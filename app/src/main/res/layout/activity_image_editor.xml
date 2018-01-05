@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <robin.com.robinimageeditor.view.ActionFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_black">
+
+        <robin.com.robinimageeditor.photoview.PhotoView
+            android:id="@+id/layerImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/layerEditorParent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <robin.com.robinimageeditor.layer.LayerComposite
+                android:id="@+id/layerComposite"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <robin.com.robinimageeditor.layer.ScrawlView
+                    android:id="@+id/layerScrawlView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <robin.com.robinimageeditor.layer.StickerView
+                    android:id="@+id/layerStickerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </robin.com.robinimageeditor.layer.LayerComposite>
+        </FrameLayout>
+    </robin.com.robinimageeditor.view.ActionFrameLayout>
+
+    <include
+        android:id="@+id/editorBar"
+        layout="@layout/action_bar_editor" />
+
+    <FrameLayout
+        android:id="@+id/flFunc"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_gravity="bottom"
+        android:orientation="vertical" />
+</FrameLayout>
