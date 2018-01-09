@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.layer;
+package robin.com.robinimageeditor.layer.base;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -146,7 +146,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     }
 
     protected T getFingerDownState(float downX, float downY) {
-        for (int i = saveStateMap.size() - 1; i > 0; i--) {
+        for (int i = saveStateMap.size() - 1; i >= 0; i--) {
             T state = saveStateMap.valueAt(i);
             RectF displayRect = getStateDisplayRect(state, true);
             if (displayRect.contains(downX, downY)) {
@@ -220,6 +220,16 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     }
 
     @Override
+    public void onRotate(float rotateDegree, float focusX, float focusY, boolean rootLayer) {
+        if (!rootLayer) {
+            if (currentPastingState != null) {
+                currentPastingState.getDisplayMatrix().postRotate(rotateDegree, focusX, focusY);
+                redrawAllCache();
+            }
+        }
+    }
+
+    @Override
     public void onFingerUp(float upX, float upY) {
         if (mCallback != null) {
             mCallback.showOrHideDragCallback(false);
@@ -283,7 +293,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     }
 
     @Override
-    void drawAllCachedState(Canvas canvas) {
+    protected void drawAllCachedState(Canvas canvas) {
         for (int i = 0; i < saveStateMap.size(); i++) {
             T state = saveStateMap.valueAt(i);
             drawPastingState(state, canvas);
@@ -292,12 +302,16 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         }
     }
 
+    public void setDragViewRect(RectF dragViewRect) {
+        this.dragViewRect = dragViewRect;
+    }
+
     @Override
     public void redrawOnPhotoRectUpdate() {
         redrawAllCache();
     }
 
-    abstract  void onPastingDoubleClick(T state);
+    protected abstract  void onPastingDoubleClick(T state);
 
-    abstract void drawPastingState(T state, Canvas canvas);
+    protected abstract void drawPastingState(T state, Canvas canvas);
 }

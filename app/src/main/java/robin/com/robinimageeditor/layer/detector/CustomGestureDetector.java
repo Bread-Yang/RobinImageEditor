@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.layer;
+package robin.com.robinimageeditor.layer.detector;
 
 import android.content.Context;
 import android.view.MotionEvent;
@@ -16,7 +16,8 @@ public class CustomGestureDetector {
 
     private int mActivePointerId = INVALID_POINTER_ID;
     private int mActivePointerIndex = 0;
-    private final ScaleGestureDetector mDetector;
+    private final ScaleGestureDetector mScaleDetector;
+    private final RotateGestureDetector mRotateDetector;
 
     private VelocityTracker mVelocityTracker;
     private boolean mIsDragging;
@@ -58,7 +59,17 @@ public class CustomGestureDetector {
                 // NO-OP
             }
         };
-        mDetector = new ScaleGestureDetector(context, mScaleListener);
+        mScaleDetector = new ScaleGestureDetector(context, mScaleListener);
+
+        RotateGestureDetector.OnRotateGestureListener mRotateGestureListener = new RotateGestureDetector.OnRotateGestureListener() {
+
+            @Override
+            public boolean onRotate(float degrees, float focusX, float focusY) {
+                mListener.onRotate(degrees, focusX, focusY, false);
+                return true;
+            }
+        };
+        mRotateDetector = new RotateGestureDetector(context, mRotateGestureListener);
     }
 
     public CustomGestureDetector(Context context, GestureDetectorListener listener, boolean enableMultipleFinger) {
@@ -83,7 +94,7 @@ public class CustomGestureDetector {
     }
 
     public boolean isScaling() {
-        return mDetector.isInProgress();
+        return mScaleDetector.isInProgress();
     }
 
     public boolean isDragging() {
@@ -93,7 +104,8 @@ public class CustomGestureDetector {
     public boolean onTouchEvent(MotionEvent ev) {
         try {
             if (enableMultipleFinger) {
-                mDetector.onTouchEvent(ev);
+                mScaleDetector.onTouchEvent(ev);
+                mRotateDetector.onTouchEvent(ev);
             }
             return processTouchEvent(ev);
         } catch (IllegalArgumentException e) {

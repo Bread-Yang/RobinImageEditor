@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.layer;
+package robin.com.robinimageeditor.layer.base;
 
 import android.content.Context;
 import android.graphics.Path;
@@ -16,7 +16,7 @@ import robin.com.robinimageeditor.util.Utils;
  *
  * Created by Robin Yang on 12/29/17.
  */
-abstract class BasePaintLayerView<T extends SaveStateMarker> extends BaseLayerView<T> {
+public abstract class BasePaintLayerView<T extends SaveStateMarker> extends BaseLayerView<T> {
 
     protected Path paintPath;
     protected boolean currentPathValidate;
@@ -114,5 +114,5 @@ abstract class BasePaintLayerView<T extends SaveStateMarker> extends BaseLayerVi
         return false;
     }
 
-    abstract T savePathOnFingerUp(Path paintPath);
+    protected abstract T savePathOnFingerUp(Path paintPath);
 }

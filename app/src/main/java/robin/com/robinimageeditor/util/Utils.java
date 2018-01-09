@@ -2,6 +2,7 @@ package robin.com.robinimageeditor.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
@@ -35,6 +36,10 @@ public class Utils {
 
     public static int getResourceColor(Context context, int resId) {
         return context.getResources().getColor(resId);
+    }
+
+    public static String getResourceString(Context context, int resId) {
+        return context.getResources().getString(resId);
     }
 
     public static String randomId() {
@@ -84,6 +89,7 @@ public class Utils {
         }
     }
 
+    //region rect extend methods
     public static void RectFIncrease(RectF rectF, float dx, float dy) {
         rectF.left -= dx;
         rectF.top -= dx;
@@ -98,8 +104,15 @@ public class Utils {
         rectF.bottom = centerY + height / 2;
     }
 
-    // matrix
+    public static void RectFSetInt(RectF rectF, int left, int top, int right, int bottom) {
+        rectF.left = left;
+        rectF.top = top;
+        rectF.right = right;
+        rectF.bottom = bottom;
+    }
+    //endregion
 
+    //region matrix extend methods
     public static float getMatrixValue(Matrix matrix, int whichValue) {
         float[] matrixValues = new float[9];
         matrix.getValues(matrixValues);
@@ -152,4 +165,11 @@ public class Utils {
         tempMatrix.invert(invertMatrix);
         return new float[]{startScaleX / getMatrixScale(invertMatrix), startScaleY / getMatrixScale(invertMatrix)};
     }
+    //endregion
+
+    //region canvas extend methods
+    public static int saveEntireLayer(Canvas canvas) {
+        return canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null, Canvas.ALL_SAVE_FLAG);
+    }
+    //endregion
 }

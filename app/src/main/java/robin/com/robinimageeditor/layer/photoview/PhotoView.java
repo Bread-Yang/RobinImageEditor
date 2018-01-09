@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.photoview;
+package robin.com.robinimageeditor.layer.photoview;
 
 /**
  * Created by Robin Yang on 1/2/18.
@@ -15,7 +15,7 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import robin.com.robinimageeditor.layer.GestureDetectorListener;
+import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
 import robin.com.robinimageeditor.layer.OnPhotoRectUpdateListener;
 import robin.com.robinimageeditor.layer.RootNode;
 

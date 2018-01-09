@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         android:background="@color/bg_black">
 
-        <robin.com.robinimageeditor.photoview.PhotoView
+        <robin.com.robinimageeditor.layer.photoview.PhotoView
             android:id="@+id/layerImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
@@ -22,6 +22,11 @@
                 android:id="@+id/layerComposite"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <robin.com.robinimageeditor.layer.MosaicView
+                    android:id="@+id/layerMosaicView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
                 <robin.com.robinimageeditor.layer.ScrawlView
                     android:id="@+id/layerScrawlView"

@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor;
+package robin.com.robinimageeditor.cache;
 
 import android.util.LruCache;
 

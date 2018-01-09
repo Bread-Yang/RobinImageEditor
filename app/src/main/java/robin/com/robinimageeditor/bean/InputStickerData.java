@@ -1,6 +1,6 @@
 package robin.com.robinimageeditor.bean;
 
-import robin.com.robinimageeditor.view.Sticker;
+import robin.com.robinimageeditor.view.StickerType;
 
 /**
  * Created by Robin Yang on 1/4/18.
@@ -8,20 +8,20 @@ import robin.com.robinimageeditor.view.Sticker;
 
 public class InputStickerData implements SharableData {
 
-    private Sticker sticker;
+    private StickerType stickerType;
     private int stickerIndex;
 
-    public InputStickerData(Sticker sticker, int stickerIndex) {
-        this.sticker = sticker;
+    public InputStickerData(StickerType stickerType, int stickerIndex) {
+        this.stickerType = stickerType;
         this.stickerIndex = stickerIndex;
     }
 
-    public Sticker getSticker() {
-        return sticker;
+    public StickerType getStickerType() {
+        return stickerType;
     }
 
-    public void setSticker(Sticker sticker) {
-        this.sticker = sticker;
+    public void setStickerType(StickerType stickerType) {
+        this.stickerType = stickerType;
     }
 
     public int getStickerIndex() {

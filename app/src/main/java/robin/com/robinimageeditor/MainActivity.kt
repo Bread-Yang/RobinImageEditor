@@ -16,9 +16,6 @@ import com.bumptech.glide.request.RequestOptions
 import robin.com.robinimageeditor.bean.EditorResult
 import robin.com.robinimageeditor.bean.EditorSetup
 import robin.com.robinimageeditor.util.PathUtils
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.Manifest.permission
-import android.app.PendingIntent.getActivity
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.support.v4.content.ContextCompat

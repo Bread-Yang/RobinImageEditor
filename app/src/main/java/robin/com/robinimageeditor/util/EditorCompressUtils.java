@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor;
+package robin.com.robinimageeditor.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

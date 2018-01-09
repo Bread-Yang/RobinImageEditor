@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import robin.com.robinimageeditor.R;
+import robin.com.robinimageeditor.bean.MosaicDetails;
 import robin.com.robinimageeditor.bean.ScrawlDetails;
 import robin.com.robinimageeditor.util.Utils;
 
@@ -22,7 +23,7 @@ import robin.com.robinimageeditor.util.Utils;
  * Created by Robin Yang on 1/3/18.
  */
 
-public class FuncModeToolFragment extends Fragment implements EditorModehandler {
+public class FuncModeToolFragment extends Fragment implements EditorModeHandler {
 
     private static final String KEY_MODE = "mode";
 
@@ -142,6 +143,38 @@ public class FuncModeToolFragment extends Fragment implements EditorModehandler 
 
     @Override
     public void handleStickerMode(boolean selected) {
+
+    }
+
+    @Override
+    public void handleMosaicMode(boolean selected) {
+        if (selected) {
+            MosaicDetailsView.OnMosaicChangeListener  listener = new MosaicDetailsView.OnMosaicChangeListener() {
+                @Override
+                public void onChange(MosaicMode mosaicMode) {
+                    for (int i = 0; i < mFuncDetailsListeners.size(); i++) {
+                        FuncDetailsListener funcDetailsListener = mFuncDetailsListeners.get(i);
+                        funcDetailsListener.onReceiveDetails(EditorMode.MosaicMode, new MosaicDetails(mosaicMode));
+                    }
+                }
+            };
+            MosaicDetailsView mosaicDetails = new MosaicDetailsView(getContext(), listener);
+            mosaicDetails.setOnRevokeListener(new OnRevokeListener() {
+                @Override
+                public void revoke(EditorMode editorMode) {
+                    for (int i = 0; i < mOnRevokeListeners.size(); i++) {
+                        OnRevokeListener onRevokeListener = mOnRevokeListeners.get(i);
+                        onRevokeListener.revoke(EditorMode.MosaicMode);
+                    }
+                }
+            });
+            showOrHideDetailsView(EditorMode.MosaicMode, mosaicDetails);
+        }
+        showOrHideDetails(selected);
+    }
+
+    @Override
+    public void handleTextPastingMode(boolean selected) {
 
     }
 

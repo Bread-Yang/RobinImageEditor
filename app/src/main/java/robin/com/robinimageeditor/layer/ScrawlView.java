@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import java.util.Iterator;
 
 import robin.com.robinimageeditor.bean.ScrawlSaveState;
+import robin.com.robinimageeditor.layer.base.BasePaintLayerView;
 import robin.com.robinimageeditor.util.Utils;
 
 /**
@@ -59,12 +60,12 @@ public class ScrawlView extends BasePaintLayerView<ScrawlSaveState> {
     }
 
     @Override
-    ScrawlSaveState savePathOnFingerUp(Path paintPath) {
+    protected ScrawlSaveState savePathOnFingerUp(Path paintPath) {
         return new ScrawlSaveState(Utils.copyPaint(mDrawPaint), paintPath);
     }
 
     @Override
-    void drawAllCachedState(Canvas canvas) {
+    protected void drawAllCachedState(Canvas canvas) {
         Iterator<ScrawlSaveState> iterator = saveStateMap.values().iterator();
         while (iterator.hasNext()) {
             ScrawlSaveState state = iterator.next();

@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.layer;
+package robin.com.robinimageeditor.layer.base;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -26,6 +26,10 @@ import java.util.Map;
 import robin.com.robinimageeditor.bean.EditorCacheData;
 import robin.com.robinimageeditor.bean.LayerEditResult;
 import robin.com.robinimageeditor.bean.SaveStateMarker;
+import robin.com.robinimageeditor.layer.detector.CustomGestureDetector;
+import robin.com.robinimageeditor.layer.LayerCacheNode;
+import robin.com.robinimageeditor.layer.LayerTransformer;
+import robin.com.robinimageeditor.layer.OnPhotoRectUpdateListener;
 import robin.com.robinimageeditor.util.Utils;
 
 /**
@@ -206,7 +210,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     @Override
     public void onRotate(float rotateDegree, float focusX, float focusY, boolean rootLayer) {
-
+        Log.e(TAG, "onRotate(), rotateDegree : " + rotateDegree);
     }
 
     protected class OverBoundRunnable implements Runnable {
@@ -274,7 +278,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     /**
      * invalidate all cached data
      */
-    abstract void drawAllCachedState(Canvas canvas);
+    protected abstract void drawAllCachedState(Canvas canvas);
 
     protected void initSupportView(Context context) {
 

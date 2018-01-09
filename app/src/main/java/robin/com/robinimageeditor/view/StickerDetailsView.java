@@ -16,7 +16,7 @@ import android.widget.ImageView;
 
 import robin.com.robinimageeditor.R;
 import robin.com.robinimageeditor.bean.InputStickerData;
-import robin.com.robinimageeditor.layer.StickerUtils;
+import robin.com.robinimageeditor.util.StickerUtils;
 
 /**
  * Created by Robin Yang on 1/5/18.
@@ -56,7 +56,7 @@ public class StickerDetailsView extends FrameLayout {
         LayoutInflater.from(context).inflate(R.layout.sticker_details, this, true);
         stickerView = findViewById(R.id.rvSticker);
         GridLayoutManager layoutManager = new GridLayoutManager(context, 8);
-        stickerView.setAdapter(new SimpleStickerAdapter(Sticker.Emoji));
+        stickerView.setAdapter(new SimpleStickerAdapter(StickerType.Emoji));
         stickerView.setLayoutManager(layoutManager);
     }
 
@@ -66,12 +66,12 @@ public class StickerDetailsView extends FrameLayout {
 
     class SimpleStickerAdapter extends RecyclerView.Adapter<SimpleStickerAdapter.SimpleStickerHolder> {
 
-        Sticker sticker;
+        StickerType stickerType;
         int[] stickerResource;
 
-        public SimpleStickerAdapter(Sticker sticker) {
-            this.sticker = sticker;
-            stickerResource = StickerUtils.getInstance().getStickers(sticker);
+        public SimpleStickerAdapter(StickerType stickerType) {
+            this.stickerType = stickerType;
+            stickerResource = StickerUtils.getInstance().getStickers(stickerType);
         }
 
         @Override
@@ -88,7 +88,7 @@ public class StickerDetailsView extends FrameLayout {
                 @Override
                 public void onClick(View v) {
                     if (onStickerClickListener != null) {
-                        onStickerClickListener.onResult(new InputStickerData(sticker, position));
+                        onStickerClickListener.onResult(new InputStickerData(stickerType, position));
                     }
                 }
             });

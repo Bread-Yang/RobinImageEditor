@@ -35,13 +35,16 @@ import robin.com.robinimageeditor.bean.EditorResult;
 import robin.com.robinimageeditor.bean.EditorSetup;
 import robin.com.robinimageeditor.bean.LayerEditResult;
 import robin.com.robinimageeditor.bean.Pair;
-import robin.com.robinimageeditor.layer.BaseLayerView;
+import robin.com.robinimageeditor.cache.LayerCache;
 import robin.com.robinimageeditor.layer.LayerCacheNode;
 import robin.com.robinimageeditor.layer.LayerComposite;
+import robin.com.robinimageeditor.layer.MosaicView;
 import robin.com.robinimageeditor.layer.RootEditorDelegate;
 import robin.com.robinimageeditor.layer.ScrawlView;
 import robin.com.robinimageeditor.layer.StickerView;
-import robin.com.robinimageeditor.photoview.PhotoView;
+import robin.com.robinimageeditor.layer.base.BaseLayerView;
+import robin.com.robinimageeditor.layer.photoview.PhotoView;
+import robin.com.robinimageeditor.util.EditorCompressUtils;
 import robin.com.robinimageeditor.util.Utils;
 import robin.com.robinimageeditor.view.EditorMode;
 import robin.com.robinimageeditor.view.FuncAndActionBarAnimHelper;
@@ -54,7 +57,7 @@ import robin.com.robinimageeditor.view.FuncModeToolFragment;
 
 public class ImageEditorActivity extends AppCompatActivity implements LayerViewProvider {
 
-    private static final String TAG = "ImageEditor";
+    private static final String TAG = "ImageEditorActivity";
     private static final String intentKey = "editorSetup";
 
     private EditorSetup mEditorSetup;
@@ -71,6 +74,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private PhotoView layerImageView;
     private FrameLayout layerEditorParent;
     private LayerComposite layerComposite;
+    private MosaicView layerMosaicView;
     private ScrawlView layerScrawlView;
     private StickerView layerStickerView;
 
@@ -116,6 +120,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         layerImageView = findViewById(R.id.layerImageView);
         layerScrawlView = findViewById(R.id.layerScrawlView);
         layerStickerView = findViewById(R.id.layerStickerView);
+        layerMosaicView = findViewById(R.id.layerMosaicView);
         layerEditorParent = findViewById(R.id.layerEditorParent);
         layerComposite = findViewById(R.id.layerComposite);
 
@@ -149,6 +154,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         List<EditorMode> functionalModeList = new ArrayList<>();
         functionalModeList.add(EditorMode.ScrawlMode);
         functionalModeList.add(EditorMode.StickerMode);
+        functionalModeList.add(EditorMode.MosaicMode);
 
         FuncModeToolFragment toolFragment = FuncModeToolFragment.newInstance(functionalModeList);
         getSupportFragmentManager().beginTransaction().add(R.id.flFunc, toolFragment).commit();
@@ -195,6 +201,15 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         Bitmap imageBitmap = EditorCompressUtils.getImageBitmap(mEditorPath);
         layerImageView.setImageBitmap(imageBitmap);
 
+        layerImageView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                layerMosaicView.setInitializeMatrix(layerImageView.getBaseLayoutMatrix());
+            }
+        });
+
+        layerMosaicView.setupForMosaicView(imageBitmap);
         callChildrenRestoreLayer(layerComposite, cacheData);
 
         mEditorWidth = imageBitmap.getWidth();
@@ -224,6 +239,8 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 return layerScrawlView;
             case StickerMode:
                 return layerStickerView;
+            case MosaicMode:
+                return layerMosaicView;
         }
         return null;
     }
@@ -300,8 +317,8 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             View layer = parent.getChildAt(i);
 
             if (layer instanceof LayerCacheNode) {
-                ((LayerCacheNode)layer).restoreLayerData(cacheData);
-            } else if (layer instanceof  ViewGroup) {
+                ((LayerCacheNode) layer).restoreLayerData(cacheData);
+            } else if (layer instanceof ViewGroup) {
                 callChildrenRestoreLayer((ViewGroup) layer, cacheData);
             }
         }

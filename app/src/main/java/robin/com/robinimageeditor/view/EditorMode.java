@@ -16,7 +16,7 @@ public enum EditorMode {
         }
 
         @Override
-        void onHandle(boolean selected, EditorModehandler handler) {
+        void onHandle(boolean selected, EditorModeHandler handler) {
             handler.handleScrawlMode(selected);
         }
 
@@ -33,19 +33,54 @@ public enum EditorMode {
         }
 
         @Override
-        void onHandle(boolean selected, EditorModehandler handler) {
-            handler.handleScrawlMode(selected);
+        void onHandle(boolean selected, EditorModeHandler handler) {
+            handler.handleStickerMode(selected);
         }
 
         @Override
         boolean canPersistMode() {
             return false;
         }
-    };
+    },
+
+    MosaicMode {
+        @Override
+        int getModeBgResource() {
+            return R.drawable.selector_edit_image_mosaic_tool;
+        }
+
+        @Override
+        void onHandle(boolean selected, EditorModeHandler handler) {
+            handler.handleMosaicMode(selected);
+        }
+
+        @Override
+        boolean canPersistMode() {
+            return true;
+        }
+    },
+
+    TextPastingMode {
+        @Override
+        int getModeBgResource() {
+            return R.drawable.selector_edit_image_text_tool;
+        }
+
+        @Override
+        void onHandle(boolean selected, EditorModeHandler handler) {
+            handler.handleTextPastingMode(selected);
+        }
+
+        @Override
+        boolean canPersistMode() {
+            return false;
+        }
+    }
+    ;
 
     abstract boolean canPersistMode();
 
     abstract int getModeBgResource();
 
-    abstract void onHandle(boolean selected, EditorModehandler handler);
+    abstract void onHandle(boolean selected, EditorModeHandler handler);
 }

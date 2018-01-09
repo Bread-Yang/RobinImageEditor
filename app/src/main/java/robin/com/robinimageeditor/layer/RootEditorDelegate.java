@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
+
 /**
  * Created by Robin Yang on 1/2/18.
  */

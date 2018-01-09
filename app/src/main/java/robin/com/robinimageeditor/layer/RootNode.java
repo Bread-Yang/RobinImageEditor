@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 
+import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
+
 /**
  * Root node marker
  * Created by Robin Yang on 12/29/17.

@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.layer;
+package robin.com.robinimageeditor.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 import java.util.Arrays;
 
 import robin.com.robinimageeditor.R;
-import robin.com.robinimageeditor.view.Sticker;
+import robin.com.robinimageeditor.view.StickerType;
 
 /**
  * Created by Robin Yang on 1/5/18.
@@ -49,33 +49,33 @@ public class StickerUtils {
         return mInstance;
     }
 
-    private int getByIndex(Sticker sticker, int index) {
-        if (isIndexValidate(sticker, index)) {
+    private int getByIndex(StickerType stickerType, int index) {
+        if (isIndexValidate(stickerType, index)) {
             return mEmojiResource[index];
         }
         return -1;
     }
 
-    private boolean isIndexValidate(Sticker sticker, int index) {
-        if (sticker == Sticker.Emoji) {
+    private boolean isIndexValidate(StickerType stickerType, int index) {
+        if (stickerType == StickerType.Emoji) {
             return index >= 0 && index < mEmojiResource.length;
         }
         return false;
     }
 
-    public int[] getStickers(Sticker sticker) {
-        if (sticker == Sticker.Emoji) {
+    public int[] getStickers(StickerType stickerType) {
+        if (stickerType == StickerType.Emoji) {
             return Arrays.copyOf(mEmojiResource, mEmojiResource.length);
         }
         return null;
     }
 
-    public Bitmap getStickerBitmap(Context context, Sticker sticker, int index) {
-        int resId = getByIndex(sticker, index);
+    public Bitmap getStickerBitmap(Context context, StickerType stickerType, int index) {
+        int resId = getByIndex(stickerType, index);
         if (resId == -1) {
             return null;
         }
-        if (sticker == Sticker.Emoji) {
+        if (stickerType == StickerType.Emoji) {
             Drawable drawable = getLocalDrawable(context, resId);
             if (drawable == null) {
                 return null;

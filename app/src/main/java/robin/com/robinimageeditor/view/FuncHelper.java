@@ -2,6 +2,7 @@ package robin.com.robinimageeditor.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.RectF;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,11 @@ import android.widget.FrameLayout;
 import robin.com.robinimageeditor.LayerViewProvider;
 import robin.com.robinimageeditor.bean.FuncDetailsMarker;
 import robin.com.robinimageeditor.bean.InputStickerData;
+import robin.com.robinimageeditor.bean.MosaicDetails;
 import robin.com.robinimageeditor.bean.ScrawlDetails;
-import robin.com.robinimageeditor.layer.BaseLayerView;
+import robin.com.robinimageeditor.layer.TextPastingView;
+import robin.com.robinimageeditor.layer.base.BaseLayerView;
+import robin.com.robinimageeditor.layer.MosaicView;
 import robin.com.robinimageeditor.layer.ScrawlView;
 import robin.com.robinimageeditor.layer.StickerView;
 
@@ -22,19 +26,28 @@ import robin.com.robinimageeditor.layer.StickerView;
 public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevokeListener {
 
     private LayerViewProvider mProvider;
+    private DragToDeleteView mDragToDeleteView;
     private Context mContext;
     private FuncAndActionBarAnimHelper mFuncAndActionBarAnimHelper;
     private StickerDetailsView mStickerDetailsView;
     private boolean mStickerDetailsShowing;
 
-    public FuncHelper(LayerViewProvider mProvider) {
-        this.mProvider = mProvider;
+    public FuncHelper(LayerViewProvider provider, DragToDeleteView dragToDeleteView) {
+        this.mProvider = provider;
+        this.mDragToDeleteView = dragToDeleteView;
         init();
     }
 
     private void init() {
         mContext = mProvider.getActivityContext();
         mFuncAndActionBarAnimHelper = mProvider.getFuncAndActionBarAnimHelper();
+        mDragToDeleteView.setOnLayoutRectChangeListener(new DragToDeleteView.OnLayoutRectChangeListener() {
+            @Override
+            public void onChange(View view, RectF rectF) {
+                ((StickerView) mProvider.findLayerByEditorMode(EditorMode.StickerMode)).setDragViewRect(rectF);
+                ((TextPastingView) mProvider.findLayerByEditorMode(EditorMode.TextPastingMode)).setDragViewRect(rectF);
+            }
+        });
     }
 
     private void enableOrDisableEditorMode(EditorMode editorMode, boolean enable) {
@@ -48,14 +61,23 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
         ((ScrawlView) mProvider.findLayerByEditorMode(EditorMode.ScrawlMode)).setPaintColor(details.getColor());
     }
 
+    private void setMosaicDetails(MosaicDetails details) {
+        ((MosaicView) mProvider.findLayerByEditorMode(EditorMode.MosaicMode)).setMosaicMode(details.getMosaicMode(), null);
+    }
+
     @Override
     public void onFuncModeSelected(EditorMode editorMode) {
         switch (editorMode) {
             case ScrawlMode:
-                enableOrDisableEditorMode(editorMode, true);
+                enableOrDisableEditorMode(EditorMode.ScrawlMode, true);
+                enableOrDisableEditorMode(EditorMode.MosaicMode, false);
                 break;
             case StickerMode:
                 go2StickerPanel();
+                break;
+            case MosaicMode:
+                enableOrDisableEditorMode(EditorMode.ScrawlMode, false);
+                enableOrDisableEditorMode(EditorMode.MosaicMode, true);
                 break;
         }
     }
@@ -64,7 +86,10 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
     public void onFuncModeUnselected(EditorMode editorMode) {
         switch (editorMode) {
             case ScrawlMode:
-                enableOrDisableEditorMode(editorMode, false);
+                enableOrDisableEditorMode(EditorMode.ScrawlMode, false);
+                break;
+            case MosaicMode:
+                enableOrDisableEditorMode(EditorMode.MosaicMode, false);
                 break;
         }
     }
@@ -74,6 +99,9 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
         switch (editorMode) {
             case ScrawlMode:
                 setScrawlDetails((ScrawlDetails) funcdetailsMarker);
+                break;
+            case MosaicMode:
+                setMosaicDetails((MosaicDetails) funcdetailsMarker);
                 break;
         }
     }

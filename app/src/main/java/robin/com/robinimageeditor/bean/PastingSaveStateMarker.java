@@ -9,9 +9,9 @@ import android.graphics.RectF;
 
 public abstract class PastingSaveStateMarker extends SaveStateMarker {
 
-    private RectF initDisplayRect;
-    private Matrix displayMatrix;
-    private Matrix initEventDisplayMatrix;
+    protected RectF initDisplayRect;
+    protected Matrix displayMatrix;
+    protected Matrix initEventDisplayMatrix;
 
     public PastingSaveStateMarker(RectF initDisplayRect, Matrix displayMatrix) {
         this.initDisplayRect = initDisplayRect;
@@ -23,23 +23,11 @@ public abstract class PastingSaveStateMarker extends SaveStateMarker {
         return initDisplayRect;
     }
 
-    public void setInitDisplayRect(RectF initDisplayRect) {
-        this.initDisplayRect = initDisplayRect;
-    }
-
     public Matrix getDisplayMatrix() {
         return displayMatrix;
     }
 
-    public void setDisplayMatrix(Matrix displayMatrix) {
-        this.displayMatrix = displayMatrix;
-    }
-
     public Matrix getInitEventDisplayMatrix() {
         return initEventDisplayMatrix;
-    }
-
-    public void setInitEventDisplayMatrix(Matrix initEventDisplayMatrix) {
-        this.initEventDisplayMatrix = initEventDisplayMatrix;
     }
 }
