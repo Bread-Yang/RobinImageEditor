@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <robin.com.robinimageeditor.view.ActionFrameLayout
+        android:id="@+id/layerActionView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bg_black">
@@ -38,6 +39,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
+                <robin.com.robinimageeditor.layer.TextPastingView
+                    android:id="@+id/layerTextPastingView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
             </robin.com.robinimageeditor.layer.LayerComposite>
         </FrameLayout>
     </robin.com.robinimageeditor.view.ActionFrameLayout>
@@ -45,6 +51,11 @@
     <include
         android:id="@+id/editorBar"
         layout="@layout/action_bar_editor" />
+
+    <include
+        android:id="@+id/layoutDragDelete"
+        layout="@layout/layout_drag_to_delete"
+        android:visibility="gone" />
 
     <FrameLayout
         android:id="@+id/flFunc"

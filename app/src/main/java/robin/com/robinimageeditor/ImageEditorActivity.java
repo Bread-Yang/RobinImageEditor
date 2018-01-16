@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,14 +39,18 @@ import robin.com.robinimageeditor.bean.Pair;
 import robin.com.robinimageeditor.cache.LayerCache;
 import robin.com.robinimageeditor.layer.LayerCacheNode;
 import robin.com.robinimageeditor.layer.LayerComposite;
+import robin.com.robinimageeditor.layer.LayerViewProvider;
 import robin.com.robinimageeditor.layer.MosaicView;
 import robin.com.robinimageeditor.layer.RootEditorDelegate;
 import robin.com.robinimageeditor.layer.ScrawlView;
 import robin.com.robinimageeditor.layer.StickerView;
+import robin.com.robinimageeditor.layer.TextPastingView;
 import robin.com.robinimageeditor.layer.base.BaseLayerView;
 import robin.com.robinimageeditor.layer.photoview.PhotoView;
 import robin.com.robinimageeditor.util.EditorCompressUtils;
 import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.view.ActionFrameLayout;
+import robin.com.robinimageeditor.view.DragToDeleteView;
 import robin.com.robinimageeditor.view.EditorMode;
 import robin.com.robinimageeditor.view.FuncAndActionBarAnimHelper;
 import robin.com.robinimageeditor.view.FuncHelper;
@@ -67,9 +72,14 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private int mEditorHeight;
 
     private RootEditorDelegate mRootEditorDelegate;
+    private FuncAndActionBarAnimHelper mFuncAndActionBarAnimHelper;
     private FuncHelper mFuncHelper;
 
     private ImageComposeTask imageComposeTask;
+
+    private ActionFrameLayout layerActionView;
+    private View editorBar;
+    private View flFunc;
 
     private PhotoView layerImageView;
     private FrameLayout layerEditorParent;
@@ -77,9 +87,12 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private MosaicView layerMosaicView;
     private ScrawlView layerScrawlView;
     private StickerView layerStickerView;
+    private TextPastingView layerTextPastingView;
 
     private TextView tvComplete;
     private ImageView ivBack;
+
+    private RelativeLayout layoutDragDelete;
 
     public static Intent intent(Context context, EditorSetup editorSetup) {
         Intent intent = new Intent(context, ImageEditorActivity.class);
@@ -117,15 +130,22 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         }
         setContentView(view);
 
+        layerActionView = findViewById(R.id.layerActionView);
+        editorBar = findViewById(R.id.editorBar);
+        flFunc = findViewById(R.id.flFunc);
+
         layerImageView = findViewById(R.id.layerImageView);
         layerScrawlView = findViewById(R.id.layerScrawlView);
         layerStickerView = findViewById(R.id.layerStickerView);
+        layerTextPastingView = findViewById(R.id.layerTextPastingView);
         layerMosaicView = findViewById(R.id.layerMosaicView);
         layerEditorParent = findViewById(R.id.layerEditorParent);
         layerComposite = findViewById(R.id.layerComposite);
 
         tvComplete = findViewById(R.id.tvComplete);
         ivBack = findViewById(R.id.ivBack);
+
+        layoutDragDelete = findViewById(R.id.layoutDragDelete);
     }
 
     private void initData() {
@@ -154,13 +174,15 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         List<EditorMode> functionalModeList = new ArrayList<>();
         functionalModeList.add(EditorMode.ScrawlMode);
         functionalModeList.add(EditorMode.StickerMode);
+        functionalModeList.add(EditorMode.TextPastingMode);
         functionalModeList.add(EditorMode.MosaicMode);
 
         FuncModeToolFragment toolFragment = FuncModeToolFragment.newInstance(functionalModeList);
         getSupportFragmentManager().beginTransaction().add(R.id.flFunc, toolFragment).commit();
 
         mRootEditorDelegate = new RootEditorDelegate(layerImageView, layerEditorParent);
-        mFuncHelper = new FuncHelper(this);
+        mFuncAndActionBarAnimHelper = new FuncAndActionBarAnimHelper(layerActionView, editorBar, flFunc, this);
+        mFuncHelper = new FuncHelper(this, new DragToDeleteView(layoutDragDelete));
 
         toolFragment.addFuncModeListener(mFuncHelper);
         toolFragment.addFuncModeDetailsListener(mFuncHelper);
@@ -239,6 +261,8 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 return layerScrawlView;
             case StickerMode:
                 return layerStickerView;
+            case TextPastingMode:
+                return layerTextPastingView;
             case MosaicMode:
                 return layerMosaicView;
         }
@@ -252,7 +276,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
     @Override
     public FuncAndActionBarAnimHelper getFuncAndActionBarAnimHelper() {
-        return null;
+        return mFuncAndActionBarAnimHelper;
     }
 
     @Override
@@ -324,6 +348,11 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mFuncHelper.onActivityResult(requestCode, resultCode, data);
+    }
 
     /**
      * AsyncTask for image Compose

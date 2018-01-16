@@ -60,4 +60,12 @@ public class ActionFrameLayout extends FrameLayout {
         }
         return super.dispatchTouchEvent(ev);
     }
+
+    public ActionListener getActionListener() {
+        return actionListener;
+    }
+
+    public void setActionListener(ActionListener actionListener) {
+        this.actionListener = actionListener;
+    }
 }

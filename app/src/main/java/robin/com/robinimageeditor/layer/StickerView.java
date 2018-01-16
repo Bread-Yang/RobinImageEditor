@@ -52,7 +52,7 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
 
     private void addStickerPasting(int stickerIndex, StickerType stickerType) {
         genDisplayCanvas();
-        StickerSaveState state = initStickerSaveState(stickerIndex, stickerType, null);
+        StickerSaveState state = initStickerSaveState(stickerIndex, stickerType);
         if (state == null) {
             return;
         }
@@ -62,10 +62,8 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
         hideExtraValidateRect();
     }
 
-    private StickerSaveState initStickerSaveState(int stickerIndex, StickerType stickerType, Matrix matrix) {
-        if (matrix == null) {
-            matrix = new Matrix();
-        }
+    private StickerSaveState initStickerSaveState(int stickerIndex, StickerType stickerType) {
+        Matrix matrix = new Matrix();
 
         Bitmap bitmap = StickerUtils.getInstance().getStickerBitmap(getContext(), stickerType, stickerIndex);
         if (bitmap == null) {
@@ -77,9 +75,16 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
         PointF point = new PointF(validateRect.centerX(), validateRect.centerY());
         point = Utils.mapInvertMatrixPoint(getDrawMatrix(), point);  // 图片未Matrix变换前的中点
         Utils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
-        RectF initTextRect = new RectF();
-        initTextRect.set(initDisplayRect);
         Utils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
+
+//        float tranlateX = initDisplayRect.left;
+//        float tranlateY = initDisplayRect.top;
+//        float scaleX = initDisplayRect.width() / width;
+//        float scaleY = initDisplayRect.height() / height;
+//
+//        matrix.postTranslate(tranlateX, tranlateY);
+//        matrix.postScale(scaleX, scaleY);
+
         return new StickerSaveState(stickerType, stickerIndex, initDisplayRect, matrix);
     }
 

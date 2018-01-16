@@ -36,7 +36,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     protected Paint focusRectCornerPaint;
     protected float focusRectCornerWidth;
 
-    private OnOperateCallback mCallback;
+    protected OnOperateCallback mCallback;
 
     public interface OnOperateCallback {
         void showOrHideDragCallback(boolean b);
@@ -259,8 +259,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                     float dy = Utils.getMatrixTransY(currentMatrix) - Utils.getMatrixTransY(initEventMatrix);
                     rebound(dx, dy);
                 }
+                currentPastingState.getInitEventDisplayMatrix().reset();
             }
-            currentPastingState.getInitEventDisplayMatrix().reset();
         }
         // hide extra validate rect (over mValidateRect should be masked)
         hideExtraValidateRect();

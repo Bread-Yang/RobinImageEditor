@@ -1,11 +1,9 @@
-package robin.com.robinimageeditor;
+package robin.com.robinimageeditor.layer;
 
 import android.content.Context;
 import android.view.View;
 
 import robin.com.robinimageeditor.bean.Pair;
-import robin.com.robinimageeditor.layer.LayerComposite;
-import robin.com.robinimageeditor.layer.RootEditorDelegate;
 import robin.com.robinimageeditor.view.EditorMode;
 import robin.com.robinimageeditor.view.FuncAndActionBarAnimHelper;
 

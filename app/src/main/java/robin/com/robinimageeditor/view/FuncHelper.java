@@ -2,28 +2,36 @@ package robin.com.robinimageeditor.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.RectF;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import robin.com.robinimageeditor.LayerViewProvider;
+import robin.com.robinimageeditor.EditorTextInputActivity;
+import robin.com.robinimageeditor.R;
 import robin.com.robinimageeditor.bean.FuncDetailsMarker;
 import robin.com.robinimageeditor.bean.InputStickerData;
+import robin.com.robinimageeditor.bean.InputTextData;
 import robin.com.robinimageeditor.bean.MosaicDetails;
 import robin.com.robinimageeditor.bean.ScrawlDetails;
-import robin.com.robinimageeditor.layer.TextPastingView;
-import robin.com.robinimageeditor.layer.base.BaseLayerView;
+import robin.com.robinimageeditor.bean.SharableData;
+import robin.com.robinimageeditor.layer.LayerViewProvider;
 import robin.com.robinimageeditor.layer.MosaicView;
 import robin.com.robinimageeditor.layer.ScrawlView;
 import robin.com.robinimageeditor.layer.StickerView;
+import robin.com.robinimageeditor.layer.TextPastingView;
+import robin.com.robinimageeditor.layer.base.BaseLayerView;
+import robin.com.robinimageeditor.layer.base.BasePastingLayerView;
 
 /**
  * Created by Robin Yang on 1/3/18.
  */
 
 public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevokeListener {
+
+    private final int TEXT_INPUT_RESULT_CODE = 301;
 
     private LayerViewProvider mProvider;
     private DragToDeleteView mDragToDeleteView;
@@ -41,11 +49,28 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
     private void init() {
         mContext = mProvider.getActivityContext();
         mFuncAndActionBarAnimHelper = mProvider.getFuncAndActionBarAnimHelper();
+
+        final TextPastingView textPastingView = ((TextPastingView) mProvider.findLayerByEditorMode(EditorMode.TextPastingMode));
+        if (textPastingView != null) {
+            setUpPastingView(textPastingView);
+
+        }
+
+        final StickerView stickerView = ((StickerView) mProvider.findLayerByEditorMode(EditorMode.StickerMode));
+        if (stickerView != null) {
+            setUpPastingView(stickerView);
+        }
+
         mDragToDeleteView.setOnLayoutRectChangeListener(new DragToDeleteView.OnLayoutRectChangeListener() {
             @Override
             public void onChange(View view, RectF rectF) {
-                ((StickerView) mProvider.findLayerByEditorMode(EditorMode.StickerMode)).setDragViewRect(rectF);
-                ((TextPastingView) mProvider.findLayerByEditorMode(EditorMode.TextPastingMode)).setDragViewRect(rectF);
+                if (stickerView != null) {
+                    stickerView.setDragViewRect(rectF);
+                }
+
+                if (textPastingView != null) {
+                    textPastingView.setDragViewRect(rectF);
+                }
             }
         });
     }
@@ -65,6 +90,11 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
         ((MosaicView) mProvider.findLayerByEditorMode(EditorMode.MosaicMode)).setMosaicMode(details.getMosaicMode(), null);
     }
 
+    private void showOrHideDrag2Delete(boolean show) {
+        mFuncAndActionBarAnimHelper.showOrHideFuncAndBarView(!show);
+        mDragToDeleteView.showOrHide(show);
+    }
+
     @Override
     public void onFuncModeSelected(EditorMode editorMode) {
         switch (editorMode) {
@@ -74,6 +104,9 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
                 break;
             case StickerMode:
                 go2StickerPanel();
+                break;
+            case TextPastingMode:
+                go2InputView(null);
                 break;
             case MosaicMode:
                 enableOrDisableEditorMode(EditorMode.ScrawlMode, false);
@@ -150,6 +183,48 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
         if (mStickerDetailsView != null) {
             ((ViewGroup) ((Activity) mContext).getWindow().getDecorView()).removeView(mStickerDetailsView);
             mStickerDetailsShowing = false;
+        }
+    }
+
+    private void go2InputView(InputTextData prepareData) {
+        mFuncAndActionBarAnimHelper.showOrHideFuncAndBarView(false);
+        Intent intent = EditorTextInputActivity.intent(mContext, prepareData);
+        ((Activity) mContext).startActivityForResult(intent, TEXT_INPUT_RESULT_CODE);
+        ((Activity) mContext).overridePendingTransition(R.anim.animation_bottom_to_top, 0);
+    }
+
+    private void resultFromInputView(int resultCode, Intent data) {
+        if (data != null) {
+            InputTextData result = (InputTextData) data.getSerializableExtra(String.valueOf(resultCode));
+            if (result != null) {
+                ((TextPastingView) mProvider.findLayerByEditorMode(EditorMode.TextPastingMode)).onTextPastingChanged(result);
+            }
+            mFuncAndActionBarAnimHelper.showOrHideFuncAndBarView(true);
+        }
+    }
+
+    private void setUpPastingView(BasePastingLayerView layerView) {
+        layerView.setCallback(new BasePastingLayerView.OnOperateCallback() {
+            @Override
+            public void showOrHideDragCallback(boolean b) {
+                showOrHideDrag2Delete(b);
+            }
+
+            @Override
+            public void setOrNotDragCallback(boolean b) {
+                mDragToDeleteView.setDrag2DeleteText(b);
+            }
+
+            @Override
+            public void onLayerViewDoubleClick(View view, SharableData sharableData) {
+
+            }
+        });
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == TEXT_INPUT_RESULT_CODE) {
+            resultFromInputView(resultCode, data);
         }
     }
 }
