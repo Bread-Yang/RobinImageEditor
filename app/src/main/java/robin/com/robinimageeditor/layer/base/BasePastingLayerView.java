@@ -5,7 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.util.AttributeSet;
@@ -102,20 +104,86 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     protected void drawFocusDecorate(Canvas canvas) {
         if (currentPastingState != null) {
-            RectF display = getStateDisplayRect(currentPastingState, false);
-            canvas.drawRect(display, focusRectPaint);
+            RectF initDisplayRectF = currentPastingState.getInitDisplayRect();
+            float[] polygonPoint = new float[8];
+
+            // left_top
+            polygonPoint[0] = initDisplayRectF.left;
+            polygonPoint[1] = initDisplayRectF.top;
+
+            // top_right
+            polygonPoint[2] = initDisplayRectF.right;
+            polygonPoint[3] = initDisplayRectF.top;
+
+            // bottom_right
+            polygonPoint[4] = initDisplayRectF.right;
+            polygonPoint[5] = initDisplayRectF.bottom;
+
+            // bottom_left
+            polygonPoint[6] = initDisplayRectF.left;
+            polygonPoint[7] = initDisplayRectF.bottom;
+
+            currentPastingState.getTransformMatrix().mapPoints(polygonPoint);
+
+            Path path = new Path();
+            path.moveTo(polygonPoint[0], polygonPoint[1]);
+            path.lineTo(polygonPoint[2], polygonPoint[3]);
+            path.lineTo(polygonPoint[4], polygonPoint[5]);
+            path.lineTo(polygonPoint[6], polygonPoint[7]);
+            path.close();
+
+            canvas.drawPath(path, focusRectPaint);
+
+            // draw bigRect corner's smallRect
+            drawFocusRectCornerRect(canvas, initDisplayRectF.left, initDisplayRectF.top);
+            drawFocusRectCornerRect(canvas, initDisplayRectF.right, initDisplayRectF.top);
+            drawFocusRectCornerRect(canvas, initDisplayRectF.right, initDisplayRectF.bottom);
+            drawFocusRectCornerRect(canvas, initDisplayRectF.left, initDisplayRectF.bottom);
+
+//            RectF display = getStateDisplayRect(currentPastingState, false);
+//            canvas.drawRect(display, focusRectPaint);
+
             // rect corner rect
-            drawFocusRectCornerRect(canvas, display.left, display.top);
-            drawFocusRectCornerRect(canvas, display.right, display.top);
-            drawFocusRectCornerRect(canvas, display.right, display.bottom);
-            drawFocusRectCornerRect(canvas, display.left, display.bottom);
+//            drawFocusRectCornerRect(canvas, display.left, display.top);
+//            drawFocusRectCornerRect(canvas, display.right, display.top);
+//            drawFocusRectCornerRect(canvas, display.right, display.bottom);
+//            drawFocusRectCornerRect(canvas, display.left, display.bottom);
         }
     }
 
     protected void drawFocusRectCornerRect(Canvas canvas, float centerX, float centerY) {
         RectF rect = new RectF();
         Utils.RectFSchedule(rect, centerX, centerY, focusRectCornerWidth, focusRectCornerWidth);
-        canvas.drawRect(rect, focusRectCornerPaint);
+
+        float[] polygonPoint = new float[8];
+
+        // left_top
+        polygonPoint[0] = rect.left;
+        polygonPoint[1] = rect.top;
+
+        // top_right
+        polygonPoint[2] = rect.right;
+        polygonPoint[3] = rect.top;
+
+        // bottom_right
+        polygonPoint[4] = rect.right;
+        polygonPoint[5] = rect.bottom;
+
+        // bottom_left
+        polygonPoint[6] = rect.left;
+        polygonPoint[7] = rect.bottom;
+
+        currentPastingState.getTransformMatrix().mapPoints(polygonPoint);
+
+        Path path = new Path();
+        path.moveTo(polygonPoint[0], polygonPoint[1]);
+        path.lineTo(polygonPoint[2], polygonPoint[3]);
+        path.lineTo(polygonPoint[4], polygonPoint[5]);
+        path.lineTo(polygonPoint[6], polygonPoint[7]);
+        path.close();
+
+        canvas.drawPath(path, focusRectCornerPaint);
+//        canvas.drawRect(rect, focusRectCornerPaint);
     }
 
     @Override
@@ -133,8 +201,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                 checkDisplayRegion(currentPastingState);
                 saveStateMap.remove(currentPastingState.getId());
                 saveStateMap.put(currentPastingState.getId(), currentPastingState);
-                currentPastingState.getInitEventDisplayMatrix().set(currentPastingState.getDisplayMatrix());
-                currentPastingState.getInitEventDisplayMatrix().postConcat(getDrawMatrix());
+//                currentPastingState.getInitDisplayMatrix().set(currentPastingState.getTransformMatrix());
+//                currentPastingState.getInitDisplayMatrix().postConcat(getDrawMatrix());
                 redrawAllCache();
             }
             if (currentPastingState == null) {
@@ -149,7 +217,10 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         for (int i = saveStateMap.size() - 1; i >= 0; i--) {
             T state = saveStateMap.valueAt(i);
             RectF displayRect = getStateDisplayRect(state, true);
-            if (displayRect.contains(downX, downY)) {
+//            if (displayRect.contains(downX, downY)) {
+//                return state;
+//            }
+            if (containsTouchPoint(state, (int)downX, (int)downY)) {
                 return state;
             }
         }
@@ -165,9 +236,31 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         pastingOutOfBound = !validateRect.contains(display);
     }
 
+    protected boolean containsTouchPoint(PastingSaveStateMarker state, int x, int y) {
+        Path path = new Path();
+        path.addRect(state.getInitDisplayRect(), Path.Direction.CW);
+
+        Matrix finalMatrix = new Matrix();
+        finalMatrix.set(state.getTransformMatrix());
+        finalMatrix.postConcat(getDrawMatrix());
+        path.transform(finalMatrix);
+
+        RectF rectF = new RectF();
+        path.computeBounds(rectF, true);
+
+
+        Region region = new Region();
+        region.setPath(path, new Region((int)rectF.left, (int)rectF.top, (int)rectF.right, (int)rectF.bottom));
+
+        if (region.contains(x, y)) {
+            return true;
+        }
+        return false;
+    }
+
     protected RectF getStateDisplayRect(PastingSaveStateMarker state, boolean realDisplay) {
         Matrix finalMatrix = new Matrix();
-        finalMatrix.set(state.getDisplayMatrix());
+        finalMatrix.set(state.getTransformMatrix());
         if (realDisplay) {
             finalMatrix.postConcat(getDrawMatrix());
         }
@@ -194,7 +287,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                     }
                     // calc
                     float[] invert = Utils.mapInvertMatrixTranslate(getDrawMatrix(), dx, dy);
-                    currentPastingState.getDisplayMatrix().postTranslate(invert[0], invert[1]);
+                    currentPastingState.getTransformMatrix().postTranslate(invert[0], invert[1]);
                     RectF displayRect = getStateDisplayRect(currentPastingState, true);
                     checkDisplayRegion(displayRect);
                     // setStates
@@ -213,7 +306,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
             if (currentPastingState != null) {
                 float[] invert = Utils.mapInvertMatrixScale(getDrawMatrix(), scaleFactor, scaleFactor);
                 checkDisplayRegion(currentPastingState);
-                currentPastingState.getDisplayMatrix().postScale(invert[0], invert[1], focusX, focusY);
+                currentPastingState.getTransformMatrix().postScale(invert[0], invert[1], focusX, focusY);
                 redrawAllCache();
             }
         }
@@ -223,7 +316,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     public void onRotate(float rotateDegree, float focusX, float focusY, boolean rootLayer) {
         if (!rootLayer) {
             if (currentPastingState != null) {
-                currentPastingState.getDisplayMatrix().postRotate(rotateDegree, focusX, focusY);
+                currentPastingState.getTransformMatrix().postRotate(rotateDegree, focusX, focusY);
                 redrawAllCache();
             }
         }
@@ -251,15 +344,15 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
             } else {
                 // rebound
                 if (!validateRect.contains(displayRect.centerX(), displayRect.centerY())) {
-                    Matrix initEventMatrix = currentPastingState.getInitEventDisplayMatrix();
+                    Matrix initEventMatrix = currentPastingState.getInitDisplayMatrix();
                     Matrix currentMatrix = new Matrix();
-                    currentMatrix.set(currentPastingState.getDisplayMatrix());
+                    currentMatrix.set(currentPastingState.getTransformMatrix());
                     currentMatrix.postConcat(getDrawMatrix());
                     float dx = Utils.getMatrixTransX(currentMatrix) - Utils.getMatrixTransX(initEventMatrix);
                     float dy = Utils.getMatrixTransY(currentMatrix) - Utils.getMatrixTransY(initEventMatrix);
                     rebound(dx, dy);
                 }
-                currentPastingState.getInitEventDisplayMatrix().reset();
+//                currentPastingState.getInitDisplayMatrix().reset();
             }
         }
         // hide extra validate rect (over mValidateRect should be masked)
@@ -298,7 +391,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
             T state = saveStateMap.valueAt(i);
             drawPastingState(state, canvas);
             // update pasting available rect
-            pastingMap.put(state.getId(), getStateDisplayRect(state, true));
+//            pastingMap.put(state.getId(), getStateDisplayRect(state, true));
         }
     }
 

@@ -14,8 +14,9 @@ public class StickerSaveState extends PastingSaveStateMarker {
     private StickerType stickerType;
     private int stickerIndex;
 
-    public StickerSaveState(StickerType stickerType, int stickerIndex, RectF initDisplayRect, Matrix displayMatrix) {
-        super(initDisplayRect, displayMatrix);
+    public StickerSaveState(StickerType stickerType, int stickerIndex, RectF initDisplayRect,
+                            Matrix initDisplayMatrix, Matrix transformMatrix) {
+        super(initDisplayRect, initDisplayMatrix, transformMatrix);
         this.stickerType = stickerType;
         this.stickerIndex = stickerIndex;
     }
@@ -23,7 +24,7 @@ public class StickerSaveState extends PastingSaveStateMarker {
     @Override
     public SaveStateMarker deepCopy() {
         SaveStateMarker state = new StickerSaveState(stickerType, stickerIndex,
-                new RectF(getInitDisplayRect()), new Matrix(getDisplayMatrix()));
+                new RectF(getInitDisplayRect()), new Matrix(getInitDisplayMatrix()), new Matrix(getTransformMatrix()));
         state.setId(this.getId());
         return state;
     }

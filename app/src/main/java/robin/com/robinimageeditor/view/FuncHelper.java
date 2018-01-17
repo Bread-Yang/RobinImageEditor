@@ -203,7 +203,7 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
         }
     }
 
-    private void setUpPastingView(BasePastingLayerView layerView) {
+    private void setUpPastingView(final BasePastingLayerView layerView) {
         layerView.setCallback(new BasePastingLayerView.OnOperateCallback() {
             @Override
             public void showOrHideDragCallback(boolean b) {
@@ -217,7 +217,9 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
 
             @Override
             public void onLayerViewDoubleClick(View view, SharableData sharableData) {
-
+                if (layerView instanceof TextPastingView) {
+                    go2InputView((InputTextData) sharableData);
+                }
             }
         });
     }

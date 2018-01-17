@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
@@ -66,7 +67,7 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         if (id != null) {
             TextPastingSaveState result = saveStateMap.get(id);
             if (result != null) {
-                displayMatrix = result.getDisplayMatrix();
+                displayMatrix = result.getTransformMatrix();
             }
         }
         TextPastingSaveState state = initTextPastingSaveState(text, color, displayMatrix);
@@ -80,9 +81,9 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         hideExtraValidateRect();
     }
 
-    private TextPastingSaveState initTextPastingSaveState(String text, int color, Matrix matrix) {
-        if (matrix == null) {
-            matrix = new Matrix();
+    private TextPastingSaveState initTextPastingSaveState(String text, int color, Matrix initMatrix) {
+        if (initMatrix == null) {
+            initMatrix = new Matrix();
         }
         mTextPaint.setColor(color);
         float width = mTextPaint.measureText(text);
@@ -94,18 +95,40 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         RectF initTextRect = new RectF();
         initTextRect.set(initDisplayRect);
         Utils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
-        return new TextPastingSaveState(text, color, initTextRect, initDisplayRect, matrix);
+        return new TextPastingSaveState(text, color, initTextRect, initDisplayRect, initMatrix, null);
     }
 
     @Override
     protected void drawPastingState(TextPastingSaveState state, Canvas canvas) {
         RectF resultTextRect = new RectF();
-        Matrix matrix = new Matrix(state.getDisplayMatrix());
+        Matrix matrix = new Matrix(state.getTransformMatrix());
         matrix.mapRect(resultTextRect, state.getInitTextRect());
         mTempTextPaint.setTextSize(mTextPaint.getTextSize() * Utils.getMatrixScale(matrix));
         mTempTextPaint.setColor(state.getTextColor());
         PointF result = new PointF(resultTextRect.left, resultTextRect.bottom - mTempTextPaint.descent());
-        canvas.drawText(state.getText(), result.x, result.y, mTempTextPaint);
+//        canvas.drawText(state.getText(), result.x, result.y, mTempTextPaint);
+
+        RectF initDisplayRectF = state.getInitDisplayRect();
+        float[] polygonPoint = new float[4];
+
+        float width = mTextPaint.measureText(state.getText());
+        float height = mTextPaint.descent() - mTextPaint.ascent();
+
+        // left_middle + (text's height / 2)
+        polygonPoint[0] = initDisplayRectF.left + (initDisplayRectF.width() - width) / 2;
+        polygonPoint[1] = (initDisplayRectF.top + initDisplayRectF.bottom) / 2 + height / 3;
+
+        // left_middle + (text's height / 2)
+        polygonPoint[2] = initDisplayRectF.right;
+        polygonPoint[3] = (initDisplayRectF.top + initDisplayRectF.bottom) / 2 + height / 3;
+
+        state.getTransformMatrix().mapPoints(polygonPoint);
+
+        Path path = new Path();
+        path.moveTo(polygonPoint[0], polygonPoint[1]);
+        path.lineTo(polygonPoint[2], polygonPoint[3]);
+
+        canvas.drawTextOnPath(state.getText(), path, 0, 0, mTempTextPaint);
     }
 
     @Override

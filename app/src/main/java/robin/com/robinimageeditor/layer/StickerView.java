@@ -63,7 +63,7 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
     }
 
     private StickerSaveState initStickerSaveState(int stickerIndex, StickerType stickerType) {
-        Matrix matrix = new Matrix();
+        Matrix initMatrix = new Matrix();
 
         Bitmap bitmap = StickerUtils.getInstance().getStickerBitmap(getContext(), stickerType, stickerIndex);
         if (bitmap == null) {
@@ -77,15 +77,15 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
         Utils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
         Utils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
 
-//        float tranlateX = initDisplayRect.left;
-//        float tranlateY = initDisplayRect.top;
-//        float scaleX = initDisplayRect.width() / width;
-//        float scaleY = initDisplayRect.height() / height;
-//
-//        matrix.postTranslate(tranlateX, tranlateY);
-//        matrix.postScale(scaleX, scaleY);
+        float tranlateX = initDisplayRect.left;
+        float tranlateY = initDisplayRect.top;
+        float scaleX = initDisplayRect.width() / width;
+        float scaleY = initDisplayRect.height() / height;
 
-        return new StickerSaveState(stickerType, stickerIndex, initDisplayRect, matrix);
+        initMatrix.postScale(scaleX, scaleY);
+        initMatrix.postTranslate(tranlateX, tranlateY);
+
+        return new StickerSaveState(stickerType, stickerIndex, initDisplayRect, initMatrix, null);
     }
 
     @Override
@@ -99,10 +99,14 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
         if (result == null) {
             return;
         }
-        RectF resultStickerRect = new RectF();
-        Matrix matrix = new Matrix(state.getDisplayMatrix());
-        matrix.mapRect(resultStickerRect, state.getInitDisplayRect());
-        canvas.drawBitmap(result, null, resultStickerRect, null);
-//        canvas.drawBitmap(result, matrix, null);
+//        RectF resultStickerRect = new RectF();
+//        Matrix matrix = new Matrix(state.getTransformMatrix());
+//        matrix.mapRect(resultStickerRect, state.getInitDisplayRect());
+//        canvas.drawBitmap(result, null, resultStickerRect, null);
+
+
+        Matrix matrix = new Matrix(state.getInitDisplayMatrix());
+        matrix.postConcat(state.getTransformMatrix());
+        canvas.drawBitmap(result, matrix, null);
     }
 }

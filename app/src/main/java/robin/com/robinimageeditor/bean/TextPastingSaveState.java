@@ -13,8 +13,9 @@ public class TextPastingSaveState extends PastingSaveStateMarker {
     private int textColor;
     private RectF initTextRect;
 
-    public TextPastingSaveState(String text, int textColor, RectF initTextRect, RectF initDisplayRect, Matrix displayMatrix) {
-        super(initDisplayRect, displayMatrix);
+    public TextPastingSaveState(String text, int textColor, RectF initTextRect, RectF initDisplayRect,
+                                Matrix displayMatrix, Matrix transformMatrix) {
+        super(initDisplayRect, displayMatrix, transformMatrix);
         this.text = text;
         this.textColor = textColor;
         this.initTextRect = initTextRect;
@@ -35,7 +36,9 @@ public class TextPastingSaveState extends PastingSaveStateMarker {
     @Override
     public SaveStateMarker deepCopy() {
         SaveStateMarker state = new TextPastingSaveState(text, textColor,
-                new RectF(initTextRect), new RectF(initDisplayRect), new Matrix(getDisplayMatrix()));
+                new RectF(initTextRect), new RectF(initDisplayRect),
+                new Matrix(initDisplayMatrix),
+                new Matrix(transformMatrix));
         state.setId(this.getId());
         return state;
     }
