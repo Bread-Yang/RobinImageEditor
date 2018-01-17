@@ -44,7 +44,7 @@ public class MosaicDetailsView extends FrameLayout {
             if (mode.getModeBgResource() <= 0) {
                 continue;
             }
-            final View item = LayoutInflater.from(context).inflate(R.layout.mosaic_item_func_details, rootFunc, false);
+            final View item = LayoutInflater.from(context).inflate(R.layout.item_mosaic_func_details, rootFunc, false);
             ImageView ivFuncDesc = item.findViewById(R.id.ivMosaicDesc);
             ivFuncDesc.setImageResource(mode.getModeBgResource());
             item.setTag(mode);

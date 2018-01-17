@@ -9,9 +9,9 @@ import android.graphics.Matrix;
 
 public class LayerEditResult implements SharableData{
 
-    Matrix supportMatrix;
+    private Matrix supportMatrix;
 
-    Bitmap bitmap;
+    private Bitmap bitmap;
 
     public LayerEditResult(Matrix supportMatrix, Bitmap bitmap) {
         this.supportMatrix = supportMatrix;

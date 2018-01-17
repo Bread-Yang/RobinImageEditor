@@ -11,6 +11,8 @@
     <color name="white_f">#fff</color>
     <color name="green_btn">#1ad42f</color>
     <color name="transparent_6f">#6f000000</color>
+    <color name="transparent">#00000000</color>
+
     <array name="color_seeds">
         <item>#ffffff</item>
         <item>#ff0000</item>
@@ -25,5 +27,4 @@
         <item>#ee00ff</item>
         <item>#ff00e1</item>
     </array>
-    <color name="transparent">#00000000</color>
 </resources>

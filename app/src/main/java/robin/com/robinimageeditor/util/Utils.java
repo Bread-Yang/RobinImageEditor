@@ -21,6 +21,7 @@ public class Utils {
 
     private static int randomId = 0;
 
+    //region context methods
     public static int dp2px(Context context, float dp) {
         float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
@@ -31,18 +32,19 @@ public class Utils {
         return (int) (sp * scale + 0.5f);
     }
 
-    public static void recycleBitmap(Bitmap bitmap) {
-        if (bitmap != null && bitmap.isRecycled()) {
-            bitmap.recycle();
-        }
-    }
-
     public static int getResourceColor(Context context, int resId) {
         return context.getResources().getColor(resId);
     }
 
     public static String getResourceString(Context context, int resId) {
         return context.getResources().getString(resId);
+    }
+    //endregion
+
+    public static void recycleBitmap(Bitmap bitmap) {
+        if (bitmap != null && bitmap.isRecycled()) {
+            bitmap.recycle();
+        }
     }
 
     public static String randomId() {

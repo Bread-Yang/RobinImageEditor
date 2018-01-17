@@ -8,7 +8,7 @@ import robin.com.robinimageeditor.view.MosaicMode;
 
 public class MosaicDetails implements FuncDetailsMarker {
 
-    MosaicMode mosaicMode;
+    private MosaicMode mosaicMode;
 
     public MosaicDetails(MosaicMode mosaicMode) {
         this.mosaicMode = mosaicMode;

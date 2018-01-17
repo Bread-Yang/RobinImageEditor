@@ -41,27 +41,26 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     private static final String TAG = "BaseLayerView";
 
-    /*support matrix for drawing layerView*/
-    private Matrix drawMatrix;
+    /* support matrix for drawing layerView */
     protected final Matrix supportMatrix = new Matrix();
     protected final Matrix rootLayerMatrix = new Matrix();
     protected final RectF validateRect = new RectF();
 
-    /*support drawing*/
+    /* support drawing */
     protected Bitmap displayBitmap;
     protected Canvas displayCanvas;
 
-    /*saveState Info*/
+    /* saveState Info */
     protected ArrayMap<String, T> saveStateMap = new ArrayMap<>();
 
-    /*gesture*/
+    /* gesture */
     protected CustomGestureDetector gestureDetector;
     protected AccelerateDecelerateInterpolator adInterpolator = new AccelerateDecelerateInterpolator();
 
-    /*paint*/
+    /* paint */
     protected Paint maskPaint;
 
-    /*operation*/
+    /* 当前layer是否能拦截触控事件 */
     private boolean isLayerInEditMode;
     protected Matrix unitMatrix = new Matrix();
     protected boolean viewIsLayout;
@@ -291,15 +290,15 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     }
 
-    //region of save and restore data
+    // region of save and restore data
     public LayerEditResult getEditorResult() {
         return new LayerEditResult(supportMatrix, displayBitmap);
     }
 
-    //cache layer data.
+    // cache layer data.
     @Override
-    public void saveLayerData(HashMap<String, EditorCacheData> output) {
-        output.put(getLayerTag(), new EditorCacheData(new ArrayMap<String, SaveStateMarker>(saveStateMap)));
+    public void saveLayerData(HashMap<String, EditorCacheData> cacheDataHashMap) {
+        cacheDataHashMap.put(getLayerTag(), new EditorCacheData(new ArrayMap<String, SaveStateMarker>(saveStateMap)));
     }
 
     @Override
@@ -345,7 +344,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         return matrix;
     }
 
-    public void setLayerInEditMode(boolean layerInEditMode) {
-        isLayerInEditMode = layerInEditMode;
+    public void setLayerInEditMode(boolean isLayerInEditMode) {
+        this.isLayerInEditMode = isLayerInEditMode;
     }
 }

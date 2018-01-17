@@ -4,13 +4,13 @@
     android:layout_height="match_parent">
 
     <robin.com.robinimageeditor.view.ActionFrameLayout
-        android:id="@+id/layerActionView"
+        android:id="@+id/actionFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bg_black">
 
         <robin.com.robinimageeditor.layer.photoview.PhotoView
-            android:id="@+id/layerImageView"
+            android:id="@+id/layerPhotoView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -49,11 +49,11 @@
     </robin.com.robinimageeditor.view.ActionFrameLayout>
 
     <include
-        android:id="@+id/editorBar"
+        android:id="@+id/toolBar"
         layout="@layout/action_bar_editor" />
 
     <include
-        android:id="@+id/layoutDragDelete"
+        android:id="@+id/rltDragDelete"
         layout="@layout/layout_drag_to_delete"
         android:visibility="gone" />
 

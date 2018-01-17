@@ -9,7 +9,6 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,8 +25,6 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     private RectF dragViewRect;
 
-    /* pasting info... */
-    protected ArrayMap<String, RectF> pastingMap;
     protected boolean pastingOutOfBound;
     protected boolean pastingDoubleClick;
     protected T currentPastingState;
@@ -67,11 +64,10 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     }
 
     private void init() {
-        // 可编辑模式
+        // 继承于BasePastingLayerView的子类默认是可拦截触控事件
         setLayerInEditMode(true);
 
         dragViewRect = new RectF();
-        pastingMap = new ArrayMap<String, RectF>();
         hidePastingOutOfBoundsRunnable = new HidePastingOutOfBoundsRunnable();
     }
 
@@ -216,7 +212,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     protected T getFingerDownState(float downX, float downY) {
         for (int i = saveStateMap.size() - 1; i >= 0; i--) {
             T state = saveStateMap.valueAt(i);
-            RectF displayRect = getStateDisplayRect(state, true);
+//            RectF displayRect = getStateDisplayRect(state, true);
 //            if (displayRect.contains(downX, downY)) {
 //                return state;
 //            }
@@ -247,7 +243,6 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
         RectF rectF = new RectF();
         path.computeBounds(rectF, true);
-
 
         Region region = new Region();
         region.setPath(path, new Region((int)rectF.left, (int)rectF.top, (int)rectF.right, (int)rectF.bottom));
@@ -390,8 +385,6 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         for (int i = 0; i < saveStateMap.size(); i++) {
             T state = saveStateMap.valueAt(i);
             drawPastingState(state, canvas);
-            // update pasting available rect
-//            pastingMap.put(state.getId(), getStateDisplayRect(state, true));
         }
     }
 

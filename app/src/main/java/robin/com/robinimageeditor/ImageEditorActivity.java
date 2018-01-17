@@ -77,11 +77,11 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
     private ImageComposeTask imageComposeTask;
 
-    private ActionFrameLayout layerActionView;
-    private View editorBar;
+    private ActionFrameLayout actionFrameLayout;
+    private View toolBar;
     private View flFunc;
 
-    private PhotoView layerImageView;
+    private PhotoView layerPhotoView;
     private FrameLayout layerEditorParent;
     private LayerComposite layerComposite;
     private MosaicView layerMosaicView;
@@ -92,7 +92,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private TextView tvComplete;
     private ImageView ivBack;
 
-    private RelativeLayout layoutDragDelete;
+    private RelativeLayout rltDragDelete;
 
     public static Intent intent(Context context, EditorSetup editorSetup) {
         Intent intent = new Intent(context, ImageEditorActivity.class);
@@ -130,11 +130,11 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         }
         setContentView(view);
 
-        layerActionView = findViewById(R.id.layerActionView);
-        editorBar = findViewById(R.id.editorBar);
+        actionFrameLayout = findViewById(R.id.actionFrameLayout);
+        toolBar = findViewById(R.id.toolBar);
         flFunc = findViewById(R.id.flFunc);
 
-        layerImageView = findViewById(R.id.layerImageView);
+        layerPhotoView = findViewById(R.id.layerPhotoView);
         layerScrawlView = findViewById(R.id.layerScrawlView);
         layerStickerView = findViewById(R.id.layerStickerView);
         layerTextPastingView = findViewById(R.id.layerTextPastingView);
@@ -145,7 +145,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         tvComplete = findViewById(R.id.tvComplete);
         ivBack = findViewById(R.id.ivBack);
 
-        layoutDragDelete = findViewById(R.id.layoutDragDelete);
+        rltDragDelete = findViewById(R.id.rltDragDelete);
     }
 
     private void initData() {
@@ -161,9 +161,9 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             return;
         }
         mEditorSetup = editorSetup;
-        String op = mEditorSetup.getOriginalPath();
-        String ep = mEditorSetup.getEditorPath();
-        if (op == null && ep == null) {
+        String originalPath = mEditorSetup.getOriginalPath();
+        String editorPath = mEditorSetup.getEditorPath();
+        if (originalPath == null && editorPath == null) {
             Log.e(TAG, "originalPath,editorPath are both null");
             finish();
             return;
@@ -180,9 +180,9 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         FuncModeToolFragment toolFragment = FuncModeToolFragment.newInstance(functionalModeList);
         getSupportFragmentManager().beginTransaction().add(R.id.flFunc, toolFragment).commit();
 
-        mRootEditorDelegate = new RootEditorDelegate(layerImageView, layerEditorParent);
-        mFuncAndActionBarAnimHelper = new FuncAndActionBarAnimHelper(layerActionView, editorBar, flFunc, this);
-        mFuncHelper = new FuncHelper(this, new DragToDeleteView(layoutDragDelete));
+        mRootEditorDelegate = new RootEditorDelegate(layerPhotoView, layerEditorParent);
+        mFuncAndActionBarAnimHelper = new FuncAndActionBarAnimHelper(actionFrameLayout, toolBar, flFunc, this);
+        mFuncHelper = new FuncHelper(this, new DragToDeleteView(rltDragDelete));
 
         toolFragment.addFuncModeListener(mFuncHelper);
         toolFragment.addFuncModeDetailsListener(mFuncHelper);
@@ -193,27 +193,27 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     }
 
     private void restoreData() {
-        String op = mEditorSetup.getOriginalPath();
-        String ep = mEditorSetup.getEditorPath();
+        String originalPath = mEditorSetup.getOriginalPath();
+        String editorPath = mEditorSetup.getEditorPath();
         HashMap<String, EditorCacheData> cacheData = null;
-        if (op != null) {
-            mEditorId = op;
-            if (ep != null) {
-                mEditorId += ep;
+        if (originalPath != null) {
+            mEditorId = originalPath;
+            if (editorPath != null) {
+                mEditorId += editorPath;
             }
             cacheData = LayerCache.getIntance().getCacheDataById(mEditorId);
         }
-        if ((cacheData == null || cacheData.isEmpty()) && ep != null) {
-            mEditorId = ep;
-            if (op != null) {
-                mEditorId = op + ep;
+        if ((cacheData == null || cacheData.isEmpty()) && editorPath != null) {
+            mEditorId = editorPath;
+            if (originalPath != null) {
+                mEditorId = originalPath + editorPath;
             }
             cacheData = LayerCache.getIntance().getCacheDataById(mEditorId);
             //set up layer cache with ep...
-            mEditorPath = ep;
+            mEditorPath = editorPath;
         } else {
             //op has extra data or not
-            mEditorPath = op;
+            mEditorPath = originalPath;
         }
         if (!new File(mEditorPath).exists()) {
             Toast.makeText(this, "文件不存在！", Toast.LENGTH_SHORT).show();
@@ -221,13 +221,13 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             return;
         }
         Bitmap imageBitmap = EditorCompressUtils.getImageBitmap(mEditorPath);
-        layerImageView.setImageBitmap(imageBitmap);
+        layerPhotoView.setImageBitmap(imageBitmap);
 
-        layerImageView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        layerPhotoView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                layerMosaicView.setInitializeMatrix(layerImageView.getBaseLayoutMatrix());
+                layerMosaicView.setInitializeMatrix(layerPhotoView.getBaseLayoutMatrix());
             }
         });
 
@@ -458,7 +458,6 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
                 if (layer instanceof BaseLayerView) {
                     ((BaseLayerView) layer).saveLayerData(cacheData);
-
                 } else if (layer instanceof ViewGroup) {
                     saveChildrenLayerData((ViewGroup) layer, cacheData);
                 }
