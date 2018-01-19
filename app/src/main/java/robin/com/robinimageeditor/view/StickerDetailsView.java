@@ -53,7 +53,7 @@ public class StickerDetailsView extends FrameLayout {
     }
 
     private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.sticker_details, this, true);
+        LayoutInflater.from(context).inflate(R.layout.sticker_func_details, this, true);
         stickerView = findViewById(R.id.rvSticker);
         GridLayoutManager layoutManager = new GridLayoutManager(context, 8);
         stickerView.setAdapter(new SimpleStickerAdapter(StickerType.Emoji));

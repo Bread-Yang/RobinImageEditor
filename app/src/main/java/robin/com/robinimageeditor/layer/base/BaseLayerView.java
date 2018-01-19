@@ -302,8 +302,8 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     }
 
     @Override
-    public void restoreLayerData(HashMap<String, EditorCacheData> input) {
-        EditorCacheData lastCache = input.get(getLayerTag());
+    public void restoreLayerData(HashMap<String, EditorCacheData> cacheDataHashMap) {
+        EditorCacheData lastCache = cacheDataHashMap.get(getLayerTag());
         if (lastCache != null) {
             ArrayMap<String, T> restore = ((ArrayMap<String, T>) lastCache.getLayerCache());
             Iterator iterator = restore.entrySet().iterator();

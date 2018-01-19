@@ -178,6 +178,11 @@ public class FuncModeToolFragment extends Fragment implements EditorModeHandler 
 
     }
 
+    @Override
+    public void handleCropMode(boolean selected) {
+
+    }
+
     private void showOrHideDetailsView(EditorMode editorMode, View view) {
         int count = mFuncDetailPanel.getChildCount();
         View toRemoveView = null;

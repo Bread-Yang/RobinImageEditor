@@ -17,6 +17,7 @@ import robin.com.robinimageeditor.bean.InputTextData;
 import robin.com.robinimageeditor.bean.MosaicDetails;
 import robin.com.robinimageeditor.bean.ScrawlDetails;
 import robin.com.robinimageeditor.bean.SharableData;
+import robin.com.robinimageeditor.layer.CropHelper;
 import robin.com.robinimageeditor.layer.LayerViewProvider;
 import robin.com.robinimageeditor.layer.MosaicView;
 import robin.com.robinimageeditor.layer.ScrawlView;
@@ -37,6 +38,7 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
     private DragToDeleteView mDragToDeleteView;
     private Context mContext;
     private FuncAndActionBarAnimHelper mFuncAndActionBarAnimHelper;
+    private CropHelper mCropHelper;
     private StickerDetailsView mStickerDetailsView;
     private boolean mStickerDetailsShowing;
 
@@ -49,6 +51,7 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
     private void init() {
         mContext = mProvider.getActivityContext();
         mFuncAndActionBarAnimHelper = mProvider.getFuncAndActionBarAnimHelper();
+        mCropHelper = mProvider.getCropHelper();
 
         final TextPastingView textPastingView = ((TextPastingView) mProvider.findLayerByEditorMode(EditorMode.TextPastingMode));
         if (textPastingView != null) {
@@ -111,6 +114,9 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
             case MosaicMode:
                 enableOrDisableEditorMode(EditorMode.ScrawlMode, false);
                 enableOrDisableEditorMode(EditorMode.MosaicMode, true);
+                break;
+            case CropMode:
+                mCropHelper.showCropDetails();
                 break;
         }
     }

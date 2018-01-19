@@ -75,6 +75,23 @@ public enum EditorMode {
         boolean canPersistMode() {
             return false;
         }
+    },
+
+    CropMode {
+        @Override
+        int getModeBgResource() {
+            return R.drawable.selector_edit_image_crop_tool;
+        }
+
+        @Override
+        void onHandle(boolean selected, EditorModeHandler handler) {
+            handler.handleCropMode(selected);
+        }
+
+        @Override
+        boolean canPersistMode() {
+            return false;
+        }
     }
     ;
 

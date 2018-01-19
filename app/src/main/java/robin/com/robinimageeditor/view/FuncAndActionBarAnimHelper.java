@@ -30,8 +30,10 @@ public class FuncAndActionBarAnimHelper implements ActionFrameLayout.ActionListe
     private HideOrShowRunnable hideRunnable = new HideOrShowRunnable(false);
     private HideOrShowRunnable showRunnable = new HideOrShowRunnable(true);
 
+    private boolean interceptDirtyAnimation;
     private boolean mDirtyAnimating = false;
     private boolean mDirtyScreen = true;
+    private boolean mMoveActionHandled;
 
     private ArrayList<OnFunBarAnimationListener> mFunBarAnimateListeners = new ArrayList<>();
 
@@ -53,13 +55,35 @@ public class FuncAndActionBarAnimHelper implements ActionFrameLayout.ActionListe
     }
 
     @Override
-    public void actionUp() {
-
+    public void actionMove() {
+        if (interceptDirtyAnimation) {
+            return;
+        }
+        if (mDirtyScreen && !mMoveActionHandled) {
+            if (!mDirtyAnimating) {
+                mMoveActionHandled = true;
+                mHandler.postDelayed(hideRunnable, 300);
+            }
+        }
     }
 
     @Override
-    public void actionMove() {
-
+    public void actionUp() {
+        if (interceptDirtyAnimation) {
+            return;
+        }
+        mMoveActionHandled = false;
+        if (mDirtyScreen) {
+            mHandler.removeCallbacks(hideRunnable);
+            if (!mDirtyAnimating) {
+                mHandler.postDelayed(hideRunnable, 300);
+            }
+        } else {
+            mHandler.removeCallbacks(showRunnable);
+            if (!mDirtyAnimating) {
+                mHandler.postDelayed(showRunnable, 300);
+            }
+        }
     }
 
     public void showOrHideFuncAndBarView(boolean show) {
@@ -123,6 +147,14 @@ public class FuncAndActionBarAnimHelper implements ActionFrameLayout.ActionListe
             OnFunBarAnimationListener listener = mFunBarAnimateListeners.get(i);
             listener.onFunBarAnimate(show);
         }
+    }
+
+    public boolean isInterceptDirtyAnimation() {
+        return interceptDirtyAnimation;
+    }
+
+    public void setInterceptDirtyAnimation(boolean interceptDirtyAnimation) {
+        this.interceptDirtyAnimation = interceptDirtyAnimation;
     }
 
     class HideOrShowRunnable implements Runnable {

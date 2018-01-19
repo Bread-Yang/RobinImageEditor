@@ -3,6 +3,7 @@ package robin.com.robinimageeditor.layer;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
@@ -43,11 +44,13 @@ public class ScrawlView extends BasePaintLayerView<ScrawlSaveState> {
         super.initSupportView(context);
         mDrawPaint = new Paint();
         mDrawPaint.setAntiAlias(true);
+        mDrawPaint.setDither(true);
         mDrawPaint.setColor(Color.RED);
         mDrawPaint.setStrokeJoin(Paint.Join.ROUND);
         mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
         mDrawPaint.setStyle(Paint.Style.STROKE);
-        mDrawPaint.setStrokeWidth(Utils.dp2px(context, 3f));
+        mDrawPaint.setPathEffect(new CornerPathEffect(10));
+        mDrawPaint.setStrokeWidth(Utils.dp2px(context, 6f));
     }
 
     @Override

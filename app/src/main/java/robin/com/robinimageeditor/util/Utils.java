@@ -153,6 +153,10 @@ public class Utils {
         return (float) Math.sqrt((Math.pow(getMatrixValue(matrix, Matrix.MSCALE_X), 2.0) + Math.pow(getMatrixValue(matrix, Matrix.MSKEW_Y), 2.0)));
     }
 
+    public static float getMatrixDegree(Matrix matrix) {
+        return -Math.round(Math.atan2(getMatrixValue(matrix, Matrix.MSKEW_X), getMatrixValue(matrix, Matrix.MSCALE_X)) * (180 / Math.PI));
+    }
+
     public static float getMatrixTransX(Matrix matrix) {
         return getMatrixValue(matrix, Matrix.MTRANS_X);
     }

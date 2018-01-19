@@ -13,4 +13,6 @@ public interface EditorModeHandler {
     void handleMosaicMode(boolean selected);
 
     void handleTextPastingMode(boolean selected);
+
+    void handleCropMode(boolean selected);
 }

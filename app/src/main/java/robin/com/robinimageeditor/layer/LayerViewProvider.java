@@ -19,7 +19,7 @@ public interface LayerViewProvider {
 
     FuncAndActionBarAnimHelper getFuncAndActionBarAnimHelper();
 
-//    CropHelper getCropHelper();
+    CropHelper getCropHelper();
 
     RootEditorDelegate getRootEditorDelegate();
 

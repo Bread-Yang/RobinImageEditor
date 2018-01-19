@@ -12,14 +12,15 @@ import robin.com.robinimageeditor.util.Utils;
 
 /**
  * ## Base paintingLayerView  for [ScrawlView] and [MosaicView]
- *  It's hold move path[paintPath] for user's finger move
- *
+ * It's hold move path[paintPath] for user's finger move
+ * <p>
  * Created by Robin Yang on 12/29/17.
  */
 public abstract class BasePaintLayerView<T extends SaveStateMarker> extends BaseLayerView<T> {
 
     protected Path paintPath;
     protected boolean currentPathValidate;
+    private float mLastX, mLastY;
 
     public BasePaintLayerView(Context context) {
         super(context);
@@ -56,6 +57,8 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
         PointF result = Utils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(downX, downY));
         if (paintPath != null) {
             paintPath.moveTo(result.x, result.y);
+            mLastX = result.x;
+            mLastY = result.y;
         }
     }
 
@@ -65,7 +68,10 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
             if (paintPath != null) {
                 PointF result = Utils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(x, y));
                 if (!interceptDrag(x, y)) {
-                    paintPath.lineTo(result.x, result.y);
+//                    paintPath.lineTo(result.x, result.y);
+                    paintPath.quadTo(mLastX, mLastY, (result.x + mLastX) / 2, (result.y + mLastY) / 2);
+                    mLastX = result.x;
+                    mLastY = result.y;
                     currentPathValidate = true;
                     drawDragPath(paintPath);
                 }

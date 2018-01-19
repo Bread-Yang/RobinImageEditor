@@ -43,14 +43,23 @@
                     android:id="@+id/layerTextPastingView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
-
             </robin.com.robinimageeditor.layer.LayerComposite>
+
+            <robin.com.robinimageeditor.layer.CropView
+                android:id="@+id/layerCropView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </FrameLayout>
     </robin.com.robinimageeditor.view.ActionFrameLayout>
 
     <include
         android:id="@+id/toolBar"
         layout="@layout/action_bar_editor" />
+
+    <include
+        android:id="@+id/layoutCropDetails"
+        layout="@layout/crop_func_details"
+        android:visibility="gone"/>
 
     <include
         android:id="@+id/rltDragDelete"

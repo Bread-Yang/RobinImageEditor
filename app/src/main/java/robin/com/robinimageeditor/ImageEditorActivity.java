@@ -31,12 +31,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import robin.com.robinimageeditor.bean.CropSaveState;
 import robin.com.robinimageeditor.bean.EditorCacheData;
 import robin.com.robinimageeditor.bean.EditorResult;
 import robin.com.robinimageeditor.bean.EditorSetup;
 import robin.com.robinimageeditor.bean.LayerEditResult;
 import robin.com.robinimageeditor.bean.Pair;
 import robin.com.robinimageeditor.cache.LayerCache;
+import robin.com.robinimageeditor.layer.CropDetailsView;
+import robin.com.robinimageeditor.layer.CropHelper;
+import robin.com.robinimageeditor.layer.CropView;
 import robin.com.robinimageeditor.layer.LayerCacheNode;
 import robin.com.robinimageeditor.layer.LayerComposite;
 import robin.com.robinimageeditor.layer.LayerViewProvider;
@@ -74,6 +78,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private RootEditorDelegate mRootEditorDelegate;
     private FuncAndActionBarAnimHelper mFuncAndActionBarAnimHelper;
     private FuncHelper mFuncHelper;
+    private CropHelper mCropHelper;
 
     private ImageComposeTask imageComposeTask;
 
@@ -88,6 +93,9 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private ScrawlView layerScrawlView;
     private StickerView layerStickerView;
     private TextPastingView layerTextPastingView;
+    private CropView layerCropView;
+
+    private View layoutCropDetails;
 
     private TextView tvComplete;
     private ImageView ivBack;
@@ -139,8 +147,11 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         layerStickerView = findViewById(R.id.layerStickerView);
         layerTextPastingView = findViewById(R.id.layerTextPastingView);
         layerMosaicView = findViewById(R.id.layerMosaicView);
+        layerCropView = findViewById(R.id.layerCropView);
         layerEditorParent = findViewById(R.id.layerEditorParent);
         layerComposite = findViewById(R.id.layerComposite);
+
+        layoutCropDetails = findViewById(R.id.layoutCropDetails);
 
         tvComplete = findViewById(R.id.tvComplete);
         ivBack = findViewById(R.id.ivBack);
@@ -176,12 +187,14 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         functionalModeList.add(EditorMode.StickerMode);
         functionalModeList.add(EditorMode.TextPastingMode);
         functionalModeList.add(EditorMode.MosaicMode);
+        functionalModeList.add(EditorMode.CropMode);
 
         FuncModeToolFragment toolFragment = FuncModeToolFragment.newInstance(functionalModeList);
         getSupportFragmentManager().beginTransaction().add(R.id.flFunc, toolFragment).commit();
 
         mRootEditorDelegate = new RootEditorDelegate(layerPhotoView, layerEditorParent);
         mFuncAndActionBarAnimHelper = new FuncAndActionBarAnimHelper(actionFrameLayout, toolBar, flFunc, this);
+        mCropHelper = new CropHelper(layerCropView, new CropDetailsView(layoutCropDetails), this);
         mFuncHelper = new FuncHelper(this, new DragToDeleteView(rltDragDelete));
 
         toolFragment.addFuncModeListener(mFuncHelper);
@@ -221,15 +234,21 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             return;
         }
         Bitmap imageBitmap = EditorCompressUtils.getImageBitmap(mEditorPath);
-        layerPhotoView.setImageBitmap(imageBitmap);
 
-        layerPhotoView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                layerMosaicView.setInitializeMatrix(layerPhotoView.getBaseLayoutMatrix());
-            }
-        });
+        mCropHelper.restoreLayerData(cacheData);
+        Bitmap cropBitmap = mCropHelper.restoreCropData(imageBitmap);
+        layerPhotoView.setImageBitmap(cropBitmap);
+
+//        layerPhotoView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+//            @Override
+//            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+//                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//                layerMosaicView.setInitializeMatrix(layerPhotoView.getBaseLayoutMatrix());
+//            }
+//        });
+
+        CropSaveState cropState = mCropHelper.getSavedCropState();
+        layerPhotoView.addOnLayoutChangeListener(new LayerImageOnLayoutChangeListener(cropState));
 
         layerMosaicView.setupForMosaicView(imageBitmap);
         callChildrenRestoreLayer(layerComposite, cacheData);
@@ -265,6 +284,8 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 return layerTextPastingView;
             case MosaicMode:
                 return layerMosaicView;
+            case CropMode:
+                return layerCropView;
         }
         return null;
     }
@@ -277,6 +298,11 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     @Override
     public FuncAndActionBarAnimHelper getFuncAndActionBarAnimHelper() {
         return mFuncAndActionBarAnimHelper;
+    }
+
+    @Override
+    public CropHelper getCropHelper() {
+        return mCropHelper;
     }
 
     @Override
@@ -354,6 +380,31 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         mFuncHelper.onActivityResult(requestCode, resultCode, data);
     }
 
+    class LayerImageOnLayoutChangeListener implements View.OnLayoutChangeListener {
+
+        private CropSaveState state;
+
+        public LayerImageOnLayoutChangeListener(CropSaveState state) {
+            this.state = state;
+        }
+
+        @Override
+        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            Matrix matrix = null;
+            if (state != null) {
+                matrix = state.getOriginalMatrix();
+            }
+            if (matrix == null) {
+                matrix = layerPhotoView.getBaseLayoutMatrix();
+            }
+            if (state != null) {
+                mCropHelper.resetEditorSupportMatrix(state);
+            }
+            layerMosaicView.setInitializeMatrix(matrix);
+            layerPhotoView.removeOnLayoutChangeListener(this);
+        }
+    }
+
     /**
      * AsyncTask for image Compose
      */
@@ -413,6 +464,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 // Save cached data.
                 HashMap<String, EditorCacheData> cacheData = LayerCache.getIntance().getCacheDataById(mEditorId);
                 saveChildrenLayerData(layerComposite, cacheData);
+                mProvider.getCropHelper().saveLayerData(cacheData);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
