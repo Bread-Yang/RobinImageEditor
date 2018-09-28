@@ -1,5 +1,7 @@
 package robin.com.robinimageeditor.bean;
 
+import robin.com.robinimageeditor.data.share.SharableData;
+
 /**
  * Created by Robin Yang on 1/15/18.
  */

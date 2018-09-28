@@ -12,7 +12,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 12/28/17.
@@ -136,9 +136,9 @@ public class FuncAndActionBarAnimHelper implements ActionFrameLayout.ActionListe
         set.setDuration(300);
         set.start();
         if (show) {
-            Utils.showStatusBar((Activity) activityContext);
+            MatrixUtils.showStatusBar((Activity) activityContext);
         } else {
-            Utils.hideStatusBar((Activity) activityContext);
+            MatrixUtils.hideStatusBar((Activity) activityContext);
         }
     }
 

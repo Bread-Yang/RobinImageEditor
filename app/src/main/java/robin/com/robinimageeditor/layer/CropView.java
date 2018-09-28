@@ -16,7 +16,7 @@ import android.view.View;
 
 import robin.com.robinimageeditor.layer.detector.CustomGestureDetector;
 import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/17/18.
@@ -86,12 +86,12 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
 
     private void initView(Context context) {
         // mDrawingRect = new RectF(200f, 200f, 1000f, 1000f);  //test
-        int mCropTouchSlop = Utils.dp2px(context, 15f);
+        int mCropTouchSlop = MatrixUtils.dp2px(context, 15f);
         // init cropWindowHelper.
         mCropWindowHelper = new CropWindowHelper(mCropTouchSlop);
         mCropWindowHelper.setEdge(mDrawingRect);
         // mValidateBorderRect = RectF(0f, 0f, 1080f, 1920f);  //test
-        int minCrop = Utils.dp2px(context, 60f);
+        int minCrop = MatrixUtils.dp2px(context, 60f);
         mCropWindowHelper.minCropWindowWidth = minCrop;
         mCropWindowHelper.minCropWindowHeight = minCrop;
         // touchEventSupport.
@@ -104,8 +104,8 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
         mPaintTranslucent = getBorderPaint(mGuidelineStrokeWidth, mBackgroundColor);
         mPaintTranslucent.setStyle(Paint.Style.FILL);
         // inner border
-        mBorderCornerLength = Utils.dp2px(context, 20f);
-        mBorderCornerOffset = Utils.dp2px(context, 3f);
+        mBorderCornerLength = MatrixUtils.dp2px(context, 20f);
+        mBorderCornerOffset = MatrixUtils.dp2px(context, 3f);
     }
 
     @Override
@@ -257,7 +257,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
         if (validateBorder.bottom > mViewRect.bottom) {
             validateBorder.bottom = mViewRect.bottom;
         }
-        rotateCropWindow(Utils.getMatrixDegree(matrix)); //rotate.
+        rotateCropWindow(MatrixUtils.getMatrixDegree(matrix)); //rotate.
         mValidateBorderRect.set(validateBorder);
         boolean boundsChanged = mCropWindowHelper.checkCropWindowBounds(mValidateBorderRect);
         if (boundsChanged) {

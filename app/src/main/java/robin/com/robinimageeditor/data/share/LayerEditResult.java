@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.bean;
+package robin.com.robinimageeditor.data.share;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -7,7 +7,7 @@ import android.graphics.Matrix;
  * Created by Robin Yang on 12/29/17.
  */
 
-public class LayerEditResult implements SharableData{
+public class LayerEditResult implements SharableData {
 
     private Matrix supportMatrix;
 

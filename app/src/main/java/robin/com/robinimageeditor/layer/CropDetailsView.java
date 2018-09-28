@@ -5,7 +5,7 @@ import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import robin.com.robinimageeditor.R;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/17/18.
@@ -90,7 +90,7 @@ public class CropDetailsView implements ViewTreeObserver.OnPreDrawListener {
         } else {
             color = R.color.white_f;
         }
-        color = Utils.getResourceColor(view.getContext(), color);
+        color = MatrixUtils.getResourceColor(view.getContext(), color);
         mRestoreView.setTextColor(color);
     }
 

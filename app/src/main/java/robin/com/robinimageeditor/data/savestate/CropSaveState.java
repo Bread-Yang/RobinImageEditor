@@ -1,10 +1,10 @@
-package robin.com.robinimageeditor.bean;
+package robin.com.robinimageeditor.data.savestate;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/17/18.
@@ -33,8 +33,8 @@ public class CropSaveState extends SaveStateMarker {
 
     @Override
     public void reset() {
-        Utils.recycleBitmap(originalBitmap);
-        Utils.recycleBitmap(cropBitmap);
+        MatrixUtils.recycleBitmap(originalBitmap);
+        MatrixUtils.recycleBitmap(cropBitmap);
         cropFitCenterMatrix.reset();
     }
 

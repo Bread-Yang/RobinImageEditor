@@ -13,9 +13,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import robin.com.robinimageeditor.bean.PastingSaveStateMarker;
-import robin.com.robinimageeditor.bean.SharableData;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.data.savestate.PastingSaveStateMarker;
+import robin.com.robinimageeditor.data.share.SharableData;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/4/18.
@@ -83,8 +83,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         focusRectPaint.setColor(Color.WHITE);
 
         // focusCornerRect
-        focusRectCornerWidth = Utils.dp2px(context, 2f);
-        focusRectCornerPaint = Utils.copyPaint(focusRectPaint);
+        focusRectCornerWidth = MatrixUtils.dp2px(context, 2f);
+        focusRectCornerPaint = MatrixUtils.copyPaint(focusRectPaint);
         focusRectCornerPaint.setStyle(Paint.Style.FILL);
     }
 
@@ -149,7 +149,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     protected void drawFocusRectCornerRect(Canvas canvas, float centerX, float centerY) {
         RectF rect = new RectF();
-        Utils.RectFSchedule(rect, centerX, centerY, focusRectCornerWidth, focusRectCornerWidth);
+        MatrixUtils.RectFSchedule(rect, centerX, centerY, focusRectCornerWidth, focusRectCornerWidth);
 
         float[] polygonPoint = new float[8];
 
@@ -281,7 +281,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                         mCallback.showOrHideDragCallback(true);
                     }
                     // calc
-                    float[] invert = Utils.mapInvertMatrixTranslate(getDrawMatrix(), dx, dy);
+                    float[] invert = MatrixUtils.mapInvertMatrixTranslate(getDrawMatrix(), dx, dy);
                     currentPastingState.getTransformMatrix().postTranslate(invert[0], invert[1]);
                     RectF displayRect = getStateDisplayRect(currentPastingState, true);
                     checkDisplayRegion(displayRect);
@@ -299,7 +299,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     public void onScale(float scaleFactor, float focusX, float focusY, boolean rootLayer) {
         if (!rootLayer) {
             if (currentPastingState != null) {
-                float[] invert = Utils.mapInvertMatrixScale(getDrawMatrix(), scaleFactor, scaleFactor);
+                float[] invert = MatrixUtils.mapInvertMatrixScale(getDrawMatrix(), scaleFactor, scaleFactor);
                 checkDisplayRegion(currentPastingState);
                 currentPastingState.getTransformMatrix().postScale(invert[0], invert[1], focusX, focusY);
                 redrawAllCache();
@@ -343,8 +343,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                     Matrix currentMatrix = new Matrix();
                     currentMatrix.set(currentPastingState.getTransformMatrix());
                     currentMatrix.postConcat(getDrawMatrix());
-                    float dx = Utils.getMatrixTransX(currentMatrix) - Utils.getMatrixTransX(initEventMatrix);
-                    float dy = Utils.getMatrixTransY(currentMatrix) - Utils.getMatrixTransY(initEventMatrix);
+                    float dx = MatrixUtils.getMatrixTransX(currentMatrix) - MatrixUtils.getMatrixTransX(initEventMatrix);
+                    float dy = MatrixUtils.getMatrixTransY(currentMatrix) - MatrixUtils.getMatrixTransY(initEventMatrix);
                     rebound(dx, dy);
                 }
 //                currentPastingState.getInitDisplayMatrix().reset();

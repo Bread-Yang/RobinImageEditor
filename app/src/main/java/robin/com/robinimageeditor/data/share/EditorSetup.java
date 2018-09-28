@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.bean;
+package robin.com.robinimageeditor.data.share;
 
 /**
  * Created by Robin Yang on 12/28/17.

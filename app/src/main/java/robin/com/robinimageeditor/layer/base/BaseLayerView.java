@@ -23,14 +23,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import robin.com.robinimageeditor.bean.EditorCacheData;
-import robin.com.robinimageeditor.bean.LayerEditResult;
-import robin.com.robinimageeditor.bean.SaveStateMarker;
+import robin.com.robinimageeditor.editcache.EditorCacheData;
+import robin.com.robinimageeditor.data.share.LayerEditResult;
+import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
 import robin.com.robinimageeditor.layer.detector.CustomGestureDetector;
 import robin.com.robinimageeditor.layer.LayerCacheNode;
 import robin.com.robinimageeditor.layer.LayerTransformer;
 import robin.com.robinimageeditor.layer.OnPhotoRectUpdateListener;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 12/28/17.
@@ -99,7 +99,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Utils.recycleBitmap(displayBitmap);
+        MatrixUtils.recycleBitmap(displayBitmap);
         displayCanvas = null;
     }
 
@@ -130,9 +130,9 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     protected void drawMask(Canvas canvas) {
 //        val layerRect = RectF(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat())
-//        val diffs = Utils.diffRect(layerRect, validateRect)
+//        val diffs = MatrixUtils.diffRect(layerRect, validateRect)
 //        for (rect in diffs) {
-//            canvas.drawRect(Utils.mapInvertMatrixRect(getDrawMatrix(), rect), maskPaint)
+//            canvas.drawRect(MatrixUtils.mapInvertMatrixRect(getDrawMatrix(), rect), maskPaint)
 //        }
     }
 

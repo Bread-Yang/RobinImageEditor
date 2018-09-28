@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.bean;
+package robin.com.robinimageeditor.data.savestate;
 
 import android.graphics.Matrix;
 import android.graphics.RectF;

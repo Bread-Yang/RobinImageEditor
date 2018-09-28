@@ -4,8 +4,11 @@ package robin.com.robinimageeditor;
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ImageView
@@ -13,12 +16,9 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import robin.com.robinimageeditor.bean.EditorResult
-import robin.com.robinimageeditor.bean.EditorSetup
+import robin.com.robinimageeditor.data.share.EditorResult
+import robin.com.robinimageeditor.data.share.EditorSetup
 import robin.com.robinimageeditor.util.PathUtils
-import android.support.v4.app.ActivityCompat
-import android.content.pm.PackageManager
-import android.support.v4.content.ContextCompat
 
 /**
  * Created by Robin Yang on 12/27/17.
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.main_activity)
         ivDisplay = findViewById<ImageView>(R.id.iv_display)
         ivDisplay.scaleType = ImageView.ScaleType.FIT_CENTER
     }

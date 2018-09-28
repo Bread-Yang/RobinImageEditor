@@ -12,9 +12,9 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import robin.com.robinimageeditor.bean.InputTextData;
-import robin.com.robinimageeditor.bean.TextPastingSaveState;
+import robin.com.robinimageeditor.data.savestate.TextPastingSaveState;
 import robin.com.robinimageeditor.layer.base.BasePastingLayerView;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/9/18.
@@ -45,12 +45,12 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
     @Override
     protected void initSupportView(Context context) {
         super.initSupportView(context);
-        mFocusRectOffset = Utils.dp2px(context, 10f);
+        mFocusRectOffset = MatrixUtils.dp2px(context, 10f);
         // textPaint
         mTextPaint = new Paint();
-        mTextPaint.setTextSize(Utils.sp2px(context, 25f));
+        mTextPaint.setTextSize(MatrixUtils.sp2px(context, 25f));
         mTextPaint.setAntiAlias(true);
-        mTempTextPaint = Utils.copyPaint(mTextPaint);
+        mTempTextPaint = MatrixUtils.copyPaint(mTextPaint);
     }
 
     public void onTextPastingChanged(InputTextData data) {
@@ -90,11 +90,11 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         float height = mTextPaint.descent() - mTextPaint.ascent();
         RectF initDisplayRect = new RectF();
         PointF point = new PointF(validateRect.centerX(), validateRect.centerY());
-        point = Utils.mapInvertMatrixPoint(getDrawMatrix(), point);
-        Utils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
+        point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);
+        MatrixUtils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
         RectF initTextRect = new RectF();
         initTextRect.set(initDisplayRect);
-        Utils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
+        MatrixUtils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
         return new TextPastingSaveState(text, color, initTextRect, initDisplayRect, initMatrix, null);
     }
 
@@ -103,7 +103,7 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         RectF resultTextRect = new RectF();
         Matrix matrix = new Matrix(state.getTransformMatrix());
         matrix.mapRect(resultTextRect, state.getInitTextRect());
-        mTempTextPaint.setTextSize(mTextPaint.getTextSize() * Utils.getMatrixScale(matrix));
+        mTempTextPaint.setTextSize(mTextPaint.getTextSize() * MatrixUtils.getMatrixScale(matrix));
         mTempTextPaint.setColor(state.getTextColor());
         PointF result = new PointF(resultTextRect.left, resultTextRect.bottom - mTempTextPaint.descent());
 //        canvas.drawText(state.getText(), result.x, result.y, mTempTextPaint);

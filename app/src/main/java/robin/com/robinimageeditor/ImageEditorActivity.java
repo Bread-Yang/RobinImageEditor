@@ -31,13 +31,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import robin.com.robinimageeditor.bean.CropSaveState;
-import robin.com.robinimageeditor.bean.EditorCacheData;
-import robin.com.robinimageeditor.bean.EditorResult;
-import robin.com.robinimageeditor.bean.EditorSetup;
-import robin.com.robinimageeditor.bean.LayerEditResult;
+import robin.com.robinimageeditor.data.savestate.CropSaveState;
+import robin.com.robinimageeditor.editcache.EditorCacheData;
+import robin.com.robinimageeditor.data.share.EditorResult;
+import robin.com.robinimageeditor.data.share.EditorSetup;
+import robin.com.robinimageeditor.data.share.LayerEditResult;
 import robin.com.robinimageeditor.bean.Pair;
-import robin.com.robinimageeditor.cache.LayerCache;
+import robin.com.robinimageeditor.editcache.PhotoEditCache;
 import robin.com.robinimageeditor.layer.CropDetailsView;
 import robin.com.robinimageeditor.layer.CropHelper;
 import robin.com.robinimageeditor.layer.CropView;
@@ -52,7 +52,7 @@ import robin.com.robinimageeditor.layer.TextPastingView;
 import robin.com.robinimageeditor.layer.base.BaseLayerView;
 import robin.com.robinimageeditor.layer.photoview.PhotoView;
 import robin.com.robinimageeditor.util.EditorCompressUtils;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 import robin.com.robinimageeditor.view.ActionFrameLayout;
 import robin.com.robinimageeditor.view.DragToDeleteView;
 import robin.com.robinimageeditor.view.EditorMode;
@@ -119,7 +119,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
     private void initRootView() {
         if (Build.VERSION.SDK_INT >= 21) {
-            this.getWindow().setStatusBarColor(Utils.getResourceColor(this, R.color.bg_black));
+            this.getWindow().setStatusBarColor(MatrixUtils.getResourceColor(this, R.color.bg_black));
         }
         // transparent necessary
         getWindow().setBackgroundDrawableResource(R.color.transparent);
@@ -130,7 +130,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
         ColorDrawable mBackgroundColor = new ColorDrawable(Color.BLACK);
-        View view = View.inflate(this, R.layout.activity_image_editor, null);
+        View view = View.inflate(this, R.layout.image_editor_activity, null);
         if (Build.VERSION.SDK_INT >= 16) {
             view.setBackground(mBackgroundColor);
         } else {
@@ -151,12 +151,12 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         layerEditorParent = findViewById(R.id.layerEditorParent);
         layerComposite = findViewById(R.id.layerComposite);
 
-        layoutCropDetails = findViewById(R.id.layoutCropDetails);
+        layoutCropDetails = findViewById(R.id.cropDetailsLayout);
 
         tvComplete = findViewById(R.id.tvComplete);
         ivBack = findViewById(R.id.ivBack);
 
-        rltDragDelete = findViewById(R.id.rltDragDelete);
+        rltDragDelete = findViewById(R.id.rlDragDelete);
     }
 
     private void initData() {
@@ -214,14 +214,14 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             if (editorPath != null) {
                 mEditorId += editorPath;
             }
-            cacheData = LayerCache.getIntance().getCacheDataById(mEditorId);
+            cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
         }
         if ((cacheData == null || cacheData.isEmpty()) && editorPath != null) {
             mEditorId = editorPath;
             if (originalPath != null) {
                 mEditorId = originalPath + editorPath;
             }
-            cacheData = LayerCache.getIntance().getCacheDataById(mEditorId);
+            cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
             //set up layer cache with ep...
             mEditorPath = editorPath;
         } else {
@@ -359,7 +359,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     }
 
     private void supportRecycle() {
-        Utils.recycleBitmap(mRootEditorDelegate.getDisplayBitmap());
+        MatrixUtils.recycleBitmap(mRootEditorDelegate.getDisplayBitmap());
     }
 
     private void callChildrenRestoreLayer(ViewGroup parent, HashMap<String, EditorCacheData> cacheData) {
@@ -457,12 +457,12 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             try {
                 result.compress(Bitmap.CompressFormat.JPEG, 85, new FileOutputStream(new File(mPath)));
 
-                Utils.recycleBitmap(compose);
-                Utils.recycleBitmap(result);
-                Utils.recycleBitmap(rootBit);
+                MatrixUtils.recycleBitmap(compose);
+                MatrixUtils.recycleBitmap(result);
+                MatrixUtils.recycleBitmap(rootBit);
 
                 // Save cached data.
-                HashMap<String, EditorCacheData> cacheData = LayerCache.getIntance().getCacheDataById(mEditorId);
+                HashMap<String, EditorCacheData> cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
                 saveChildrenLayerData(layerComposite, cacheData);
                 mProvider.getCropHelper().saveLayerData(cacheData);
             } catch (FileNotFoundException e) {

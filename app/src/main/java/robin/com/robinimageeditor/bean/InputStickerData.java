@@ -1,5 +1,6 @@
 package robin.com.robinimageeditor.bean;
 
+import robin.com.robinimageeditor.data.share.SharableData;
 import robin.com.robinimageeditor.view.StickerType;
 
 /**

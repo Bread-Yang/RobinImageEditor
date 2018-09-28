@@ -1,9 +1,9 @@
-package robin.com.robinimageeditor.bean;
+package robin.com.robinimageeditor.data.savestate;
 
 import android.graphics.Paint;
 import android.graphics.Path;
 
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 12/29/17.
@@ -21,7 +21,7 @@ public class ScrawlSaveState extends SaveStateMarker {
 
     @Override
     public SaveStateMarker deepCopy() {
-        SaveStateMarker state = new ScrawlSaveState(Utils.copyPaint(paint), path);
+        SaveStateMarker state = new ScrawlSaveState(MatrixUtils.copyPaint(paint), path);
         state.setId(this.getId());
         return state;
     }

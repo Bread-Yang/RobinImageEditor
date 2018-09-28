@@ -3,7 +3,6 @@ package robin.com.robinimageeditor.bean;
 /**
  * Created by Robin Yang on 12/28/17.
  */
-
 public class Pair<A, B> {
 
     private A first;

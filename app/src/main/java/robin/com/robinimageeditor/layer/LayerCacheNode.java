@@ -2,7 +2,7 @@ package robin.com.robinimageeditor.layer;
 
 import java.util.HashMap;
 
-import robin.com.robinimageeditor.bean.EditorCacheData;
+import robin.com.robinimageeditor.editcache.EditorCacheData;
 
 /**
  * Created by Robin Yang on 12/28/17.

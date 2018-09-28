@@ -54,16 +54,16 @@
 
     <include
         android:id="@+id/toolBar"
-        layout="@layout/action_bar_editor" />
+        layout="@layout/action_bar_editor_layout" />
 
     <include
-        android:id="@+id/layoutCropDetails"
-        layout="@layout/crop_func_details"
+        android:id="@+id/cropDetailsLayout"
+        layout="@layout/crop_func_details_layout"
         android:visibility="gone"/>
 
     <include
-        android:id="@+id/rltDragDelete"
-        layout="@layout/layout_drag_to_delete"
+        android:id="@+id/rlDragDelete"
+        layout="@layout/drag_to_delete_layout"
         android:visibility="gone" />
 
     <FrameLayout

@@ -17,7 +17,7 @@ import android.widget.ImageView;
  * Created by Robin Yang on 12/28/17.
  */
 
-public class Utils {
+public class MatrixUtils {
 
     private static int randomId = 0;
 
@@ -179,8 +179,8 @@ public class Utils {
         Matrix invertMatrix = new Matrix();
         tempMatrix.set(matrix);
         tempMatrix.invert(invertMatrix);
-        float startX = Utils.getMatrixTransX(invertMatrix);
-        float startY = Utils.getMatrixTransY(invertMatrix);
+        float startX = MatrixUtils.getMatrixTransX(invertMatrix);
+        float startY = MatrixUtils.getMatrixTransY(invertMatrix);
         tempMatrix.postTranslate(dx, dy);
         invertMatrix.reset();
         tempMatrix.invert(invertMatrix);
@@ -192,8 +192,8 @@ public class Utils {
         Matrix invertMatrix = new Matrix();
         tempMatrix.set(matrix);
         tempMatrix.invert(invertMatrix);
-        float startScaleX = Utils.getMatrixScale(invertMatrix);
-        float startScaleY = Utils.getMatrixScale(invertMatrix);
+        float startScaleX = MatrixUtils.getMatrixScale(invertMatrix);
+        float startScaleY = MatrixUtils.getMatrixScale(invertMatrix);
         tempMatrix.postScale(scaleX, scaleY);
         invertMatrix.reset();
         tempMatrix.invert(invertMatrix);

@@ -15,7 +15,7 @@ import android.widget.FrameLayout;
 
 public class LayerComposite extends FrameLayout {
 
-    private boolean handleEvent = true;
+    private boolean isHandlingEvent = true;
 
     public LayerComposite(@NonNull Context context) {
         super(context);
@@ -44,14 +44,14 @@ public class LayerComposite extends FrameLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (handleEvent) {
+        if (isHandlingEvent) {
             return super.dispatchTouchEvent(ev);
         } else {
             return false;
         }
     }
 
-    public void setHandleEvent(boolean handleEvent) {
-        this.handleEvent = handleEvent;
+    public void setHandlingEvent(boolean handlingEvent) {
+        this.isHandlingEvent = handlingEvent;
     }
 }

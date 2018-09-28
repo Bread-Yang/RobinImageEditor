@@ -1,6 +1,6 @@
-package robin.com.robinimageeditor.bean;
+package robin.com.robinimageeditor.data.savestate;
 
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 12/28/17.
@@ -8,7 +8,7 @@ import robin.com.robinimageeditor.util.Utils;
 
 public abstract class SaveStateMarker {
 
-    private String id = Utils.randomId();
+    private String id = MatrixUtils.randomId();
 
     @Override
     public boolean equals(Object obj) {

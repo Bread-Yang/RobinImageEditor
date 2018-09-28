@@ -10,10 +10,10 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
 import robin.com.robinimageeditor.bean.InputStickerData;
-import robin.com.robinimageeditor.bean.StickerSaveState;
+import robin.com.robinimageeditor.data.savestate.StickerSaveState;
 import robin.com.robinimageeditor.layer.base.BasePastingLayerView;
+import robin.com.robinimageeditor.util.MatrixUtils;
 import robin.com.robinimageeditor.util.StickerUtils;
-import robin.com.robinimageeditor.util.Utils;
 import robin.com.robinimageeditor.view.StickerType;
 
 /**
@@ -43,7 +43,7 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
     @Override
     protected void initSupportView(Context context) {
         super.initSupportView(context);
-        mFocusRectOffset = Utils.dp2px(context, 10f);
+        mFocusRectOffset = MatrixUtils.dp2px(context, 10f);
     }
 
     public void onStickerPastingChanged(InputStickerData data) {
@@ -73,9 +73,9 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
         float height = bitmap.getHeight();
         RectF initDisplayRect = new RectF();
         PointF point = new PointF(validateRect.centerX(), validateRect.centerY());
-        point = Utils.mapInvertMatrixPoint(getDrawMatrix(), point);  // 图片未Matrix变换前的中点
-        Utils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
-        Utils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
+        point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);  // 图片未Matrix变换前的中点
+        MatrixUtils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
+        MatrixUtils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
 
         float tranlateX = initDisplayRect.left;
         float tranlateY = initDisplayRect.top;

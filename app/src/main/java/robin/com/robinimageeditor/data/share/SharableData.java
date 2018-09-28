@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.bean;
+package robin.com.robinimageeditor.data.share;
 
 import java.io.Serializable;
 

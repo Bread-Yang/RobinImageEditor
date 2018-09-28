@@ -16,7 +16,7 @@ import robin.com.robinimageeditor.bean.InputStickerData;
 import robin.com.robinimageeditor.bean.InputTextData;
 import robin.com.robinimageeditor.bean.MosaicDetails;
 import robin.com.robinimageeditor.bean.ScrawlDetails;
-import robin.com.robinimageeditor.bean.SharableData;
+import robin.com.robinimageeditor.data.share.SharableData;
 import robin.com.robinimageeditor.layer.CropHelper;
 import robin.com.robinimageeditor.layer.LayerViewProvider;
 import robin.com.robinimageeditor.layer.MosaicView;

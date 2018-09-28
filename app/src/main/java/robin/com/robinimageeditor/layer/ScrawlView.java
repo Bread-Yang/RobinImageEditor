@@ -11,11 +11,13 @@ import android.util.AttributeSet;
 
 import java.util.Iterator;
 
-import robin.com.robinimageeditor.bean.ScrawlSaveState;
+import robin.com.robinimageeditor.data.savestate.ScrawlSaveState;
 import robin.com.robinimageeditor.layer.base.BasePaintLayerView;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
+ * Photo scrawl edit layer.
+ *
  * Created by Robin Yang on 12/28/17.
  */
 
@@ -50,7 +52,7 @@ public class ScrawlView extends BasePaintLayerView<ScrawlSaveState> {
         mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
         mDrawPaint.setStyle(Paint.Style.STROKE);
         mDrawPaint.setPathEffect(new CornerPathEffect(10));
-        mDrawPaint.setStrokeWidth(Utils.dp2px(context, 6f));
+        mDrawPaint.setStrokeWidth(MatrixUtils.dp2px(context, 6f));
     }
 
     @Override
@@ -64,7 +66,7 @@ public class ScrawlView extends BasePaintLayerView<ScrawlSaveState> {
 
     @Override
     protected ScrawlSaveState savePathOnFingerUp(Path paintPath) {
-        return new ScrawlSaveState(Utils.copyPaint(mDrawPaint), paintPath);
+        return new ScrawlSaveState(MatrixUtils.copyPaint(mDrawPaint), paintPath);
     }
 
     @Override

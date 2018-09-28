@@ -12,11 +12,11 @@ import android.view.View;
 import java.util.HashMap;
 import java.util.Map;
 
-import robin.com.robinimageeditor.bean.CropSaveState;
-import robin.com.robinimageeditor.bean.EditorCacheData;
+import robin.com.robinimageeditor.data.savestate.CropSaveState;
+import robin.com.robinimageeditor.editcache.EditorCacheData;
 import robin.com.robinimageeditor.bean.Pair;
-import robin.com.robinimageeditor.bean.SaveStateMarker;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
+import robin.com.robinimageeditor.util.MatrixUtils;
 import robin.com.robinimageeditor.view.FuncAndActionBarAnimHelper;
 
 /**
@@ -86,7 +86,7 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
             Bitmap cropBitmap = getCropBitmap(lastCropRect, mCropSaveState.getOriginalBitmap(),
                     mCropSaveState.getSupportMatrix(), mCropSaveState.getLastDisplayRectF());
             if (mCropSaveState.getCropBitmap() != cropBitmap) {
-                Utils.recycleBitmap(mCropSaveState.getCropBitmap());
+                MatrixUtils.recycleBitmap(mCropSaveState.getCropBitmap());
                 mCropSaveState.setCropBitmap(cropBitmap);
             }
             if (cropBitmap == mCropSaveState.getOriginalBitmap()) {
@@ -147,7 +147,7 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
         }
 
         //other layer do not handle touch event.
-        mLayerComposite.setHandleEvent(false);
+        mLayerComposite.setHandlingEvent(false);
     }
 
     private void force2SetupCropView() {
@@ -205,7 +205,7 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
         if (mCropSaveState == null) {
             mRootEditorDelegate.setScale(1.0f, false);
         }
-        mLayerComposite.setHandleEvent(true);
+        mLayerComposite.setHandlingEvent(true);
     }
 
     public void resetEditorSupportMatrix(CropSaveState state) {
@@ -345,7 +345,7 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
     }
 
     private float getRotateDegree(Matrix matrix) {
-        return Utils.getMatrixDegree(matrix);
+        return MatrixUtils.getMatrixDegree(matrix);
     }
 
     @Override
@@ -361,7 +361,7 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
                 mCropView.setupDrawingRect(mCropSaveState.getCropRect());
                 Matrix matrix = new Matrix();
                 matrix.set(mCropSaveState.getSupportMatrix());
-                //matrix.postConcat(Utils.getInvertMatrix(it.cropFitCenterMatrix))
+                //matrix.postConcat(MatrixUtils.getInvertMatrix(it.cropFitCenterMatrix))
                 mRootEditorDelegate.setSupportMatrix(matrix);
             }
             mRootEditorDelegate.getRooView().removeOnLayoutChangeListener(this);

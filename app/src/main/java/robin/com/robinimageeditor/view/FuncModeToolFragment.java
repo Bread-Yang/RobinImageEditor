@@ -17,7 +17,7 @@ import java.util.List;
 import robin.com.robinimageeditor.R;
 import robin.com.robinimageeditor.bean.MosaicDetails;
 import robin.com.robinimageeditor.bean.ScrawlDetails;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/3/18.
@@ -47,7 +47,7 @@ public class FuncModeToolFragment extends Fragment implements EditorModeHandler 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_func, container, false);
+        View root = inflater.inflate(R.layout.func_mode_fragment, container, false);
         mFuncModePanel = root.findViewById(R.id.llFuncMode);
         mFuncDetailPanel = root.findViewById(R.id.flFuncDetails);
         return root;
@@ -63,7 +63,7 @@ public class FuncModeToolFragment extends Fragment implements EditorModeHandler 
             if (mode.getModeBgResource() <= 0) {
                 continue;
             }
-            final View item = LayoutInflater.from(getContext()).inflate(R.layout.item_func_mode, mFuncModePanel , false);
+            final View item = LayoutInflater.from(getContext()).inflate(R.layout.func_mode_item, mFuncModePanel , false);
             ImageView ivFuncDesc = item.findViewById(R.id.ivFuncDesc);
             ivFuncDesc.setImageResource(mode.getModeBgResource());
             item.setTag(mode);
@@ -80,7 +80,7 @@ public class FuncModeToolFragment extends Fragment implements EditorModeHandler 
     private void onFuncModeClick(EditorMode editorMode, int position, View clickView) {
         if (mSelectedMode == editorMode) {
             editorMode.onHandle(false, this);
-            Utils.changeSelectedStatus(mFuncModePanel, -1);
+            MatrixUtils.changeSelectedStatus(mFuncModePanel, -1);
             for (int i = 0; i < mFuncModeListeners.size(); i++) {
                 mFuncModeListeners.get(i).onFuncModeUnselected(editorMode);
             }
@@ -88,7 +88,7 @@ public class FuncModeToolFragment extends Fragment implements EditorModeHandler 
         } else {
             editorMode.onHandle(true, this);
             if (editorMode.canPersistMode()) {
-                Utils.changeSelectedStatus(mFuncModePanel, position);
+                MatrixUtils.changeSelectedStatus(mFuncModePanel, position);
                 mSelectedMode = editorMode;
             }
             for (int i = 0; i < mFuncModeListeners.size(); i++) {

@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import robin.com.robinimageeditor.R;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/9/18.
@@ -28,7 +28,7 @@ public class DragToDeleteView {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 RectF rectF = new RectF();
-                Utils.RectFSetInt(rectF, left, top, right, bottom);
+                MatrixUtils.RectFSetInt(rectF, left, top, right, bottom);
                 if (onLayoutRectChangeListener != null) {
                     onLayoutRectChangeListener.onChange(mRootView, rectF);
                 }
@@ -45,9 +45,9 @@ public class DragToDeleteView {
     public void setDrag2DeleteText(boolean focus) {
         String text = null;
         if (focus) {
-            text = Utils.getResourceString(mRootView.getContext(), R.string.editor_drag_to_delete);
+            text = MatrixUtils.getResourceString(mRootView.getContext(), R.string.editor_drag_to_delete);
         } else {
-            text = Utils.getResourceString(mRootView.getContext(), R.string.editor_release_to_delete);
+            text = MatrixUtils.getResourceString(mRootView.getContext(), R.string.editor_release_to_delete);
         }
         mTextView.setText(text);
     }

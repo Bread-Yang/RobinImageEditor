@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import robin.com.robinimageeditor.R;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/8/18.
@@ -36,7 +36,7 @@ public class MosaicDetailsView extends FrameLayout {
     }
 
     private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.mosaic_func_details, this, true);
+        LayoutInflater.from(context).inflate(R.layout.mosaic_func_details_view, this, true);
         final LinearLayout rootFunc = findViewById(R.id.llMosaicDetails);
         MosaicMode[] values = MosaicMode.values();
         for (int index = 0; index < values.length; index++) {
@@ -44,7 +44,7 @@ public class MosaicDetailsView extends FrameLayout {
             if (mode.getModeBgResource() <= 0) {
                 continue;
             }
-            final View item = LayoutInflater.from(context).inflate(R.layout.item_mosaic_func_details, rootFunc, false);
+            final View item = LayoutInflater.from(context).inflate(R.layout.mosaic_func_details_item, rootFunc, false);
             ImageView ivFuncDesc = item.findViewById(R.id.ivMosaicDesc);
             ivFuncDesc.setImageResource(mode.getModeBgResource());
             item.setTag(mode);
@@ -72,7 +72,7 @@ public class MosaicDetailsView extends FrameLayout {
     }
 
     private void onMosaicClick(MosaicMode mosaicMode, int position, View clickView, ViewGroup rootView) {
-        Utils.changeSelectedStatus(rootView, position);
+        MatrixUtils.changeSelectedStatus(rootView, position);
         if (onMosaicChangeListener != null) {
             onMosaicChangeListener.onChange(mosaicMode);
         }

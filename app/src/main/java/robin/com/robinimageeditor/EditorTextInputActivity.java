@@ -40,7 +40,7 @@ public class EditorTextInputActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_editor_text_input);
+        setContentView(R.layout.editor_text_input_activity);
         AdjustResizeInFullScreen.assistActivity(this);
         initData();
         initListener();

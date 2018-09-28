@@ -77,7 +77,7 @@ public class StickerDetailsView extends FrameLayout {
         @Override
         public SimpleStickerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_sticker_details, parent, false);
+                    .inflate(R.layout.sticker_details_recycle_item, parent, false);
             return new SimpleStickerHolder(view);
         }
 

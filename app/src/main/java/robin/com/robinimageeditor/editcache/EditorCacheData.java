@@ -1,8 +1,11 @@
-package robin.com.robinimageeditor.bean;
+package robin.com.robinimageeditor.editcache;
 
 import android.support.v4.util.ArrayMap;
 
 import java.util.Map;
+
+import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
+import robin.com.robinimageeditor.data.share.SharableData;
 
 /**
  * Created by Robin Yang on 12/28/17.

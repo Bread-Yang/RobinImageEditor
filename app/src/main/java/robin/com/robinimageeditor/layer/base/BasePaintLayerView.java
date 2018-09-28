@@ -7,13 +7,13 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import robin.com.robinimageeditor.bean.SaveStateMarker;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
- * ## Base paintingLayerView  for [ScrawlView] and [MosaicView]
- * It's hold move path[paintPath] for user's finger move
- * <p>
+ * Base painting LayerView for {@link robin.com.robinimageeditor.layer.ScrawlView} and {@link robin.com.robinimageeditor.layer.MosaicView}
+ * It's hold move path{@link paintPath} for user's finger move
+ *
  * Created by Robin Yang on 12/29/17.
  */
 public abstract class BasePaintLayerView<T extends SaveStateMarker> extends BaseLayerView<T> {
@@ -54,7 +54,7 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
         super.onFingerDown(downX, downY);
         genDisplayCanvas();
         paintPath = new Path();
-        PointF result = Utils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(downX, downY));
+        PointF result = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(downX, downY));
         if (paintPath != null) {
             paintPath.moveTo(result.x, result.y);
             mLastX = result.x;
@@ -66,7 +66,7 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
     public void onDrag(float dx, float dy, float x, float y, boolean rootLayer) {
         if (!rootLayer) {
             if (paintPath != null) {
-                PointF result = Utils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(x, y));
+                PointF result = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(x, y));
                 if (!interceptDrag(x, y)) {
 //                    paintPath.lineTo(result.x, result.y);
                     paintPath.quadTo(mLastX, mLastY, (result.x + mLastX) / 2, (result.y + mLastY) / 2);

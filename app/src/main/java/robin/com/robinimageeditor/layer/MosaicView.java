@@ -16,16 +16,15 @@ import android.util.AttributeSet;
 
 import java.util.Iterator;
 
-import robin.com.robinimageeditor.bean.MosaicSaveState;
+import robin.com.robinimageeditor.data.savestate.MosaicSaveState;
 import robin.com.robinimageeditor.layer.base.BasePaintLayerView;
+import robin.com.robinimageeditor.util.MatrixUtils;
 import robin.com.robinimageeditor.util.MosaicUtils;
-import robin.com.robinimageeditor.util.Utils;
 import robin.com.robinimageeditor.view.MosaicMode;
 
 /**
  * Created by Robin Yang on 1/8/18.
  */
-
 public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
 
     private Bitmap mGridMosaicCover;
@@ -63,15 +62,15 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
         mMosaicPaint.setStrokeJoin(Paint.Join.ROUND);
         mMosaicPaint.setStrokeCap(Paint.Cap.ROUND);
         mMosaicPaint.setPathEffect(new CornerPathEffect(10));
-        mMosaicPaint.setStrokeWidth(Utils.dp2px(context, 30));
+        mMosaicPaint.setStrokeWidth(MatrixUtils.dp2px(context, 30));
         mMosaicPaintMode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Utils.recycleBitmap(mGridMosaicCover);
-        Utils.recycleBitmap(mBlurMosaicCover);
+        MatrixUtils.recycleBitmap(mGridMosaicCover);
+        MatrixUtils.recycleBitmap(mBlurMosaicCover);
     }
 
     private Bitmap getMosaicCover(MosaicMode mosaicMode) {
@@ -105,7 +104,7 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
         if (cover == null) {
             return false;
         }
-        int count = Utils.saveEntireLayer(canvas);
+        int count = MatrixUtils.saveEntireLayer(canvas);
         canvas.drawPath(paintPath, mMosaicPaint);
         mMosaicPaint.setXfermode(mMosaicPaintMode);
         canvas.drawBitmap(cover, initializeMatrix, mMosaicPaint); // 显示和path的交集
@@ -144,7 +143,7 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
                     mGridMosaicCover = MosaicUtils.getGridMosaic(mosaicBitmap);
                 }
             } else {
-                Utils.recycleBitmap(mGridMosaicCover);
+                MatrixUtils.recycleBitmap(mGridMosaicCover);
                 mBlurMosaicCover = MosaicUtils.getGridMosaic(mosaicBitmap);
             }
         } else if (mosaicMode == MosaicMode.Blur) {
@@ -153,7 +152,7 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
                     mBlurMosaicCover = MosaicUtils.getBlurMosaic(mosaicBitmap);
                 }
             } else {
-                Utils.recycleBitmap(mBlurMosaicCover);
+                MatrixUtils.recycleBitmap(mBlurMosaicCover);
                 mBlurMosaicCover = MosaicUtils.getBlurMosaic(mosaicBitmap);
             }
         }

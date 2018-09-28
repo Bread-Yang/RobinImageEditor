@@ -18,7 +18,7 @@ import android.widget.OverScroller;
 import robin.com.robinimageeditor.layer.detector.CustomGestureDetector;
 import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
 import robin.com.robinimageeditor.layer.OnPhotoRectUpdateListener;
-import robin.com.robinimageeditor.util.Utils;
+import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
  * The component of {@link PhotoView} which does the work allowing for zooming, scaling, panning, etc.
@@ -185,7 +185,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     }
 
     public void setMinimumScale(float minimumScale) {
-        Utils.checkZoomLevels(minimumScale, mMidScale, mMaxScale);
+        MatrixUtils.checkZoomLevels(minimumScale, mMidScale, mMaxScale);
         mMinScale = minimumScale;
     }
 
@@ -194,7 +194,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     }
 
     public void setMediumScale(float mediumScale) {
-        Utils.checkZoomLevels(mMinScale, mediumScale, mMaxScale);
+        MatrixUtils.checkZoomLevels(mMinScale, mediumScale, mMaxScale);
         mMidScale = mediumScale;
     }
 
@@ -203,7 +203,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     }
 
     public void setMaximumScale(float maximumScale) {
-        Utils.checkZoomLevels(mMinScale, mMidScale, maximumScale);
+        MatrixUtils.checkZoomLevels(mMinScale, mMidScale, maximumScale);
         mMaxScale = maximumScale;
     }
 
@@ -316,7 +316,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     public boolean onTouch(View v, MotionEvent ev) {
         boolean handled = false;
 
-        if (mZoomEnabled && Utils.hasDrawable((ImageView) v)) {
+        if (mZoomEnabled && MatrixUtils.hasDrawable((ImageView) v)) {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     ViewParent parent = v.getParent();
@@ -374,7 +374,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     }
 
     public void setScaleLevels(float minimumScale, float mediumScale, float maximumScale) {
-        Utils.checkZoomLevels(minimumScale, mediumScale, maximumScale);
+        MatrixUtils.checkZoomLevels(minimumScale, mediumScale, maximumScale);
         mMinScale = minimumScale;
         mMidScale = mediumScale;
         mMaxScale = maximumScale;
@@ -427,7 +427,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     }
 
     public void setScaleType(ScaleType scaleType) {
-        if (Utils.isSupportedScaleType(scaleType) && scaleType != mScaleType) {
+        if (MatrixUtils.isSupportedScaleType(scaleType) && scaleType != mScaleType) {
             mScaleType = scaleType;
             update();
         }

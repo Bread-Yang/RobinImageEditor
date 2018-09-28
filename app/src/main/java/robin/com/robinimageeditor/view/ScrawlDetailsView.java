@@ -23,7 +23,7 @@ public class ScrawlDetailsView extends FrameLayout {
     }
 
     private void init() {
-        LayoutInflater.from(getContext()).inflate(R.layout.scrawl_func_details, this, true);
+        LayoutInflater.from(getContext()).inflate(R.layout.scrawl_func_details_view, this, true);
 
         findViewById(R.id.ivRevoke).setOnClickListener(new OnClickListener() {
             @Override
