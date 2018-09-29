@@ -12,7 +12,7 @@ public interface LayerCacheNode {
 
     String getLayerTag();
 
-    void restoreLayerData(HashMap<String, EditorCacheData> cacheDataHashMap);
+    void restoreLayerEditData(HashMap<String, EditorCacheData> cacheDataHashMap);
 
-    void saveLayerData(HashMap<String, EditorCacheData> cacheDataHashMap);
+    void saveLayerEditData(HashMap<String, EditorCacheData> cacheDataHashMap);
 }
