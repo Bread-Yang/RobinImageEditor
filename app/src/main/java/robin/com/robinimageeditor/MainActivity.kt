@@ -16,8 +16,8 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import robin.com.robinimageeditor.data.share.EditorPathSetup
 import robin.com.robinimageeditor.data.share.EditorResult
-import robin.com.robinimageeditor.data.share.EditorSetup
 import robin.com.robinimageeditor.util.PathUtils
 
 /**
@@ -25,9 +25,12 @@ import robin.com.robinimageeditor.util.PathUtils
  */
 class MainActivity : AppCompatActivity() {
 
-    private var mOriginalPath: String? = null
+    private var mDisplayImageUrl: String? = null
     private lateinit var ivDisplay: ImageView
     private lateinit var mEditorPath: String
+    /**
+     * Key : 编辑后图片的url, 原来图片的url
+     */
     private val editResultMap = mutableMapOf<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,12 +52,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun editImage(view: View) {
-        mOriginalPath ?: let {
+        mDisplayImageUrl ?: let {
             Toast.makeText(this, "请先选择图片", Toast.LENGTH_SHORT).show()
             return
         }
-        val source = editResultMap[mOriginalPath!!]
-        val setup = EditorSetup(source, mOriginalPath, getEditorSavePath())
+        val source = editResultMap[mDisplayImageUrl!!]
+        val setup = EditorPathSetup(source, mDisplayImageUrl, getEditorSavePath())
         val intent = ImageEditorActivity.intent(this, setup)
         startActivityForResult(intent, ACTION_REQUEST_EDITOR)
     }
@@ -81,9 +84,9 @@ class MainActivity : AppCompatActivity() {
                         ActivityCompat.requestPermissions(
                                 this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
                     } else {
-                        mOriginalPath = PathUtils.getFilePath(this, uri)
-                        //ivDisplay.setImageURI(Uri.fromFile(File(mOriginalPath)))
-                        Glide.with(this).load(mOriginalPath).apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                        mDisplayImageUrl = PathUtils.getFilePath(this, uri)
+                        //ivDisplay.setImageURI(Uri.fromFile(File(mDisplayImageUrl)))
+                        Glide.with(this).load(mDisplayImageUrl).apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
                                 .apply(RequestOptions.skipMemoryCacheOf(true)).into(ivDisplay)
                     }
                 }
@@ -92,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                     val result = data.getSerializableExtra(resultCode.toString()) as EditorResult
                     if (result.isEditStatus()) {
                         //editor result path and original path
-                        mOriginalPath = result.editor2SavedPath
+                        mDisplayImageUrl = result.editor2SavedPath
                         editResultMap.put(result.editor2SavedPath, result.originalPath!!)
                         //ivDisplay.setImageURI(Uri.fromFile(File(result.editor2SavedPath)))
                         Glide.with(this).load(result.editor2SavedPath).apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))

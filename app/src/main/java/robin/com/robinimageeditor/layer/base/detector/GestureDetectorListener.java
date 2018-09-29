@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.layer.detector;
+package robin.com.robinimageeditor.layer.base.detector;
 
 /**
  * Created by Robin Yang on 12/28/17.

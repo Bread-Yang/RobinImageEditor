@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.layer.detector;
+package robin.com.robinimageeditor.layer.base.detector;
 
 import android.content.Context;
 import android.view.MotionEvent;

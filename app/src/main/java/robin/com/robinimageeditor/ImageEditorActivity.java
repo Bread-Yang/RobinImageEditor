@@ -32,16 +32,16 @@ import java.util.HashMap;
 import java.util.List;
 
 import robin.com.robinimageeditor.data.savestate.CropSaveState;
+import robin.com.robinimageeditor.data.share.EditorPathSetup;
 import robin.com.robinimageeditor.editcache.EditorCacheData;
 import robin.com.robinimageeditor.data.share.EditorResult;
-import robin.com.robinimageeditor.data.share.EditorSetup;
 import robin.com.robinimageeditor.data.share.LayerEditResult;
 import robin.com.robinimageeditor.bean.Pair;
 import robin.com.robinimageeditor.editcache.PhotoEditCache;
 import robin.com.robinimageeditor.layer.CropDetailsView;
 import robin.com.robinimageeditor.layer.CropHelper;
 import robin.com.robinimageeditor.layer.CropView;
-import robin.com.robinimageeditor.layer.LayerCacheNode;
+import robin.com.robinimageeditor.layer.base.LayerCacheNode;
 import robin.com.robinimageeditor.layer.LayerComposite;
 import robin.com.robinimageeditor.layer.LayerViewProvider;
 import robin.com.robinimageeditor.layer.MosaicView;
@@ -67,11 +67,11 @@ import robin.com.robinimageeditor.view.FuncModeToolFragment;
 public class ImageEditorActivity extends AppCompatActivity implements LayerViewProvider {
 
     private static final String TAG = "ImageEditorActivity";
-    private static final String intentKey = "editorSetup";
+    private static final String intentKey = "editorPathSetup";
 
-    private EditorSetup mEditorSetup;
+    private EditorPathSetup mEditorPathSetup;
     private String mEditorId;
-    private String mEditorPath;
+    private String mOriginalImageUrl;
     private int mEditorWidth;
     private int mEditorHeight;
 
@@ -102,9 +102,9 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
     private RelativeLayout rltDragDelete;
 
-    public static Intent intent(Context context, EditorSetup editorSetup) {
+    public static Intent intent(Context context, EditorPathSetup editorPathSetup) {
         Intent intent = new Intent(context, ImageEditorActivity.class);
-        intent.putExtra(intentKey, editorSetup);
+        intent.putExtra(intentKey, editorPathSetup);
         return intent;
     }
 
@@ -165,17 +165,17 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             finish();
             return;
         }
-        EditorSetup editorSetup = (EditorSetup) intent.getSerializableExtra(intentKey);
-        if (editorSetup == null) {
-            Log.e(TAG, "editorSetup == null");
+        EditorPathSetup editorPathSetup = (EditorPathSetup) intent.getSerializableExtra(intentKey);
+        if (editorPathSetup == null) {
+            Log.e(TAG, "editorPathSetup == null");
             finish();
             return;
         }
-        mEditorSetup = editorSetup;
-        String originalPath = mEditorSetup.getOriginalPath();
-        String editorPath = mEditorSetup.getEditorPath();
-        if (originalPath == null && editorPath == null) {
-            Log.e(TAG, "originalPath,editorPath are both null");
+        mEditorPathSetup = editorPathSetup;
+        String originalImageUrl = mEditorPathSetup.getOriginalImageUrl();
+        String editedImageUrl = mEditorPathSetup.getEditedImageUrl();
+        if (originalImageUrl == null && editedImageUrl == null) {
+            Log.e(TAG, "originalImageUrl,editedImageUrl are both null");
             finish();
             return;
         }
@@ -206,37 +206,38 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     }
 
     private void restoreData() {
-        String originalPath = mEditorSetup.getOriginalPath();
-        String editorPath = mEditorSetup.getEditorPath();
-        HashMap<String, EditorCacheData> cacheData = null;
-        if (originalPath != null) {
-            mEditorId = originalPath;
-            if (editorPath != null) {
-                mEditorId += editorPath;
+        String originalImageUrl = mEditorPathSetup.getOriginalImageUrl();
+        String editedImageUrl = mEditorPathSetup.getEditedImageUrl();
+        HashMap<String, EditorCacheData> editCacheData = null;
+        if (originalImageUrl != null) {
+            mEditorId = originalImageUrl;
+            if (editedImageUrl != null) {
+                // key是原图片Url和编辑后图片Url的结合
+                mEditorId += editedImageUrl;
             }
-            cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
+            editCacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
         }
-        if ((cacheData == null || cacheData.isEmpty()) && editorPath != null) {
-            mEditorId = editorPath;
-            if (originalPath != null) {
-                mEditorId = originalPath + editorPath;
+        if ((editCacheData == null || editCacheData.isEmpty()) && editedImageUrl != null) {
+            mEditorId = editedImageUrl;
+            if (originalImageUrl != null) {
+                mEditorId = originalImageUrl + editedImageUrl;
             }
-            cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
+            editCacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
             //set up layer cache with ep...
-            mEditorPath = editorPath;
+            mOriginalImageUrl = editedImageUrl;
         } else {
             //op has extra data or not
-            mEditorPath = originalPath;
+            mOriginalImageUrl = originalImageUrl;
         }
-        if (!new File(mEditorPath).exists()) {
+        if (!new File(mOriginalImageUrl).exists()) {
             Toast.makeText(this, "文件不存在！", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-        Bitmap imageBitmap = EditorCompressUtils.getImageBitmap(mEditorPath);
+        Bitmap imageBitmap = EditorCompressUtils.getImageBitmap(mOriginalImageUrl);
 
-        mCropHelper.restoreLayerData(cacheData);
-        Bitmap cropBitmap = mCropHelper.restoreCropData(imageBitmap);
+        mCropHelper.restoreLayerEditData(editCacheData);
+        Bitmap cropBitmap = mCropHelper.restoreBitmapByCropSaveState(imageBitmap);
         layerPhotoView.setImageBitmap(cropBitmap);
 
 //        layerPhotoView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -247,11 +248,11 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 //            }
 //        });
 
-        CropSaveState cropState = mCropHelper.getSavedCropState();
+        CropSaveState cropState = mCropHelper.getCropSaveState();
         layerPhotoView.addOnLayoutChangeListener(new LayerImageOnLayoutChangeListener(cropState));
 
         layerMosaicView.setupForMosaicView(imageBitmap);
-        callChildrenRestoreLayer(layerComposite, cacheData);
+        callChildrenRestoreLayer(layerComposite, editCacheData);
 
         mEditorWidth = imageBitmap.getWidth();
         mEditorHeight = imageBitmap.getHeight();
@@ -322,7 +323,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
     @Override
     public String getResultEditorId() {
-        return mEditorPath + mEditorSetup.getEditor2SavedPath();
+        return mOriginalImageUrl + mEditorPathSetup.getEditor2SavedPath();
     }
 
     @Override
@@ -338,7 +339,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     }
 
     private void imageCompose() {
-        String path = mEditorSetup.getEditor2SavedPath();
+        String path = mEditorPathSetup.getEditor2SavedPath();
         File parentFile = new File(path).getParentFile();
         parentFile.mkdirs();
         if (imageComposeTask != null) {
@@ -351,8 +352,8 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private void onImageComposeResult(boolean editStatus) {
         supportRecycle();
         Intent intent = new Intent();
-        EditorResult resultData = new EditorResult(mEditorPath, mEditorSetup.getEditorPath(),
-                mEditorSetup.getEditor2SavedPath(), editStatus);
+        EditorResult resultData = new EditorResult(mOriginalImageUrl, mEditorPathSetup.getEditedImageUrl(),
+                mEditorPathSetup.getEditor2SavedPath(), editStatus);
         intent.putExtra(String.valueOf(RESULT_OK), resultData);
         setResult(RESULT_OK, intent);
         finish();
@@ -367,7 +368,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             View layer = parent.getChildAt(i);
 
             if (layer instanceof LayerCacheNode) {
-                ((LayerCacheNode) layer).restoreLayerData(cacheData);
+                ((LayerCacheNode) layer).restoreLayerEditData(cacheData);
             } else if (layer instanceof ViewGroup) {
                 callChildrenRestoreLayer((ViewGroup) layer, cacheData);
             }
@@ -444,27 +445,27 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             RootEditorDelegate delegate = mProvider.getRootEditorDelegate();
 
             // draw image data layer by layer
-            Bitmap rootBit = delegate.getDisplayBitmap();
-            Bitmap compose = Bitmap.createBitmap(layerComposite.getWidth(), layerComposite.getHeight(), Bitmap.Config.RGB_565);
+            Bitmap rootBitmap = delegate.getDisplayBitmap();
+            Bitmap composeBitmap = Bitmap.createBitmap(layerComposite.getWidth(), layerComposite.getHeight(), Bitmap.Config.RGB_565);
 
-            Canvas canvas = new Canvas(compose);
-            canvas.drawBitmap(rootBit, delegate.getBaseLayoutMatrix(), null);
+            Canvas canvas = new Canvas(composeBitmap);
+            canvas.drawBitmap(rootBitmap, delegate.getBaseLayoutMatrix(), null);
 
             drawChildrenLayer(layerComposite, canvas);
 
             RectF rect = delegate.getOriginalRect();
-            Bitmap result = Bitmap.createBitmap(compose, (int) rect.left, (int) rect.top, (int) rect.width(), (int) rect.height());
+            Bitmap resultBitmap = Bitmap.createBitmap(composeBitmap, (int) rect.left, (int) rect.top, (int) rect.width(), (int) rect.height());
             try {
-                result.compress(Bitmap.CompressFormat.JPEG, 85, new FileOutputStream(new File(mPath)));
+                resultBitmap.compress(Bitmap.CompressFormat.JPEG, 85, new FileOutputStream(new File(mPath)));
 
-                MatrixUtils.recycleBitmap(compose);
-                MatrixUtils.recycleBitmap(result);
-                MatrixUtils.recycleBitmap(rootBit);
+                MatrixUtils.recycleBitmap(composeBitmap);
+                MatrixUtils.recycleBitmap(resultBitmap);
+                MatrixUtils.recycleBitmap(rootBitmap);
 
                 // Save cached data.
                 HashMap<String, EditorCacheData> cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
                 saveChildrenLayerData(layerComposite, cacheData);
-                mProvider.getCropHelper().saveLayerData(cacheData);
+                mProvider.getCropHelper().saveLayerEditData(cacheData);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -509,7 +510,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 View layer = parent.getChildAt(i);
 
                 if (layer instanceof BaseLayerView) {
-                    ((BaseLayerView) layer).saveLayerData(cacheData);
+                    ((BaseLayerView) layer).saveLayerEditData(cacheData);
                 } else if (layer instanceof ViewGroup) {
                     saveChildrenLayerData((ViewGroup) layer, cacheData);
                 }

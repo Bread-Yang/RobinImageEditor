@@ -66,10 +66,12 @@ public class EditorCompressUtils {
         BitmapFactory.decodeFile(filePath, options);
         int outWidth = options.outWidth;
         int outHeight = options.outHeight;
+        // 如inSmapleSize前bitmap,宽高是96 * 96, 当inSampleSize == 2时，decode出来的bitmap宽高是48 * 48
         options.inSampleSize = computeSize(outWidth, outHeight) * 2;
         options.inJustDecodeBounds = false;
         Log.e("EditorImage", "options.inSampleSize=${options.inSampleSize}");
-        return BitmapFactory.decodeFile(filePath, options);
+        Bitmap subSampleBitmap = BitmapFactory.decodeFile(filePath, options);
+        return subSampleBitmap;
     }
 
 }

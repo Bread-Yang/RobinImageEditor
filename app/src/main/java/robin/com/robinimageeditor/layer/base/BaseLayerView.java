@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.os.Build;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.support.v4.view.ViewCompat;
@@ -26,13 +27,12 @@ import java.util.Map;
 import robin.com.robinimageeditor.editcache.EditorCacheData;
 import robin.com.robinimageeditor.data.share.LayerEditResult;
 import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
-import robin.com.robinimageeditor.layer.detector.CustomGestureDetector;
-import robin.com.robinimageeditor.layer.LayerCacheNode;
-import robin.com.robinimageeditor.layer.LayerTransformer;
-import robin.com.robinimageeditor.layer.OnPhotoRectUpdateListener;
+import robin.com.robinimageeditor.layer.base.detector.CustomGestureDetector;
 import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**
+ * All photo edit layer base on this view.
+ *
  * Created by Robin Yang on 12/28/17.
  */
 
@@ -41,13 +41,25 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     private static final String TAG = "BaseLayerView";
 
-    /* support matrix for drawing layerView */
+    /**
+     * Support matrix for drawing layerView, PhotoView放大、缩小、移动等等操作不改变supportMatrix,
+     * 只改变rootLayerMatrix.只有当图片裁剪了，才会改变supportMatrix
+     * {@link robin.com.robinimageeditor.layer.CropHelper#resetEditorSupportMatrix}
+     */
     protected final Matrix supportMatrix = new Matrix();
+    /**
+     * PhotoView放大、缩小、移动等等操作会改变此值(PhotoAttacher持有RootEditorDelegate的引用，RootEditorDelegate持有
+     * 各个BaseLayerView的引用，PhotoView操作最后导致BaseLayerView.resetEditorSupportMatrix()被调用)
+     * {@link robin.com.robinimageeditor.layer.photoview.PhotoViewAttacher#setImageViewMatrix}
+     */
     protected final Matrix rootLayerMatrix = new Matrix();
     protected final RectF validateRect = new RectF();
 
     /* support drawing */
     protected Bitmap displayBitmap;
+    /**
+     * Canvas that draw on {@link displayBitmap}
+     */
     protected Canvas displayCanvas;
 
     /* saveState Info */
@@ -57,12 +69,13 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     protected CustomGestureDetector gestureDetector;
     protected AccelerateDecelerateInterpolator adInterpolator = new AccelerateDecelerateInterpolator();
 
-    /* paint */
+    /* not used */
     protected Paint maskPaint;
 
     /* 当前layer是否能拦截触控事件 */
     private boolean isLayerInEditMode;
     protected Matrix unitMatrix = new Matrix();
+    /** view是否已经加载完*/
     protected boolean viewIsLayout;
 
     public BaseLayerView(Context context) {
@@ -103,12 +116,14 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         displayCanvas = null;
     }
 
+    @CallSuper
     @Override
     protected void onDraw(Canvas canvas) {
         // drawDisplay
         if (displayBitmap != null) {
             if (clipRect()) {
                 canvas.save();
+                // 该方法用于裁剪画布，也就是设置画布的显示区域
                 canvas.clipRect(validateRect);
                 canvas.drawBitmap(displayBitmap, getDrawMatrix(), null);
                 canvas.restore();
@@ -248,8 +263,8 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     }
 
     /**
-     * open fun for intercept touch event or not.
-     * if intercept this layer will handle it,other wise do nothing
+     * method for intercept touch event or not.
+     * if intercept this layer will handle it,otherwise do nothing
      */
     protected boolean checkInterceptedOnTouchEvent(MotionEvent event) {
         return true;
@@ -297,12 +312,12 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     // cache layer data.
     @Override
-    public void saveLayerData(HashMap<String, EditorCacheData> cacheDataHashMap) {
+    public void saveLayerEditData(HashMap<String, EditorCacheData> cacheDataHashMap) {
         cacheDataHashMap.put(getLayerTag(), new EditorCacheData(new ArrayMap<String, SaveStateMarker>(saveStateMap)));
     }
 
     @Override
-    public void restoreLayerData(HashMap<String, EditorCacheData> cacheDataHashMap) {
+    public void restoreLayerEditData(HashMap<String, EditorCacheData> cacheDataHashMap) {
         EditorCacheData lastCache = cacheDataHashMap.get(getLayerTag());
         if (lastCache != null) {
             ArrayMap<String, T> restore = ((ArrayMap<String, T>) lastCache.getLayerCache());

@@ -15,9 +15,9 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.OverScroller;
 
-import robin.com.robinimageeditor.layer.detector.CustomGestureDetector;
-import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
-import robin.com.robinimageeditor.layer.OnPhotoRectUpdateListener;
+import robin.com.robinimageeditor.layer.base.detector.CustomGestureDetector;
+import robin.com.robinimageeditor.layer.base.detector.GestureDetectorListener;
+import robin.com.robinimageeditor.layer.base.OnPhotoRectUpdateListener;
 import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**

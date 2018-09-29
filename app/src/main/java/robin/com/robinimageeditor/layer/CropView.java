@@ -14,8 +14,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import robin.com.robinimageeditor.layer.detector.CustomGestureDetector;
-import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
+import robin.com.robinimageeditor.layer.base.OnPhotoRectUpdateListener;
+import robin.com.robinimageeditor.layer.base.detector.CustomGestureDetector;
+import robin.com.robinimageeditor.layer.base.detector.GestureDetectorListener;
 import robin.com.robinimageeditor.util.MatrixUtils;
 
 /**

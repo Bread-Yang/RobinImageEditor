@@ -15,8 +15,8 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
-import robin.com.robinimageeditor.layer.OnPhotoRectUpdateListener;
+import robin.com.robinimageeditor.layer.base.detector.GestureDetectorListener;
+import robin.com.robinimageeditor.layer.base.OnPhotoRectUpdateListener;
 import robin.com.robinimageeditor.layer.RootNode;
 
 /**

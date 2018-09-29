@@ -4,7 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 
-import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
+import robin.com.robinimageeditor.layer.base.OnPhotoRectUpdateListener;
+import robin.com.robinimageeditor.layer.base.detector.GestureDetectorListener;
 
 /**
  * Root node marker

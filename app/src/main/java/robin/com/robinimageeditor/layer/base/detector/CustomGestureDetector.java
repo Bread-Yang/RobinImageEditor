@@ -1,4 +1,4 @@
-package robin.com.robinimageeditor.layer.detector;
+package robin.com.robinimageeditor.layer.base.detector;
 
 import android.content.Context;
 import android.view.MotionEvent;
@@ -7,7 +7,7 @@ import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 
 /**
- * ## Does a whole lot of gesture detecting.
+ * Does a whole lot of gesture detecting.
  * Created by Robin Yang on 12/29/17.
  */
 public class CustomGestureDetector {

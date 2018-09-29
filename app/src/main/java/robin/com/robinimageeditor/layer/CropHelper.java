@@ -16,6 +16,7 @@ import robin.com.robinimageeditor.data.savestate.CropSaveState;
 import robin.com.robinimageeditor.editcache.EditorCacheData;
 import robin.com.robinimageeditor.bean.Pair;
 import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
+import robin.com.robinimageeditor.layer.base.LayerCacheNode;
 import robin.com.robinimageeditor.util.MatrixUtils;
 import robin.com.robinimageeditor.view.FuncAndActionBarAnimHelper;
 
@@ -230,7 +231,7 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
         return matrix;
     }
 
-    public CropSaveState getSavedCropState() {
+    public CropSaveState getCropSaveState() {
         if (mCropSaveState != null) {
             return mCropSaveState;
         }
@@ -238,32 +239,32 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
     }
 
     @Override
-    public void saveLayerData(HashMap<String, EditorCacheData> cacheDataHashMap) {
-        String tag = getLayerTag();
+    public void saveLayerEditData(HashMap<String, EditorCacheData> cacheDataHashMap) {
+        String cropLayerTag = getLayerTag();
         if (mCropSaveState != null) {
             mCropSaveState.reset();
-            mSavedStateMap.put(tag, mCropSaveState);
-            cacheDataHashMap.put(tag, new EditorCacheData(new ArrayMap<String, SaveStateMarker>(mSavedStateMap)));
+            mSavedStateMap.put(cropLayerTag, mCropSaveState);
+            cacheDataHashMap.put(cropLayerTag, new EditorCacheData(new ArrayMap<String, SaveStateMarker>(mSavedStateMap)));
         }
         if (mCropSaveState == null) {
-            cacheDataHashMap.remove(tag);
+            cacheDataHashMap.remove(cropLayerTag);
         }
     }
 
     @Override
-    public void restoreLayerData(HashMap<String, EditorCacheData> cacheDataHashMap) {
-        String tag = getLayerTag();
-        EditorCacheData cachedData = cacheDataHashMap.get(tag);
+    public void restoreLayerEditData(HashMap<String, EditorCacheData> cacheDataHashMap) {
+        String cropLayerTag = getLayerTag();
+        EditorCacheData cachedData = cacheDataHashMap.get(cropLayerTag);
         if (cachedData != null) {
             Map<String, SaveStateMarker> layerCache = cachedData.getLayerCache();
             if (layerCache.size() != 0) {
-                SaveStateMarker result = layerCache.get(tag);
+                SaveStateMarker result = layerCache.get(cropLayerTag);
                 mCropSaveState = (CropSaveState) result.deepCopy();
             }
         }
     }
 
-    public Bitmap restoreCropData(Bitmap originalBitmap) {
+    public Bitmap restoreBitmapByCropSaveState(Bitmap originalBitmap) {
         Bitmap cropBitmap = null;
         if (mCropSaveState != null) {
             mCropSaveState.setOriginalBitmap(originalBitmap);

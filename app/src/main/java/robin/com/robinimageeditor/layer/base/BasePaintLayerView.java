@@ -18,7 +18,13 @@ import robin.com.robinimageeditor.util.MatrixUtils;
  */
 public abstract class BasePaintLayerView<T extends SaveStateMarker> extends BaseLayerView<T> {
 
+    /**
+     * When finger down, new a Path to it, when finger up, save this path and null it.
+     */
     protected Path paintPath;
+    /**
+     * Decide whether save the {@link paintPath} to {@link saveStateMap}, When finger move, set it true.
+     */
     protected boolean currentPathValidate;
     private float mLastX, mLastY;
 

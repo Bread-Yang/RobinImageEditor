@@ -4,13 +4,13 @@ package robin.com.robinimageeditor.data.share;
  * Created by Robin Yang on 12/28/17.
  */
 
-public class EditorSetup implements SharableData {
+public class EditorPathSetup implements SharableData {
 
     private String originalImageUrl;
     private String editedImageUrl;
     private String editor2SavedPath;
 
-    public EditorSetup(String originalImageUrl, String editedImageUrl, String editor2SavedPath) {
+    public EditorPathSetup(String originalImageUrl, String editedImageUrl, String editor2SavedPath) {
         this.originalImageUrl = originalImageUrl;
         this.editedImageUrl = editedImageUrl;
         this.editor2SavedPath = editor2SavedPath;

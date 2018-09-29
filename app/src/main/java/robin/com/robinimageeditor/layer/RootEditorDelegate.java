@@ -7,13 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import robin.com.robinimageeditor.layer.detector.GestureDetectorListener;
+import robin.com.robinimageeditor.layer.base.LayerTransformer;
+import robin.com.robinimageeditor.layer.base.OnPhotoRectUpdateListener;
+import robin.com.robinimageeditor.layer.base.detector.GestureDetectorListener;
 
 /**
+ * Called by {@link rootNode}{@link robin.com.robinimageeditor.layer.photoview.PhotoView}, when {@link rootNode} operate,
+ * change the {@link delegateParent}'s child {@link robin.com.robinimageeditor.layer.base.BaseLayerView}'s rect and matrix
+ * {@link RootEditorDelegate#onPhotoRectUpdate} accordingly.
+ *
  * Created by Robin Yang on 1/2/18.
  */
 
-public class RootEditorDelegate implements RootNode<ImageView>, LayerTransformer, OnPhotoRectUpdateListener{
+public class RootEditorDelegate implements RootNode<ImageView>, LayerTransformer, OnPhotoRectUpdateListener {
 
     private RootNode<ImageView> rootNode;
     private ViewGroup delegateParent;
@@ -26,6 +32,11 @@ public class RootEditorDelegate implements RootNode<ImageView>, LayerTransformer
         addOnMatrixChangeListener(this);
     }
 
+    /**
+     * Called by {@link robin.com.robinimageeditor.layer.photoview.PhotoViewAttacher#setImageViewMatrix}
+     * @param rect
+     * @param matrix
+     */
     @Override
     public void onPhotoRectUpdate(RectF rect, Matrix matrix) {
         callChildrenRectUpdate(delegateParent, rect, matrix);
