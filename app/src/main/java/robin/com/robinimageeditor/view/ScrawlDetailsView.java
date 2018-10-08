@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import robin.com.robinimageeditor.R;
 
@@ -14,8 +16,14 @@ import robin.com.robinimageeditor.R;
 
 public class ScrawlDetailsView extends FrameLayout {
 
+    private static int sCheckedId = -1;
+
     private OnRevokeListener onRevokeListener;
-    private ColorSeekBar.OnColorChangeListener onColorChangeListener;
+    private OnColorChangedListener onColorChangedListener;
+
+    interface OnColorChangedListener {
+        void onColorChanged(int checkedColor);
+    }
 
     public ScrawlDetailsView(@NonNull Context context) {
         super(context);
@@ -34,22 +42,38 @@ public class ScrawlDetailsView extends FrameLayout {
             }
         });
 
-        ColorSeekBar ckb = findViewById(R.id.colorBarScrawl);
-        ckb.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
+        final PictureColorGroup colorGroup = findViewById(R.id.pcgColors);
+        colorGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
-                if (onColorChangeListener != null) {
-                    onColorChangeListener.onColorChangeListener(colorBarPosition, alphaBarPosition, color);
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                sCheckedId = group.getCheckedRadioButtonId();
+                if (onColorChangedListener != null) {
+                    onColorChangedListener.onColorChanged(colorGroup.getCheckColor());
                 }
             }
         });
+
+        if (sCheckedId != -1) {
+            RadioButton rb = colorGroup.findViewById(sCheckedId);
+            rb.setChecked(true);
+        }
+
+//        ColorSeekBar ckb = findViewById(R.id.colorBarScrawl);
+//        ckb.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
+//            @Override
+//            public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
+//                if (onColorChangeListener != null) {
+//                    onColorChangeListener.onColorChangeListener(colorBarPosition, alphaBarPosition, color);
+//                }
+//            }
+//        });
     }
 
     public void setOnRevokeListener(OnRevokeListener onRevokeListener) {
         this.onRevokeListener = onRevokeListener;
     }
 
-    public void setOnColorChangeListener(ColorSeekBar.OnColorChangeListener onColorChangeListener) {
-        this.onColorChangeListener = onColorChangeListener;
+    public void setOnColorChangedListener(OnColorChangedListener onColorChangedListener) {
+        this.onColorChangedListener = onColorChangedListener;
     }
 }

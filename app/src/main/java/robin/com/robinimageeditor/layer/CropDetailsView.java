@@ -29,7 +29,7 @@ public class CropDetailsView implements ViewTreeObserver.OnPreDrawListener {
 
     private View view;
     OnCropOperationListener cropListener;
-    private TextView mRestoreView;
+    private TextView tvCropRestore;
     OnOperateCallback mCallback;
 
     public CropDetailsView(View view) {
@@ -39,7 +39,15 @@ public class CropDetailsView implements ViewTreeObserver.OnPreDrawListener {
 
     private void init() {
         view.getViewTreeObserver().addOnPreDrawListener(this);
-        view.findViewById(R.id.ivCropRotate).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.ivCropLeftRotate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cropListener != null) {
+                    cropListener.onCropRotation(-90f);
+                }
+            }
+        });
+        view.findViewById(R.id.ivCropRightRotate).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cropListener != null) {
@@ -55,8 +63,8 @@ public class CropDetailsView implements ViewTreeObserver.OnPreDrawListener {
                 }
             }
         });
-        mRestoreView = view.findViewById(R.id.tvCropRestore);
-        mRestoreView.setOnClickListener(new View.OnClickListener() {
+        tvCropRestore = view.findViewById(R.id.tvCropRestore);
+        tvCropRestore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cropListener != null) {
@@ -88,10 +96,10 @@ public class CropDetailsView implements ViewTreeObserver.OnPreDrawListener {
         if (restore) {
             color = R.color.green_btn;
         } else {
-            color = R.color.white_f;
+            color = R.color.color_919191;
         }
         color = MatrixUtils.getResourceColor(view.getContext(), color);
-        mRestoreView.setTextColor(color);
+        tvCropRestore.setTextColor(color);
     }
 
     public void showOrHide(boolean show) {

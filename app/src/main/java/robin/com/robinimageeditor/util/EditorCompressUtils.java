@@ -13,7 +13,7 @@ public class EditorCompressUtils {
     private EditorCompressUtils() {
     }
 
-    private static int computeSize(int inputWidth, int inputHeight) {
+    private static int computeSampleSize(int inputWidth, int inputHeight) {
         int  mSampleSize;
         int srcWidth;
         if (inputWidth % 2 == 1) {
@@ -60,18 +60,23 @@ public class EditorCompressUtils {
         return mSampleSize;
     }
 
-    public static Bitmap getImageBitmap(String filePath) {
+    public static Bitmap getImageCompressBitmap(String filePath) {
+        int sampleSize = computeSampleSize(filePath);
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath, options);
-        int outWidth = options.outWidth;
-        int outHeight = options.outHeight;
         // 如inSmapleSize前bitmap,宽高是96 * 96, 当inSampleSize == 2时，decode出来的bitmap宽高是48 * 48
-        options.inSampleSize = computeSize(outWidth, outHeight) * 2;
+        options.inSampleSize = sampleSize;
         options.inJustDecodeBounds = false;
         Log.e("EditorImage", "options.inSampleSize=${options.inSampleSize}");
         Bitmap subSampleBitmap = BitmapFactory.decodeFile(filePath, options);
         return subSampleBitmap;
     }
 
+    public static int computeSampleSize(String filePath) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+        int outWidth = options.outWidth;
+        int outHeight = options.outHeight;
+        return computeSampleSize(outWidth, outHeight) * 2;
+    }
 }

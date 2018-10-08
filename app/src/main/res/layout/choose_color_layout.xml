@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robin.com.robinimageeditor.view.PictureColorGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pcgColors"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:checkedButton="@+id/pcrRed"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <robin.com.robinimageeditor.view.PictureColorRadio
+        android:id="@+id/pcrWhite"
+        android:layout_width="@dimen/image_color"
+        android:layout_height="@dimen/image_color"
+        android:layout_margin="@dimen/image_color_margin"
+        android:layout_weight="1"
+        app:image_color="@color/image_color_white" />
+
+    <robin.com.robinimageeditor.view.PictureColorRadio
+        android:id="@+id/pcrBlack"
+        android:layout_width="@dimen/image_color"
+        android:layout_height="@dimen/image_color"
+        android:layout_margin="@dimen/image_color_margin"
+        android:layout_weight="1"
+        app:image_color="@color/image_color_black" />
+
+    <robin.com.robinimageeditor.view.PictureColorRadio
+        android:id="@+id/pcrRed"
+        android:layout_width="@dimen/image_color"
+        android:layout_height="@dimen/image_color"
+        android:layout_margin="@dimen/image_color_margin"
+        android:layout_weight="1"
+        app:image_color="@color/image_color_red" />
+
+    <robin.com.robinimageeditor.view.PictureColorRadio
+        android:id="@+id/pcrYellow"
+        android:layout_width="@dimen/image_color"
+        android:layout_height="@dimen/image_color"
+        android:layout_margin="@dimen/image_color_margin"
+        android:layout_weight="1"
+        app:image_color="@color/image_color_yellow" />
+
+    <robin.com.robinimageeditor.view.PictureColorRadio
+        android:id="@+id/pcrCyan"
+        android:layout_width="@dimen/image_color"
+        android:layout_height="@dimen/image_color"
+        android:layout_margin="@dimen/image_color_margin"
+        android:layout_weight="1"
+        app:image_color="@color/image_color_green" />
+
+    <robin.com.robinimageeditor.view.PictureColorRadio
+        android:id="@+id/pcrBlue"
+        android:layout_width="@dimen/image_color"
+        android:layout_height="@dimen/image_color"
+        android:layout_margin="@dimen/image_color_margin"
+        android:layout_weight="1"
+        app:image_color="@color/image_color_blue" />
+
+    <robin.com.robinimageeditor.view.PictureColorRadio
+        android:id="@+id/pcrPurple"
+        android:layout_width="@dimen/image_color"
+        android:layout_height="@dimen/image_color"
+        android:layout_margin="@dimen/image_color_margin"
+        android:layout_weight="1"
+        app:image_color="@color/image_color_purple" />
+
+    <robin.com.robinimageeditor.view.PictureColorRadio
+        android:id="@+id/pcrOrange"
+        android:layout_width="@dimen/image_color"
+        android:layout_height="@dimen/image_color"
+        android:layout_margin="@dimen/image_color_margin"
+        android:layout_weight="1"
+        app:image_color="@color/image_color_orange" />
+</robin.com.robinimageeditor.view.PictureColorGroup>

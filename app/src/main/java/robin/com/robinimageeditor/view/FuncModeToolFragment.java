@@ -117,15 +117,24 @@ public class FuncModeToolFragment extends Fragment implements EditorModeHandler 
     public void handleScrawlMode(boolean selected) {
         if (selected) {
             ScrawlDetailsView scrawlDetailsView = new ScrawlDetailsView(getContext());
-            scrawlDetailsView.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
+            scrawlDetailsView.setOnColorChangedListener(new ScrawlDetailsView.OnColorChangedListener() {
                 @Override
-                public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
+                public void onColorChanged(int checkedColor) {
                     for (int i = 0; i < mFuncDetailsListeners.size(); i++) {
                         FuncDetailsListener funcDetailsListener = mFuncDetailsListeners.get(i);
-                        funcDetailsListener.onReceiveDetails(EditorMode.ScrawlMode, new ScrawlDetails(color));
+                        funcDetailsListener.onReceiveDetails(EditorMode.ScrawlMode, new ScrawlDetails(checkedColor));
                     }
                 }
             });
+//            scrawlDetailsView.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
+//                @Override
+//                public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
+//                    for (int i = 0; i < mFuncDetailsListeners.size(); i++) {
+//                        FuncDetailsListener funcDetailsListener = mFuncDetailsListeners.get(i);
+//                        funcDetailsListener.onReceiveDetails(EditorMode.ScrawlMode, new ScrawlDetails(color));
+//                    }
+//                }
+//            });
 
             scrawlDetailsView.setOnRevokeListener(new OnRevokeListener() {
                 @Override

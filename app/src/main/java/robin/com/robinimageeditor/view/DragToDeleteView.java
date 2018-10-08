@@ -1,8 +1,8 @@
 package robin.com.robinimageeditor.view;
 
 import android.graphics.RectF;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.TextView;
 
 import robin.com.robinimageeditor.R;
 import robin.com.robinimageeditor.util.MatrixUtils;
@@ -20,7 +20,6 @@ public class DragToDeleteView {
     private OnLayoutRectChangeListener onLayoutRectChangeListener;
 
     private View mRootView;
-    private TextView mTextView;
 
     public DragToDeleteView(View view) {
         mRootView = view;
@@ -34,8 +33,6 @@ public class DragToDeleteView {
                 }
             }
         });
-
-        mTextView = view.findViewById(R.id.tvDragDelete);
     }
 
     public void showOrHide(boolean show) {
@@ -43,13 +40,9 @@ public class DragToDeleteView {
     }
 
     public void setDrag2DeleteText(boolean focus) {
-        String text = null;
-        if (focus) {
-            text = MatrixUtils.getResourceString(mRootView.getContext(), R.string.editor_drag_to_delete);
-        } else {
-            text = MatrixUtils.getResourceString(mRootView.getContext(), R.string.editor_release_to_delete);
-        }
-        mTextView.setText(text);
+        int color = focus ? R.color.bg_alpha_33 : R.color.delete_focus;
+
+        mRootView.setBackgroundColor(ContextCompat.getColor(mRootView.getContext(), color));
     }
 
     public void setOnLayoutRectChangeListener(OnLayoutRectChangeListener onLayoutRectChangeListener) {

@@ -91,6 +91,9 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
 
     private void setMosaicDetails(MosaicDetails details) {
         ((MosaicView) mProvider.findLayerByEditorMode(EditorMode.MosaicMode)).setMosaicMode(details.getMosaicMode(), null);
+        if (details.getPaintStrokekWidth() > 0) {
+            ((MosaicView) mProvider.findLayerByEditorMode(EditorMode.MosaicMode)).setPaintStrokWidth(details.getPaintStrokekWidth());
+        }
     }
 
     private void showOrHideDrag2Delete(boolean show) {

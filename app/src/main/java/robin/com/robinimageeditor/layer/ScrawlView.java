@@ -44,13 +44,13 @@ public class ScrawlView extends BasePaintLayerView<ScrawlSaveState> {
     @Override
     public void initSupportView(Context context) {
         super.initSupportView(context);
-        mDrawPaint = new Paint();
-        mDrawPaint.setAntiAlias(true);
-        mDrawPaint.setDither(true);
+        mDrawPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mDrawPaint.setStyle(Paint.Style.STROKE);
         mDrawPaint.setColor(Color.RED);
+        mDrawPaint.setAntiAlias(true);
         mDrawPaint.setStrokeJoin(Paint.Join.ROUND);
         mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
-        mDrawPaint.setStyle(Paint.Style.STROKE);
+//        mDrawPaint.setDither(true);
         mDrawPaint.setPathEffect(new CornerPathEffect(10));
         mDrawPaint.setStrokeWidth(MatrixUtils.dp2px(context, 6f));
     }

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:background="@color/color_919191">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,30 +14,79 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/llMosaicDetails"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+        <!--<LinearLayout-->
+        <!--android:id="@+id/llMosaicDetails"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_weight="1"-->
+        <!--android:orientation="horizontal" />-->
+
+        <robin.com.robinimageeditor.view.PictureStrokeGroup
+            android:id="@+id/psgStrokes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
             android:layout_weight="1"
-            android:orientation="horizontal" />
+            android:checkedButton="@+id/psr30dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <robin.com.robinimageeditor.view.PictureStrokeRadio
+                android:id="@+id/psr22dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                app:image_stroke_color="#167FFF" />
+
+            <robin.com.robinimageeditor.view.PictureStrokeRadio
+                android:id="@+id/psr26dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginLeft="23dp"
+                app:image_stroke_color="#167FFF" />
+
+            <robin.com.robinimageeditor.view.PictureStrokeRadio
+                android:id="@+id/psr30dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginLeft="23dp"
+                app:image_stroke_color="#167FFF" />
+
+            <robin.com.robinimageeditor.view.PictureStrokeRadio
+                android:id="@+id/psr34dp"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginLeft="23dp"
+                app:image_stroke_color="#167FFF" />
+
+            <robin.com.robinimageeditor.view.PictureStrokeRadio
+                android:id="@+id/psr38dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginLeft="23dp"
+                app:image_stroke_color="#167FFF" />
+        </robin.com.robinimageeditor.view.PictureStrokeGroup>
 
         <View
-            android:layout_width="0.5dp"
+            android:layout_width="2dp"
             android:layout_height="30dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="6dp"
             android:background="@color/editor_line_space" />
 
         <ImageView
             android:id="@+id/ivRevoke"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:contentDescription="@string/app_name"
-            android:padding="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:src="@mipmap/edit_image_revoke" />
 
     </LinearLayout>

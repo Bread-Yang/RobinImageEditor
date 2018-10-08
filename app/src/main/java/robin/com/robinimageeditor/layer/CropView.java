@@ -37,7 +37,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     private float mGuidelineStrokeWidth = DEFAULT_GUIDE_LINE_WIDTH;
     private float mBorderlineWidth = DEFAULT_BORDER_LINE_WIDTH;
     private int mBorderCornerLength = 0;
-    private int mBorderCornerOffset = 0;
+    private float mBorderCornerOffset = 0;
 
     private Paint mGuidelinePaint;
     private Paint mBorderlinePaint;
@@ -100,13 +100,14 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
         // paint
         mBorderlinePaint = getBorderPaint(mBorderlineWidth, mBorderlineColor);
         mGuidelinePaint = getBorderPaint(mGuidelineStrokeWidth, mGuidelineColor);
-        mBorderCornerPaint = getBorderPaint(mBorderlineWidth * 3, mBorderlineColor);
+        mBorderCornerPaint = getBorderPaint(mBorderlineWidth * 2, mBorderlineColor);
         // bgPath
         mPaintTranslucent = getBorderPaint(mGuidelineStrokeWidth, mBackgroundColor);
         mPaintTranslucent.setStyle(Paint.Style.FILL);
         // inner border
         mBorderCornerLength = MatrixUtils.dp2px(context, 20f);
-        mBorderCornerOffset = MatrixUtils.dp2px(context, 3f);
+//        mBorderCornerOffset = MatrixUtils.dp2px(context, 3f);
+        mBorderCornerOffset = mBorderlineWidth;
     }
 
     @Override
@@ -172,19 +173,19 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
 
     private void drawCorners(Canvas canvas) {
         RectF rect = mDrawingRect;
-        int cornerOffset = mBorderCornerOffset;
+        float cornerOffset = mBorderCornerOffset;
         // Top left
-        canvas.drawLine(rect.left + cornerOffset, rect.top + cornerOffset, rect.left + cornerOffset, rect.top + mBorderCornerLength + cornerOffset, mBorderCornerPaint);
-        canvas.drawLine(rect.left + cornerOffset, rect.top + cornerOffset, rect.left + mBorderCornerLength + cornerOffset, rect.top + cornerOffset, mBorderCornerPaint);
+        canvas.drawLine(rect.left - cornerOffset, rect.top - cornerOffset, rect.left - cornerOffset, rect.top - cornerOffset + mBorderCornerLength, mBorderCornerPaint);
+        canvas.drawLine(rect.left - cornerOffset * 2, rect.top - cornerOffset, rect.left - cornerOffset + mBorderCornerLength, rect.top - cornerOffset, mBorderCornerPaint);
         // Top right
-        canvas.drawLine(rect.right - cornerOffset, rect.top + cornerOffset, rect.right - cornerOffset, rect.top + mBorderCornerLength + cornerOffset, mBorderCornerPaint);
-        canvas.drawLine(rect.right - cornerOffset, rect.top + cornerOffset, rect.right - mBorderCornerLength - cornerOffset, rect.top + cornerOffset, mBorderCornerPaint);
+        canvas.drawLine(rect.right + cornerOffset, rect.top - cornerOffset, rect.right + cornerOffset, rect.top - cornerOffset + mBorderCornerLength, mBorderCornerPaint);
+        canvas.drawLine(rect.right + cornerOffset * 2, rect.top - cornerOffset, rect.right + cornerOffset - mBorderCornerLength, rect.top - cornerOffset, mBorderCornerPaint);
         // Bottom left
-        canvas.drawLine(rect.left + cornerOffset, rect.bottom - cornerOffset, rect.left + cornerOffset, rect.bottom - mBorderCornerLength - cornerOffset, mBorderCornerPaint);
-        canvas.drawLine(rect.left + cornerOffset, rect.bottom - cornerOffset, rect.left + mBorderCornerLength + cornerOffset, rect.bottom - cornerOffset, mBorderCornerPaint);
-        // Bottom left
-        canvas.drawLine(rect.right - cornerOffset, rect.bottom - cornerOffset, rect.right - cornerOffset, rect.bottom - mBorderCornerLength - cornerOffset, mBorderCornerPaint);
-        canvas.drawLine(rect.right - cornerOffset, rect.bottom - cornerOffset, rect.right - mBorderCornerLength - cornerOffset, rect.bottom - cornerOffset, mBorderCornerPaint);
+        canvas.drawLine(rect.left - cornerOffset, rect.bottom + cornerOffset, rect.left - cornerOffset, rect.bottom + cornerOffset - mBorderCornerLength, mBorderCornerPaint);
+        canvas.drawLine(rect.left - cornerOffset * 2, rect.bottom + cornerOffset, rect.left - cornerOffset + mBorderCornerLength, rect.bottom + cornerOffset, mBorderCornerPaint);
+        // Bottom right
+        canvas.drawLine(rect.right + cornerOffset, rect.bottom + cornerOffset, rect.right + cornerOffset, rect.bottom + cornerOffset - mBorderCornerLength, mBorderCornerPaint);
+        canvas.drawLine(rect.right + cornerOffset * 2, rect.bottom + cornerOffset, rect.right + cornerOffset - mBorderCornerLength, rect.bottom + cornerOffset, mBorderCornerPaint);
     }
 
     @Override

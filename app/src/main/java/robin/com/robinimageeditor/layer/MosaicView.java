@@ -167,4 +167,8 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
     public void setInitializeMatrix(Matrix initializeMatrix) {
         this.initializeMatrix = initializeMatrix;
     }
+
+    public void setPaintStrokWidth(float width) {
+        mMosaicPaint.setStrokeWidth(width);
+    }
 }

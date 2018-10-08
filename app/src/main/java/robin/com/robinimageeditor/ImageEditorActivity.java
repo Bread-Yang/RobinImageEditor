@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,17 +30,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import robin.com.robinimageeditor.bean.Pair;
 import robin.com.robinimageeditor.data.savestate.CropSaveState;
 import robin.com.robinimageeditor.data.share.EditorPathSetup;
-import robin.com.robinimageeditor.editcache.EditorCacheData;
 import robin.com.robinimageeditor.data.share.EditorResult;
 import robin.com.robinimageeditor.data.share.LayerEditResult;
-import robin.com.robinimageeditor.bean.Pair;
+import robin.com.robinimageeditor.editcache.EditorCacheData;
 import robin.com.robinimageeditor.editcache.PhotoEditCache;
 import robin.com.robinimageeditor.layer.CropDetailsView;
 import robin.com.robinimageeditor.layer.CropHelper;
 import robin.com.robinimageeditor.layer.CropView;
-import robin.com.robinimageeditor.layer.base.LayerCacheNode;
 import robin.com.robinimageeditor.layer.LayerComposite;
 import robin.com.robinimageeditor.layer.LayerViewProvider;
 import robin.com.robinimageeditor.layer.MosaicView;
@@ -50,6 +48,7 @@ import robin.com.robinimageeditor.layer.ScrawlView;
 import robin.com.robinimageeditor.layer.StickerView;
 import robin.com.robinimageeditor.layer.TextPastingView;
 import robin.com.robinimageeditor.layer.base.BaseLayerView;
+import robin.com.robinimageeditor.layer.base.LayerCacheNode;
 import robin.com.robinimageeditor.layer.photoview.PhotoView;
 import robin.com.robinimageeditor.util.EditorCompressUtils;
 import robin.com.robinimageeditor.util.MatrixUtils;
@@ -98,7 +97,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private View layoutCropDetails;
 
     private TextView tvComplete;
-    private ImageView ivBack;
+    private TextView tvCancel;
 
     private RelativeLayout rltDragDelete;
 
@@ -154,7 +153,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         layoutCropDetails = findViewById(R.id.cropDetailsLayout);
 
         tvComplete = findViewById(R.id.tvComplete);
-        ivBack = findViewById(R.id.ivBack);
+        tvCancel = findViewById(R.id.tvCancel);
 
         rltDragDelete = findViewById(R.id.rlDragDelete);
     }
@@ -184,9 +183,9 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private void initView() {
         List<EditorMode> functionalModeList = new ArrayList<>();
         functionalModeList.add(EditorMode.ScrawlMode);
-        functionalModeList.add(EditorMode.StickerMode);
-        functionalModeList.add(EditorMode.TextPastingMode);
+//        functionalModeList.add(EditorMode.StickerMode);
         functionalModeList.add(EditorMode.MosaicMode);
+        functionalModeList.add(EditorMode.TextPastingMode);
         functionalModeList.add(EditorMode.CropMode);
 
         FuncModeToolFragment toolFragment = FuncModeToolFragment.newInstance(functionalModeList);
@@ -234,7 +233,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             finish();
             return;
         }
-        Bitmap imageBitmap = EditorCompressUtils.getImageBitmap(mOriginalImageUrl);
+        Bitmap imageBitmap = EditorCompressUtils.getImageCompressBitmap(mOriginalImageUrl);
 
         mCropHelper.restoreLayerEditData(editCacheData);
         Bitmap cropBitmap = mCropHelper.restoreBitmapByCropSaveState(imageBitmap);
@@ -259,7 +258,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     }
 
     private void initActionBarListener() {
-        ivBack.setOnClickListener(new View.OnClickListener() {
+        tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onImageComposeResult(false);
@@ -441,6 +440,8 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
         @Override
         protected Boolean doInBackground(String... strings) {
+
+            // 将编辑效果compose到layerComposite宽高相同大小的bitmap上
             mPath = strings[0];
             RootEditorDelegate delegate = mProvider.getRootEditorDelegate();
 
@@ -451,12 +452,12 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             Canvas canvas = new Canvas(composeBitmap);
             canvas.drawBitmap(rootBitmap, delegate.getBaseLayoutMatrix(), null);
 
-            drawChildrenLayer(layerComposite, canvas);
+            drawChildrenLayer(null, layerComposite, canvas);
 
             RectF rect = delegate.getOriginalRect();
             Bitmap resultBitmap = Bitmap.createBitmap(composeBitmap, (int) rect.left, (int) rect.top, (int) rect.width(), (int) rect.height());
             try {
-                resultBitmap.compress(Bitmap.CompressFormat.JPEG, 85, new FileOutputStream(new File(mPath)));
+                resultBitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(new File(mPath)));
 
                 MatrixUtils.recycleBitmap(composeBitmap);
                 MatrixUtils.recycleBitmap(resultBitmap);
@@ -469,6 +470,49 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
+            // 将编辑效果compose到编辑原图片宽高相同大小的bitmap上
+//            mPath = strings[0];
+//            RootEditorDelegate delegate = mProvider.getRootEditorDelegate();
+//
+//            // draw image data layer by layer
+//            Bitmap rootBitmap = BitmapFactory.decodeFile(mOriginalImageUrl);
+//            float scale = 1.0f / EditorCompressUtils.computeSampleSize(mOriginalImageUrl);
+////            Bitmap composeBitmap = Bitmap.createBitmap(layerComposite.getWidth(), layerComposite.getHeight(), Bitmap.Config.RGB_565);
+//            Bitmap composeBitmap = Bitmap.createBitmap(rootBitmap.getWidth(), rootBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+//
+//            Canvas canvas = new Canvas(composeBitmap);
+//            canvas.drawBitmap(rootBitmap, 0, 0, null);
+//
+//            Matrix rootBitmapMatrix = new Matrix();
+//            rootBitmapMatrix.postScale(scale, scale);
+//            rootBitmapMatrix.postConcat(delegate.getBaseLayoutMatrix());
+//
+//            Matrix invertMatrix = new Matrix();
+//            rootBitmapMatrix.invert(invertMatrix);
+//
+////            Bitmap rootBitmap = delegate.getDisplayBitmap();
+////            canvas.drawBitmap(rootBitmap, delegate.getBaseLayoutMatrix(), null);
+//
+//            drawChildrenLayer(invertMatrix, layerComposite, canvas);
+//
+////            RectF rect = delegate.getOriginalRect();
+////            Bitmap resultBitmap = Bitmap.createBitmap(composeBitmap, (int) rect.left, (int) rect.top, (int) rect.width(), (int) rect.height());
+//            try {
+//                composeBitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(new File(mPath)));
+//
+//                MatrixUtils.recycleBitmap(composeBitmap);
+////                MatrixUtils.recycleBitmap(resultBitmap);
+//                MatrixUtils.recycleBitmap(rootBitmap);
+//
+//                // Save cached data.
+//                HashMap<String, EditorCacheData> cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
+//                saveChildrenLayerData(layerComposite, cacheData);
+//                mProvider.getCropHelper().saveLayerEditData(cacheData);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+
             return true;
         }
 
@@ -486,7 +530,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             onImageComposeResult(result);
         }
 
-        private void drawChildrenLayer(ViewGroup parent, Canvas canvas) {
+        private void drawChildrenLayer(Matrix inverMatrix, ViewGroup parent, Canvas canvas) {
             for (int i = 0; i < parent.getChildCount(); i++) {
                 View layer = parent.getChildAt(i);
 
@@ -495,12 +539,14 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                     Matrix supportMatrix = editorResult.getSupportMatrix();
                     Bitmap bitmap = editorResult.getBitmap();
                     if (bitmap != null) {
-                        Matrix matrix = new Matrix();
-                        matrix.set(supportMatrix);
-                        canvas.drawBitmap(bitmap, matrix, null);
+                        if (inverMatrix != null) {
+                            supportMatrix.preConcat(inverMatrix);
+                        }
+
+                        canvas.drawBitmap(bitmap, supportMatrix, null);
                     }
                 } else if (layer instanceof ViewGroup) {
-                    drawChildrenLayer((ViewGroup) layer, canvas);
+                    drawChildrenLayer(inverMatrix, (ViewGroup) layer, canvas);
                 }
             }
         }

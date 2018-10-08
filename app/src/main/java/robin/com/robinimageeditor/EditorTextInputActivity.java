@@ -8,17 +8,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import robin.com.robinimageeditor.bean.InputTextData;
 import robin.com.robinimageeditor.util.AdjustResizeInFullScreen;
-import robin.com.robinimageeditor.view.ColorSeekBar;
+import robin.com.robinimageeditor.view.PictureColorGroup;
+import robin.com.robinimageeditor.view.PictureColorRadio;
 
 /**
  * Created by Robin Yang on 1/15/18.
  */
 
 public class EditorTextInputActivity extends AppCompatActivity {
+
+    private static int sCheckedId = -1;
 
     private static String EXTRA_CODE = "extra_input";
     private final int RESULT_CODE = 301;
@@ -27,7 +31,8 @@ public class EditorTextInputActivity extends AppCompatActivity {
     private String mTextInputId = null;
 
     private EditText etInput;
-    private ColorSeekBar colorBarInput;
+//    private ColorSeekBar colorBarInput;
+    private PictureColorGroup pcgColors;
     private TextView tvCancelInput;
     private TextView tvConfirmInput;
 
@@ -48,29 +53,44 @@ public class EditorTextInputActivity extends AppCompatActivity {
 
     private void initData() {
         etInput = findViewById(R.id.etInput);
-        colorBarInput = findViewById(R.id.colorBarInput);
+//        colorBarInput = findViewById(R.id.colorBarInput);
         tvCancelInput = findViewById(R.id.tvCancelInput);
         tvConfirmInput = findViewById(R.id.tvConfirmInput);
+        pcgColors = findViewById(R.id.pcgColors);
 
         final InputTextData readyData = (InputTextData) getIntent().getSerializableExtra(EXTRA_CODE);
         if (readyData != null) {
+            mTextColor = readyData.getColor();
+            etInput.setTextColor(mTextColor);
+
             mTextInputId = readyData.getId();
             String text = readyData.getText();
             if (text == null) {
                 text = "";
             }
             etInput.setText(text);
-            colorBarInput.setOnInitDoneListener(new ColorSeekBar.OnInitDoneListener() {
 
-                @Override
-                public void done() {
-                    int position = 8;
-                    if (readyData.getColor() != 0) {
-                        position = colorBarInput.getColorIndexPosition(readyData.getColor());
-                    }
-                    colorBarInput.setColorBarPosition(position);
+            for (int i = 0; i < pcgColors.getChildCount(); i++) {
+                PictureColorRadio child = (PictureColorRadio) pcgColors.getChildAt(i);
+                if (child.getColor() == readyData.getColor()) {
+                    child.setChecked(true);
+                    break;
                 }
-            });
+            }
+
+//            colorBarInput.setOnInitDoneListener(new ColorSeekBar.OnInitDoneListener() {
+//
+//                @Override
+//                public void done() {
+//                    int position = 8;
+//                    if (readyData.getColor() != 0) {
+//                        position = colorBarInput.getColorIndexPosition(readyData.getColor());
+//                    }
+//                    colorBarInput.setColorBarPosition(position);
+//                }
+//            });
+        } else {
+            mTextColor = pcgColors.getCheckColor();
         }
     }
 
@@ -95,14 +115,24 @@ public class EditorTextInputActivity extends AppCompatActivity {
                 }
             }
         });
-        colorBarInput.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
 
+        pcgColors.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                sCheckedId = group.getCheckedRadioButtonId();
+                int color = pcgColors.getCheckColor();
                 etInput.setTextColor(color);
                 mTextColor = color;
             }
         });
+//        colorBarInput.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
+//
+//            @Override
+//            public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
+//                etInput.setTextColor(color);
+//                mTextColor = color;
+//            }
+//        });
     }
 
     @Override

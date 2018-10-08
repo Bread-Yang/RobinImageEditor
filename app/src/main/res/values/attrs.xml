@@ -12,4 +12,11 @@
         <attr name="maxPosition" format="integer"/>
         <attr name="isVertical" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="PictureColorRadio">
+
+        <attr name="image_color" format="color" />
+        <attr name="image_stroke_color" format="color" />
+
+    </declare-styleable>
 </resources>

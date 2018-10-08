@@ -10,11 +10,17 @@ public class MosaicDetails implements FuncDetailsMarker {
 
     private MosaicMode mosaicMode;
 
+    private float paintStrokekWidth;
+
     public MosaicDetails(MosaicMode mosaicMode) {
         this.mosaicMode = mosaicMode;
     }
 
     public MosaicMode getMosaicMode() {
         return mosaicMode;
+    }
+
+    public float getPaintStrokekWidth() {
+        return paintStrokekWidth;
     }
 }

@@ -3,34 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/bg_33"
+    android:background="@color/bg_alpha_33"
     android:fitsSystemWindows="true"
     android:minHeight="?android:attr/actionBarSize"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp">
-
-        <ImageView
-            android:id="@+id/ivBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="@string/app_name"
-            android:padding="8dp"
-            android:src="@mipmap/titlebar_arrow_left_white" />
+        android:layout_height="54dp">
 
         <TextView
+            android:id="@+id/tvCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="6dp"
-            android:layout_toRightOf="@id/ivBack"
-            android:padding="8dp"
-            android:text="@string/editor_title"
+            android:paddingLeft="16dp"
+            android:paddingTop="6dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="6dp"
+            android:text="@string/editor_cancel"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
@@ -40,14 +31,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="8dp"
-            android:background="@drawable/shape_editor_complete"
-            android:paddingBottom="6dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
+            android:paddingLeft="16dp"
             android:paddingTop="6dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="6dp"
             android:text="@string/editor_complete"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
     </RelativeLayout>
 </android.support.v7.widget.Toolbar>

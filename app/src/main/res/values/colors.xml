@@ -4,14 +4,25 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="editor_line_space">#444444</color>
+    <color name="editor_line_space">#979797</color>
     <color name="bg_33">#333333</color>
-    <color name="bg_alpha_33">#9f333333</color>
+    <color name="bg_alpha_33">#cc000000</color>
+    <color name="delete_focus">#ccD0021B</color>
     <color name="bg_black">#000</color>
     <color name="white_f">#fff</color>
+    <color name="color_919191">#919191</color>
     <color name="green_btn">#1ad42f</color>
     <color name="transparent_6f">#6f000000</color>
     <color name="transparent">#00000000</color>
+
+    <color name="image_color_white">#FFFFFF</color>
+    <color name="image_color_black">#2B2B2B</color>
+    <color name="image_color_red">#E83822</color>
+    <color name="image_color_yellow">#FAE756</color>
+    <color name="image_color_green">#50BD32</color>
+    <color name="image_color_blue">#419CEB</color>
+    <color name="image_color_purple">#861CF4</color>
+    <color name="image_color_orange">#F1A536</color>
 
     <array name="color_seeds">
         <item>#ffffff</item>
