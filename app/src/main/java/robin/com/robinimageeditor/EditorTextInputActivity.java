@@ -54,8 +54,8 @@ public class EditorTextInputActivity extends AppCompatActivity {
     private void initData() {
         etInput = findViewById(R.id.etInput);
 //        colorBarInput = findViewById(R.id.colorBarInput);
-        tvCancelInput = findViewById(R.id.tvCancelInput);
-        tvConfirmInput = findViewById(R.id.tvConfirmInput);
+        tvCancelInput = findViewById(R.id.tvCancel);
+        tvConfirmInput = findViewById(R.id.tvComplete);
         pcgColors = findViewById(R.id.pcgColors);
 
         final InputTextData readyData = (InputTextData) getIntent().getSerializableExtra(EXTRA_CODE);

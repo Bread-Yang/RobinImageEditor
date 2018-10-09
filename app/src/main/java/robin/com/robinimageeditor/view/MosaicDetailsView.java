@@ -20,7 +20,8 @@ public class MosaicDetailsView extends FrameLayout {
     private static int sCheckedId = -1;
 
     public interface OnMosaicChangeListener {
-        void onChange(MosaicMode mosaicMode);
+        void onModeChange(MosaicMode mosaicMode);
+        void onStrokeWidthChange(int strokeWidth);
     }
 
     private OnMosaicChangeListener onMosaicChangeListener;
@@ -65,7 +66,7 @@ public class MosaicDetailsView extends FrameLayout {
         // MosaicMode默认是Grid
         onMosaicClick(MosaicMode.Grid, -1, null, null);
 
-        PictureStrokeGroup psgStrokes = findViewById(R.id.psgStrokes);
+        final PictureStrokeGroup psgStrokes = findViewById(R.id.psgStrokes);
         psgStrokes.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -73,12 +74,24 @@ public class MosaicDetailsView extends FrameLayout {
 //                if (onColorChangedListener != null) {
 //                    onColorChangedListener.onColorChanged(colorGroup.getCheckColor());
 //                }
+                if (onMosaicChangeListener != null) {
+                    onMosaicChangeListener.onStrokeWidthChange(psgStrokes.getCheckStroke());
+                }
             }
         });
 
         if (sCheckedId != -1) {
             RadioButton rb = psgStrokes.findViewById(sCheckedId);
             rb.setChecked(true);
+
+            if (onMosaicChangeListener != null) {
+                psgStrokes.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onMosaicChangeListener.onStrokeWidthChange(psgStrokes.getCheckStroke());
+                    }
+                });
+            }
         }
 
         findViewById(R.id.ivRevoke).setOnClickListener(new OnClickListener() {
@@ -94,7 +107,7 @@ public class MosaicDetailsView extends FrameLayout {
     private void onMosaicClick(MosaicMode mosaicMode, int position, View clickView, ViewGroup rootView) {
 //        MatrixUtils.changeSelectedStatus(rootView, position);
         if (onMosaicChangeListener != null) {
-            onMosaicChangeListener.onChange(mosaicMode);
+            onMosaicChangeListener.onModeChange(mosaicMode);
         }
     }
 

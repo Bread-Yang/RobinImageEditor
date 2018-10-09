@@ -93,13 +93,13 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
     protected void drawDragPath(Path paintPath) {
         super.drawDragPath(paintPath);
         if (displayCanvas != null) {
-            if (drawMosaicLayer(displayCanvas, mMosaicMode, paintPath)) {
+            if (drawMosaicLayer(displayCanvas, mMosaicMode, paintPath, mMosaicPaint.getStrokeWidth())) {
                 invalidate();
             }
         }
     }
 
-    private boolean drawMosaicLayer(Canvas canvas, MosaicMode mode, Path paintPath) {
+    private boolean drawMosaicLayer(Canvas canvas, MosaicMode mode, Path paintPath, float strokeWidth) {
         Bitmap cover = getMosaicCover(mode);
         if (cover == null) {
             return false;
@@ -107,6 +107,7 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
         int count = MatrixUtils.saveEntireLayer(canvas);
         canvas.drawPath(paintPath, mMosaicPaint);
         mMosaicPaint.setXfermode(mMosaicPaintMode);
+        mMosaicPaint.setStrokeWidth(strokeWidth);
         canvas.drawBitmap(cover, initializeMatrix, mMosaicPaint); // 显示和path的交集
         mMosaicPaint.setXfermode(null);
         canvas.restoreToCount(count);
@@ -116,7 +117,7 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
     @Override
     protected MosaicSaveState savePathOnFingerUp(Path paintPath) {
         if (mMosaicMode != null) {
-            return new MosaicSaveState(mMosaicMode, paintPath);
+            return new MosaicSaveState(mMosaicMode, paintPath, mMosaicPaint.getStrokeWidth());
         }
         return null;
     }
@@ -126,7 +127,7 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
         Iterator<MosaicSaveState> iterator = saveStateMap.values().iterator();
         while (iterator.hasNext()) {
             MosaicSaveState state = iterator.next();
-            drawMosaicLayer(canvas, state.getMode(), state.getPath());
+            drawMosaicLayer(canvas, state.getMode(), state.getPath(), state.getPaintStrokeWidth());
         }
     }
 

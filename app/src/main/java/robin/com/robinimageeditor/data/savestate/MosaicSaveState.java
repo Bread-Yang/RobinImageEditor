@@ -12,10 +12,12 @@ public class MosaicSaveState extends SaveStateMarker {
 
     private MosaicMode mode;
     private Path path;
+    private float paintStrokeWidth;
 
-    public MosaicSaveState(MosaicMode mode, Path path) {
+    public MosaicSaveState(MosaicMode mode, Path path, float paintStrokeWidth) {
         this.mode = mode;
         this.path = path;
+        this.paintStrokeWidth = paintStrokeWidth;
     }
 
     public MosaicMode getMode() {
@@ -32,5 +34,13 @@ public class MosaicSaveState extends SaveStateMarker {
 
     public void setPath(Path path) {
         this.path = path;
+    }
+
+    public float getPaintStrokeWidth() {
+        return paintStrokeWidth;
+    }
+
+    public void setPaintStrokekWidth(float paintStrokekWidth) {
+        this.paintStrokeWidth = paintStrokekWidth;
     }
 }

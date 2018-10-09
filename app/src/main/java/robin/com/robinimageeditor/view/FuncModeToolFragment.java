@@ -19,6 +19,8 @@ import robin.com.robinimageeditor.bean.MosaicDetails;
 import robin.com.robinimageeditor.bean.ScrawlDetails;
 import robin.com.robinimageeditor.util.MatrixUtils;
 
+import static robin.com.robinimageeditor.view.MosaicMode.Grid;
+
 /**
  * Created by Robin Yang on 1/3/18.
  */
@@ -160,10 +162,20 @@ public class FuncModeToolFragment extends Fragment implements EditorModeHandler 
         if (selected) {
             MosaicDetailsView.OnMosaicChangeListener  listener = new MosaicDetailsView.OnMosaicChangeListener() {
                 @Override
-                public void onChange(MosaicMode mosaicMode) {
+                public void onModeChange(MosaicMode mosaicMode) {
                     for (int i = 0; i < mFuncDetailsListeners.size(); i++) {
                         FuncDetailsListener funcDetailsListener = mFuncDetailsListeners.get(i);
                         funcDetailsListener.onReceiveDetails(EditorMode.MosaicMode, new MosaicDetails(mosaicMode));
+                    }
+                }
+
+                @Override
+                public void onStrokeWidthChange(int strokeWidth) {
+                    for (int i = 0; i < mFuncDetailsListeners.size(); i++) {
+                        FuncDetailsListener funcDetailsListener = mFuncDetailsListeners.get(i);
+
+                        MosaicDetails mosaicDetails = new MosaicDetails(Grid);
+                        funcDetailsListener.onReceiveDetails(EditorMode.MosaicMode, new MosaicDetails(Grid, strokeWidth));
                     }
                 }
             };

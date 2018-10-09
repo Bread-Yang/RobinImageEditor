@@ -20,6 +20,9 @@ public abstract class PastingSaveStateMarker extends SaveStateMarker {
             this.transformMatrix = new Matrix();
         }
         this.initDisplayMatrix = initDisplayMatrix;
+        if (this.initDisplayMatrix == null) {
+            this.initDisplayMatrix = new Matrix();
+        }
     }
 
     public RectF getInitDisplayRect() {

@@ -21,6 +21,8 @@ public class ScrawlDetailsView extends FrameLayout {
     private OnRevokeListener onRevokeListener;
     private OnColorChangedListener onColorChangedListener;
 
+    private PictureColorGroup colorGroup;
+
     interface OnColorChangedListener {
         void onColorChanged(int checkedColor);
     }
@@ -42,7 +44,7 @@ public class ScrawlDetailsView extends FrameLayout {
             }
         });
 
-        final PictureColorGroup colorGroup = findViewById(R.id.pcgColors);
+        colorGroup = findViewById(R.id.pcgColors);
         colorGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -75,5 +77,9 @@ public class ScrawlDetailsView extends FrameLayout {
 
     public void setOnColorChangedListener(OnColorChangedListener onColorChangedListener) {
         this.onColorChangedListener = onColorChangedListener;
+
+        if (onColorChangedListener != null) {
+            onColorChangedListener.onColorChanged(colorGroup.getCheckColor());
+        }
     }
 }
