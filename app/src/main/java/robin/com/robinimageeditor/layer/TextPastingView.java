@@ -81,9 +81,9 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         hideExtraValidateRect();
     }
 
-    private TextPastingSaveState initTextPastingSaveState(String text, int color, Matrix initMatrix) {
-        if (initMatrix == null) {
-            initMatrix = new Matrix();
+    private TextPastingSaveState initTextPastingSaveState(String text, int color, Matrix transformMatrix) {
+        if (transformMatrix == null) {
+            transformMatrix = new Matrix();
         }
         mTextPaint.setColor(color);
         float width = mTextPaint.measureText(text);
@@ -95,7 +95,7 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         RectF initTextRect = new RectF();
         initTextRect.set(initDisplayRect);
         MatrixUtils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
-        return new TextPastingSaveState(text, color, initTextRect, initDisplayRect, initMatrix, null);
+        return new TextPastingSaveState(text, color, initTextRect, initDisplayRect, new Matrix(), transformMatrix);
     }
 
     @Override

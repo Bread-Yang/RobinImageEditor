@@ -39,7 +39,9 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     public interface OnOperateCallback {
         void showOrHideDragCallback(boolean b);
+
         void setOrNotDragCallback(boolean b);
+
         void onLayerViewDoubleClick(View view, SharableData sharableData);
     }
 
@@ -216,7 +218,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 //            if (displayRect.contains(downX, downY)) {
 //                return state;
 //            }
-            if (containsTouchPoint(state, (int)downX, (int)downY)) {
+            if (containsTouchPoint(state, (int) downX, (int) downY)) {
                 return state;
             }
         }
@@ -245,7 +247,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         path.computeBounds(rectF, true);
 
         Region region = new Region();
-        region.setPath(path, new Region((int)rectF.left, (int)rectF.top, (int)rectF.right, (int)rectF.bottom));
+        region.setPath(path, new Region((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom));
 
         if (region.contains(x, y)) {
             return true;
@@ -301,7 +303,16 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
             if (currentPastingState != null) {
                 float[] invert = MatrixUtils.mapInvertMatrixScale(getDrawMatrix(), scaleFactor, scaleFactor);
                 checkDisplayRegion(currentPastingState);
-                currentPastingState.getTransformMatrix().postScale(invert[0], invert[1], focusX, focusY);
+//                currentPastingState.getTransformMatrix().postScale(invert[0], invert[1], focusX, focusY);
+
+                float[] points = new float[2];
+                RectF initDisplayRectF = currentPastingState.getInitDisplayRect();
+                points[0] = initDisplayRectF.centerX();
+                points[1] = initDisplayRectF.centerY();
+                currentPastingState.getTransformMatrix().mapPoints(points);
+
+                currentPastingState.getTransformMatrix().postScale(invert[0], invert[1],
+                        points[0], points[1]);
                 redrawAllCache();
             }
         }
@@ -311,7 +322,18 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     public void onRotate(float rotateDegree, float focusX, float focusY, boolean rootLayer) {
         if (!rootLayer) {
             if (currentPastingState != null) {
-                currentPastingState.getTransformMatrix().postRotate(rotateDegree, focusX, focusY);
+//                currentPastingState.getTransformMatrix().postRotate(rotateDegree, focusX, focusY);
+
+                float[] points = new float[2];
+
+                RectF initDisplayRectF = currentPastingState.getInitDisplayRect();
+                Matrix transformMatrix = currentPastingState.getTransformMatrix();
+
+                points[0] = initDisplayRectF.centerX();
+                points[1] = initDisplayRectF.centerY();
+
+                transformMatrix.mapPoints(points);
+                currentPastingState.getTransformMatrix().postRotate(rotateDegree, points[0], points[1]);
                 redrawAllCache();
             }
         }
@@ -397,7 +419,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         redrawAllCache();
     }
 
-    protected abstract  void onPastingDoubleClick(T state);
+    protected abstract void onPastingDoubleClick(T state);
 
     protected abstract void drawPastingState(T state, Canvas canvas);
 }

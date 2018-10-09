@@ -27,6 +27,8 @@ public class CustomGestureDetector {
     private final float mMinimumVelocity;
     private GestureDetectorListener mListener;
     private boolean enableMultipleFinger = true;
+    private boolean isScaling = false;
+    private boolean isRotating = false;
 
     public CustomGestureDetector(Context context, GestureDetectorListener listener) {
         final ViewConfiguration configuration = ViewConfiguration
@@ -44,8 +46,13 @@ public class CustomGestureDetector {
                 if (Float.isNaN(scaleFactor) || Float.isInfinite(scaleFactor))
                     return false;
 
-                mListener.onScale(scaleFactor,
-                        detector.getFocusX(), detector.getFocusY(), false);
+                if (isRotating == false) {
+                    isScaling = true;
+                    mListener.onScale(scaleFactor,
+                            detector.getFocusX(), detector.getFocusY(), false);
+                    isScaling = false;
+                }
+
                 return true;
             }
 
@@ -65,7 +72,11 @@ public class CustomGestureDetector {
 
             @Override
             public boolean onRotate(float degrees, float focusX, float focusY) {
-                mListener.onRotate(degrees, focusX, focusY, false);
+                if (isScaling == false) {
+                    isRotating = true;
+                    mListener.onRotate(degrees, focusX, focusY, false);
+                    isRotating = false;
+                }
                 return true;
             }
         };
@@ -130,7 +141,7 @@ public class CustomGestureDetector {
                 mIsDragging = false;
                 mListener.onFingerDown(mLastTouchX, mLastTouchY);
                 break;
-            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_MOVE: {
                 final float x = getActiveX(ev);
                 final float y = getActiveY(ev);
                 final float dx = x - mLastTouchX, dy = y - mLastTouchY;
@@ -141,16 +152,20 @@ public class CustomGestureDetector {
                     mIsDragging = Math.sqrt((dx * dx) + (dy * dy)) >= mTouchSlop;
                 }
 
-                if (mIsDragging) {
+                mLastTouchX = x;
+                mLastTouchY = y;
+
+                final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                final int pointerId = ev.getPointerId(pointerIndex);
+                if (mIsDragging && ev.getPointerCount() == 1 && pointerId == mActivePointerId) {
                     mListener.onDrag(dx, dy, x, y, false);
-                    mLastTouchX = x;
-                    mLastTouchY = y;
 
                     if (null != mVelocityTracker) {
                         mVelocityTracker.addMovement(ev);
                     }
                 }
                 break;
+            }
             case MotionEvent.ACTION_CANCEL:
                 mActivePointerId = INVALID_POINTER_ID;
                 // Recycle Velocity Tracker
