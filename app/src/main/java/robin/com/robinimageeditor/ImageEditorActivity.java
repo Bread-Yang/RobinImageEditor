@@ -37,27 +37,27 @@ import robin.com.robinimageeditor.data.share.EditorResult;
 import robin.com.robinimageeditor.data.share.LayerEditResult;
 import robin.com.robinimageeditor.editcache.LayerEditCache;
 import robin.com.robinimageeditor.editcache.PhotoEditCache;
+import robin.com.robinimageeditor.editmode.EditorMode;
+import robin.com.robinimageeditor.editmode.FuncModeToolFragment;
+import robin.com.robinimageeditor.funcdetail.FuncHelper;
+import robin.com.robinimageeditor.layer.LayerComposite;
+import robin.com.robinimageeditor.layer.RootEditorDelegate;
+import robin.com.robinimageeditor.layer.base.BaseLayerView;
+import robin.com.robinimageeditor.layer.base.LayerCacheNode;
+import robin.com.robinimageeditor.layer.base.LayerViewProvider;
 import robin.com.robinimageeditor.layer.crop.CropDetailsView;
 import robin.com.robinimageeditor.layer.crop.CropHelper;
 import robin.com.robinimageeditor.layer.crop.CropView;
-import robin.com.robinimageeditor.layer.LayerComposite;
-import robin.com.robinimageeditor.layer.base.LayerViewProvider;
 import robin.com.robinimageeditor.layer.mosaic.MosaicView;
-import robin.com.robinimageeditor.layer.RootEditorDelegate;
+import robin.com.robinimageeditor.layer.photoview.PhotoView;
 import robin.com.robinimageeditor.layer.scrawl.ScrawlView;
 import robin.com.robinimageeditor.layer.sticker.StickerView;
 import robin.com.robinimageeditor.layer.textpasting.TextPastingView;
-import robin.com.robinimageeditor.layer.base.BaseLayerView;
-import robin.com.robinimageeditor.layer.base.LayerCacheNode;
-import robin.com.robinimageeditor.layer.photoview.PhotoView;
 import robin.com.robinimageeditor.utils.EditorCompressUtils;
 import robin.com.robinimageeditor.utils.MatrixUtils;
 import robin.com.robinimageeditor.view.ActionFrameLayout;
 import robin.com.robinimageeditor.view.DragToDeleteView;
-import robin.com.robinimageeditor.editmode.EditorMode;
 import robin.com.robinimageeditor.view.FuncAndActionBarAnimHelper;
-import robin.com.robinimageeditor.funcdetail.FuncHelper;
-import robin.com.robinimageeditor.editmode.FuncModeToolFragment;
 
 /**
  * Created by Robin Yang on 12/28/17.
@@ -110,6 +110,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MatrixUtils.hideStatusBar(this);
         initRootView();
         initData();
         initView();
@@ -138,7 +139,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         setContentView(view);
 
         actionFrameLayout = findViewById(R.id.actionFrameLayout);
-        toolBar = findViewById(R.id.toolBar);
+        toolBar = findViewById(R.id.rlToolbar);
         flFunc = findViewById(R.id.flFunc);
 
         layerPhotoView = findViewById(R.id.layerPhotoView);

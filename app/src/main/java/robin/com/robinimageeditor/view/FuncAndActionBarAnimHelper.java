@@ -4,15 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
 import java.util.ArrayList;
-
-import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
  * Created by Robin Yang on 12/28/17.
@@ -135,11 +132,11 @@ public class FuncAndActionBarAnimHelper implements ActionFrameLayout.ActionListe
         });
         set.setDuration(300);
         set.start();
-        if (show) {
-            MatrixUtils.showStatusBar((Activity) activityContext);
-        } else {
-            MatrixUtils.hideStatusBar((Activity) activityContext);
-        }
+//        if (show) {
+//            MatrixUtils.showStatusBar((Activity) activityContext);
+//        } else {
+//            MatrixUtils.hideStatusBar((Activity) activityContext);
+//        }
     }
 
     private void invokeAnimateListener(boolean show) {
