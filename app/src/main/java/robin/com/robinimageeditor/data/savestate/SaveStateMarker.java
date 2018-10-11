@@ -1,6 +1,6 @@
 package robin.com.robinimageeditor.data.savestate;
 
-import robin.com.robinimageeditor.util.MatrixUtils;
+import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
  * Created by Robin Yang on 12/28/17.

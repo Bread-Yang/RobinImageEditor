@@ -3,7 +3,7 @@ package robin.com.robinimageeditor.data.savestate;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 
-import robin.com.robinimageeditor.view.StickerType;
+import robin.com.robinimageeditor.layer.sticker.StickerType;
 
 /**
  * Created by Robin Yang on 1/4/18.

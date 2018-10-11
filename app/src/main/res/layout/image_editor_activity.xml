@@ -24,28 +24,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <robin.com.robinimageeditor.layer.MosaicView
+                <robin.com.robinimageeditor.layer.mosaic.MosaicView
                     android:id="@+id/layerMosaicView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <robin.com.robinimageeditor.layer.ScrawlView
+                <robin.com.robinimageeditor.layer.scrawl.ScrawlView
                     android:id="@+id/layerScrawlView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <robin.com.robinimageeditor.layer.StickerView
+                <robin.com.robinimageeditor.layer.sticker.StickerView
                     android:id="@+id/layerStickerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <robin.com.robinimageeditor.layer.TextPastingView
+                <robin.com.robinimageeditor.layer.textpasting.TextPastingView
                     android:id="@+id/layerTextPastingView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </robin.com.robinimageeditor.layer.LayerComposite>
 
-            <robin.com.robinimageeditor.layer.CropView
+            <robin.com.robinimageeditor.layer.crop.CropView
                 android:id="@+id/layerCropView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

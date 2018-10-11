@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import robin.com.robinimageeditor.layer.base.LayerTransformer;
 import robin.com.robinimageeditor.layer.base.OnPhotoRectUpdateListener;
+import robin.com.robinimageeditor.layer.base.RootNode;
 import robin.com.robinimageeditor.layer.base.detector.GestureDetectorListener;
 
 /**

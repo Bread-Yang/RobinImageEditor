@@ -8,10 +8,12 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
-import robin.com.robinimageeditor.util.MatrixUtils;
+import robin.com.robinimageeditor.layer.mosaic.MosaicView;
+import robin.com.robinimageeditor.layer.scrawl.ScrawlView;
+import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
- * Base painting LayerView for {@link robin.com.robinimageeditor.layer.ScrawlView} and {@link robin.com.robinimageeditor.layer.MosaicView}
+ * Base painting LayerView for {@link ScrawlView} and {@link MosaicView}
  * It's hold move path{@link paintPath} for user's finger move
  *
  * Created by Robin Yang on 12/29/17.

@@ -24,11 +24,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import robin.com.robinimageeditor.editcache.EditorCacheData;
+import robin.com.robinimageeditor.editcache.LayerEditCache;
 import robin.com.robinimageeditor.data.share.LayerEditResult;
 import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
 import robin.com.robinimageeditor.layer.base.detector.CustomGestureDetector;
-import robin.com.robinimageeditor.util.MatrixUtils;
+import robin.com.robinimageeditor.layer.crop.CropHelper;
+import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
  * All photo edit layer base on this view.
@@ -44,7 +45,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     /**
      * Support matrix for drawing layerView, PhotoView放大、缩小、移动等等操作不改变supportMatrix,
      * 只改变rootLayerMatrix.只有当图片裁剪了，才会改变supportMatrix
-     * {@link robin.com.robinimageeditor.layer.CropHelper#resetEditorSupportMatrix}
+     * {@link CropHelper#resetEditorSupportMatrix}
      */
     protected final Matrix supportMatrix = new Matrix();
     /**
@@ -312,13 +313,13 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     // cache layer data.
     @Override
-    public void saveLayerEditData(HashMap<String, EditorCacheData> cacheDataHashMap) {
-        cacheDataHashMap.put(getLayerTag(), new EditorCacheData(new ArrayMap<String, SaveStateMarker>(saveStateMap)));
+    public void saveLayerEditData(HashMap<String, LayerEditCache> cacheDataHashMap) {
+        cacheDataHashMap.put(getLayerTag(), new LayerEditCache(new ArrayMap<String, SaveStateMarker>(saveStateMap)));
     }
 
     @Override
-    public void restoreLayerEditData(HashMap<String, EditorCacheData> cacheDataHashMap) {
-        EditorCacheData lastCache = cacheDataHashMap.get(getLayerTag());
+    public void restoreLayerEditData(HashMap<String, LayerEditCache> cacheDataHashMap) {
+        LayerEditCache lastCache = cacheDataHashMap.get(getLayerTag());
         if (lastCache != null) {
             ArrayMap<String, T> restore = ((ArrayMap<String, T>) lastCache.getLayerCache());
             Iterator iterator = restore.entrySet().iterator();

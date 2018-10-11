@@ -158,6 +158,7 @@ public class CustomGestureDetector {
                 final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                 final int pointerId = ev.getPointerId(pointerIndex);
                 if (mIsDragging && ev.getPointerCount() == 1 && pointerId == mActivePointerId) {
+//                if (mIsDragging) {
                     mListener.onDrag(dx, dy, x, y, false);
 
                     if (null != mVelocityTracker) {

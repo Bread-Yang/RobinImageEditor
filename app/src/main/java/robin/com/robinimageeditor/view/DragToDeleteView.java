@@ -5,7 +5,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import robin.com.robinimageeditor.R;
-import robin.com.robinimageeditor.util.MatrixUtils;
+import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/9/18.

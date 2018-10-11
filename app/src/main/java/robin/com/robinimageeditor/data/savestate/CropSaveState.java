@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 
-import robin.com.robinimageeditor.util.MatrixUtils;
+import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
  * Created by Robin Yang on 1/17/18.

@@ -18,7 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import robin.com.robinimageeditor.data.share.EditorPathSetup
 import robin.com.robinimageeditor.data.share.EditorResult
-import robin.com.robinimageeditor.util.PathUtils
+import robin.com.robinimageeditor.utils.PathUtils
 
 /**
  * Created by Robin Yang on 12/27/17.

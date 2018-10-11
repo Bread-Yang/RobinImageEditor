@@ -11,8 +11,8 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import robin.com.robinimageeditor.bean.InputTextData;
-import robin.com.robinimageeditor.util.AdjustResizeInFullScreen;
+import robin.com.robinimageeditor.data.share.InputTextSharableData;
+import robin.com.robinimageeditor.utils.AdjustResizeInFullScreen;
 import robin.com.robinimageeditor.view.PictureColorGroup;
 import robin.com.robinimageeditor.view.PictureColorRadio;
 
@@ -36,7 +36,7 @@ public class EditorTextInputActivity extends AppCompatActivity {
     private TextView tvCancelInput;
     private TextView tvConfirmInput;
 
-    public static Intent intent(Context context, InputTextData data) {
+    public static Intent intent(Context context, InputTextSharableData data) {
         Intent intent = new Intent(context, EditorTextInputActivity.class);
         intent.putExtra(EXTRA_CODE, data);
         return intent;
@@ -58,7 +58,7 @@ public class EditorTextInputActivity extends AppCompatActivity {
         tvConfirmInput = findViewById(R.id.tvComplete);
         pcgColors = findViewById(R.id.pcgColors);
 
-        final InputTextData readyData = (InputTextData) getIntent().getSerializableExtra(EXTRA_CODE);
+        final InputTextSharableData readyData = (InputTextSharableData) getIntent().getSerializableExtra(EXTRA_CODE);
         if (readyData != null) {
             mTextColor = readyData.getColor();
             etInput.setTextColor(mTextColor);
@@ -109,7 +109,7 @@ public class EditorTextInputActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Intent intent = new Intent();
-                    intent.putExtra(String.valueOf(RESULT_CODE), new InputTextData(mTextInputId, text.toString(), mTextColor));
+                    intent.putExtra(String.valueOf(RESULT_CODE), new InputTextSharableData(mTextInputId, text.toString(), mTextColor));
                     setResult(RESULT_CODE, intent);
                     finish();
                 }

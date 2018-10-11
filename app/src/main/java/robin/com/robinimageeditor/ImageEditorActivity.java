@@ -30,34 +30,34 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import robin.com.robinimageeditor.bean.Pair;
+import robin.com.robinimageeditor.data.Pair;
 import robin.com.robinimageeditor.data.savestate.CropSaveState;
 import robin.com.robinimageeditor.data.share.EditorPathSetup;
 import robin.com.robinimageeditor.data.share.EditorResult;
 import robin.com.robinimageeditor.data.share.LayerEditResult;
-import robin.com.robinimageeditor.editcache.EditorCacheData;
+import robin.com.robinimageeditor.editcache.LayerEditCache;
 import robin.com.robinimageeditor.editcache.PhotoEditCache;
-import robin.com.robinimageeditor.layer.CropDetailsView;
-import robin.com.robinimageeditor.layer.CropHelper;
-import robin.com.robinimageeditor.layer.CropView;
+import robin.com.robinimageeditor.layer.crop.CropDetailsView;
+import robin.com.robinimageeditor.layer.crop.CropHelper;
+import robin.com.robinimageeditor.layer.crop.CropView;
 import robin.com.robinimageeditor.layer.LayerComposite;
-import robin.com.robinimageeditor.layer.LayerViewProvider;
-import robin.com.robinimageeditor.layer.MosaicView;
+import robin.com.robinimageeditor.layer.base.LayerViewProvider;
+import robin.com.robinimageeditor.layer.mosaic.MosaicView;
 import robin.com.robinimageeditor.layer.RootEditorDelegate;
-import robin.com.robinimageeditor.layer.ScrawlView;
-import robin.com.robinimageeditor.layer.StickerView;
-import robin.com.robinimageeditor.layer.TextPastingView;
+import robin.com.robinimageeditor.layer.scrawl.ScrawlView;
+import robin.com.robinimageeditor.layer.sticker.StickerView;
+import robin.com.robinimageeditor.layer.textpasting.TextPastingView;
 import robin.com.robinimageeditor.layer.base.BaseLayerView;
 import robin.com.robinimageeditor.layer.base.LayerCacheNode;
 import robin.com.robinimageeditor.layer.photoview.PhotoView;
-import robin.com.robinimageeditor.util.EditorCompressUtils;
-import robin.com.robinimageeditor.util.MatrixUtils;
+import robin.com.robinimageeditor.utils.EditorCompressUtils;
+import robin.com.robinimageeditor.utils.MatrixUtils;
 import robin.com.robinimageeditor.view.ActionFrameLayout;
 import robin.com.robinimageeditor.view.DragToDeleteView;
-import robin.com.robinimageeditor.view.EditorMode;
+import robin.com.robinimageeditor.editmode.EditorMode;
 import robin.com.robinimageeditor.view.FuncAndActionBarAnimHelper;
-import robin.com.robinimageeditor.view.FuncHelper;
-import robin.com.robinimageeditor.view.FuncModeToolFragment;
+import robin.com.robinimageeditor.funcdetail.FuncHelper;
+import robin.com.robinimageeditor.editmode.FuncModeToolFragment;
 
 /**
  * Created by Robin Yang on 12/28/17.
@@ -207,7 +207,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private void restoreData() {
         String originalImageUrl = mEditorPathSetup.getOriginalImageUrl();
         String editedImageUrl = mEditorPathSetup.getEditedImageUrl();
-        HashMap<String, EditorCacheData> editCacheData = null;
+        HashMap<String, LayerEditCache> editCacheData = null;
         if (originalImageUrl != null) {
             mEditorId = originalImageUrl;
             if (editedImageUrl != null) {
@@ -362,7 +362,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         MatrixUtils.recycleBitmap(mRootEditorDelegate.getDisplayBitmap());
     }
 
-    private void callChildrenRestoreLayer(ViewGroup parent, HashMap<String, EditorCacheData> cacheData) {
+    private void callChildrenRestoreLayer(ViewGroup parent, HashMap<String, LayerEditCache> cacheData) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             View layer = parent.getChildAt(i);
 
@@ -464,7 +464,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 MatrixUtils.recycleBitmap(rootBitmap);
 
                 // Save cached data.
-                HashMap<String, EditorCacheData> cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
+                HashMap<String, LayerEditCache> cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
                 saveChildrenLayerData(layerComposite, cacheData);
                 mProvider.getCropHelper().saveLayerEditData(cacheData);
             } catch (FileNotFoundException e) {
@@ -506,7 +506,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 //                MatrixUtils.recycleBitmap(rootBitmap);
 //
 //                // Save cached data.
-//                HashMap<String, EditorCacheData> cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
+//                HashMap<String, LayerEditCache> cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
 //                saveChildrenLayerData(layerComposite, cacheData);
 //                mProvider.getCropHelper().saveLayerEditData(cacheData);
 //            } catch (FileNotFoundException e) {
@@ -551,7 +551,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             }
         }
 
-        private void saveChildrenLayerData(ViewGroup parent, HashMap<String, EditorCacheData> cacheData) {
+        private void saveChildrenLayerData(ViewGroup parent, HashMap<String, LayerEditCache> cacheData) {
             for (int i = 0; i < parent.getChildCount(); i++) {
                 View layer = parent.getChildAt(i);
 

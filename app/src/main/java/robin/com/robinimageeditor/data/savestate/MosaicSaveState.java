@@ -2,7 +2,7 @@ package robin.com.robinimageeditor.data.savestate;
 
 import android.graphics.Path;
 
-import robin.com.robinimageeditor.view.MosaicMode;
+import robin.com.robinimageeditor.layer.mosaic.MosaicMode;
 
 /**
  * Created by Robin Yang on 1/8/18.

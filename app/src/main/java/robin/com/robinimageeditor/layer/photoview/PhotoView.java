@@ -17,7 +17,7 @@ import android.widget.ImageView;
 
 import robin.com.robinimageeditor.layer.base.detector.GestureDetectorListener;
 import robin.com.robinimageeditor.layer.base.OnPhotoRectUpdateListener;
-import robin.com.robinimageeditor.layer.RootNode;
+import robin.com.robinimageeditor.layer.base.RootNode;
 
 /**
  * A zoomable {@link ImageView}. See {@link PhotoViewAttacher} for most of the details on how the zooming

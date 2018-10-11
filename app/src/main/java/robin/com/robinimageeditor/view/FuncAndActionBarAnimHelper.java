@@ -12,7 +12,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import robin.com.robinimageeditor.util.MatrixUtils;
+import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
  * Created by Robin Yang on 12/28/17.

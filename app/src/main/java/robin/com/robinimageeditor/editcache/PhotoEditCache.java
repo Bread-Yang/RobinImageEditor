@@ -14,7 +14,7 @@ public class PhotoEditCache {
      * Images edit cache data hashMap.
      * Key : image's url(Unique) Value : image's edit cache data.
      */
-    private HashMap<String, HashMap<String, EditorCacheData>> mLayerCache = new HashMap<>();
+    private HashMap<String, HashMap<String, LayerEditCache>> mLayerCache = new HashMap<>();
 
     private PhotoEditCache() {
 
@@ -31,8 +31,8 @@ public class PhotoEditCache {
         return sInstance;
     }
 
-    public HashMap<String, EditorCacheData> getEditCacheDataByImageUrl(String editorId) {
-        HashMap<String, EditorCacheData> cache = mLayerCache.get(editorId);
+    public HashMap<String, LayerEditCache> getEditCacheDataByImageUrl(String editorId) {
+        HashMap<String, LayerEditCache> cache = mLayerCache.get(editorId);
         if (cache == null) {
             cache = new HashMap<>();
             mLayerCache.put(editorId, cache);
@@ -40,9 +40,9 @@ public class PhotoEditCache {
         return cache;
     }
 
-//    public void putEditCacheDataByImageUrl(String editorId, HashMap<String, EditorCacheData> data) {
-//        if (data != null) {
-//            mLayerCache.put(editorId, data);
-//        }
-//    }
+    public void putEditCacheDataByImageUrl(String editorId, HashMap<String, LayerEditCache> data) {
+        if (data != null) {
+            mLayerCache.put(editorId, data);
+        }
+    }
 }

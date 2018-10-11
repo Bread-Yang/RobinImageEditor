@@ -18,7 +18,7 @@ import android.widget.OverScroller;
 import robin.com.robinimageeditor.layer.base.detector.CustomGestureDetector;
 import robin.com.robinimageeditor.layer.base.detector.GestureDetectorListener;
 import robin.com.robinimageeditor.layer.base.OnPhotoRectUpdateListener;
-import robin.com.robinimageeditor.util.MatrixUtils;
+import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
  * The component of {@link PhotoView} which does the work allowing for zooming, scaling, panning, etc.
