@@ -17,4 +17,32 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+
+    <style name="InputTextDialog" parent="android:Theme.DeviceDefault.Dialog">
+
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+
+        <item name="android:windowSoftInputMode">stateAlwaysVisible|adjustResize</item>
+
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0</item>
+
+        <item name="android:windowAnimationStyle">@style/InputTextAnimation</item>
+    </style>
+
+    <style name="InputTextAnimation" parent="android:Animation.Dialog">
+
+        <item name="android:windowEnterAnimation">@anim/anim_dialog_enter</item>
+        <item name="android:windowExitAnimation">@anim/anim_dialog_exit</item>
+
+    </style>
 </resources>
+
+

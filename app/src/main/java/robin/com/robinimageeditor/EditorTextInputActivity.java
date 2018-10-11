@@ -77,18 +77,6 @@ public class EditorTextInputActivity extends AppCompatActivity {
                     break;
                 }
             }
-
-//            colorBarInput.setOnInitDoneListener(new ColorSeekBar.OnInitDoneListener() {
-//
-//                @Override
-//                public void done() {
-//                    int position = 8;
-//                    if (readyData.getColor() != 0) {
-//                        position = colorBarInput.getColorIndexPosition(readyData.getColor());
-//                    }
-//                    colorBarInput.setColorBarPosition(position);
-//                }
-//            });
         } else {
             mTextColor = pcgColors.getCheckColor();
         }

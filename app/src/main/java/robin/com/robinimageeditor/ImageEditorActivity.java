@@ -110,11 +110,16 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MatrixUtils.hideStatusBar(this);
         initRootView();
         initData();
         initView();
         initActionBarListener();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MatrixUtils.hideStatusBar(this);
     }
 
     private void initRootView() {
@@ -139,7 +144,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         setContentView(view);
 
         actionFrameLayout = findViewById(R.id.actionFrameLayout);
-        toolBar = findViewById(R.id.rlToolbar);
+        toolBar = findViewById(R.id.toolBar);
         flFunc = findViewById(R.id.flFunc);
 
         layerPhotoView = findViewById(R.id.layerPhotoView);

@@ -9,11 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import robin.com.robinimageeditor.EditorTextInputActivity;
-import robin.com.robinimageeditor.R;
-import robin.com.robinimageeditor.data.share.SharableData;
 import robin.com.robinimageeditor.data.share.InputStickerSharableData;
 import robin.com.robinimageeditor.data.share.InputTextSharableData;
+import robin.com.robinimageeditor.data.share.SharableData;
 import robin.com.robinimageeditor.editmode.EditorMode;
 import robin.com.robinimageeditor.editmode.FuncModeListener;
 import robin.com.robinimageeditor.layer.base.BaseLayerView;
@@ -27,6 +25,7 @@ import robin.com.robinimageeditor.layer.sticker.StickerView;
 import robin.com.robinimageeditor.layer.textpasting.TextPastingView;
 import robin.com.robinimageeditor.view.DragToDeleteView;
 import robin.com.robinimageeditor.view.FuncAndActionBarAnimHelper;
+import robin.com.robinimageeditor.view.PictureTextEditDialog;
 
 /**
  * Created by Robin Yang on 1/3/18.
@@ -42,6 +41,7 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
     private FuncAndActionBarAnimHelper mFuncAndActionBarAnimHelper;
     private CropHelper mCropHelper;
     private StickerDetailsView mStickerDetailsView;
+    private PictureTextEditDialog mInputTextDialog;
     private boolean mStickerDetailsShowing;
 
     public FuncHelper(LayerViewProvider provider, DragToDeleteView dragToDeleteView) {
@@ -199,9 +199,27 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
 
     private void go2InputView(InputTextSharableData prepareData) {
         mFuncAndActionBarAnimHelper.showOrHideFuncAndBarView(false);
-        Intent intent = EditorTextInputActivity.intent(mContext, prepareData);
-        ((Activity) mContext).startActivityForResult(intent, TEXT_INPUT_RESULT_CODE);
-        ((Activity) mContext).overridePendingTransition(R.anim.animation_bottom_to_top, 0);
+//        Intent intent = EditorTextInputActivity.intent(mContext, prepareData);
+//        ((Activity) mContext).startActivityForResult(intent, TEXT_INPUT_RESULT_CODE);
+//        ((Activity) mContext).overridePendingTransition(R.anim.animation_bottom_to_top, 0);
+        if (mInputTextDialog == null) {
+            mInputTextDialog = new PictureTextEditDialog(mContext, prepareData, new PictureTextEditDialog.OnClickSaveListener() {
+                @Override
+                public void onSave(InputTextSharableData inputTextSharableData) {
+                    resultFromInputDialog(inputTextSharableData);
+                }
+            });
+        } else {
+            mInputTextDialog.setInputTextSharableData(prepareData);
+        }
+        mInputTextDialog.show();
+    }
+
+    private void resultFromInputDialog(InputTextSharableData inputTextSharableData) {
+        if (inputTextSharableData != null) {
+            ((TextPastingView) mProvider.findLayerByEditorMode(EditorMode.TextPastingMode)).onTextPastingChanged(inputTextSharableData);
+        }
+        mFuncAndActionBarAnimHelper.showOrHideFuncAndBarView(true);
     }
 
     private void resultFromInputView(int resultCode, Intent data) {
