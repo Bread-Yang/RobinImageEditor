@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -267,14 +268,18 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onImageComposeResult(false);
+                finish();
             }
         });
 
         tvComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageCompose();
+                if (hasEditedPhoto()) {
+                    imageCompose();
+                } else {
+                    onImageComposeResult(false);
+                }
             }
         });
     }
@@ -356,11 +361,29 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
     private void onImageComposeResult(boolean editStatus) {
         supportRecycle();
+
+        // delete exEdited image file.
+        String exEditedUrl = mEditorPathSetup.getEditedImageUrl();
+        if (!TextUtils.isEmpty(exEditedUrl)) {
+            File exEditImageFile = new File(exEditedUrl);
+            if (exEditImageFile.exists()) {
+                exEditImageFile.delete();
+            }
+        }
+
+        EditorResult resultData;
+        if (editStatus) {
+            resultData = new EditorResult(mOriginalImageUrl,
+                    mEditorPathSetup.getEditor2SavedPath(), editStatus);
+        } else {
+            resultData = new EditorResult(mOriginalImageUrl,
+                    null, false);
+        }
+
         Intent intent = new Intent();
-        EditorResult resultData = new EditorResult(mOriginalImageUrl, mEditorPathSetup.getEditedImageUrl(),
-                mEditorPathSetup.getEditor2SavedPath(), editStatus);
         intent.putExtra(String.valueOf(RESULT_OK), resultData);
         setResult(RESULT_OK, intent);
+
         finish();
     }
 
@@ -378,6 +401,22 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 callChildrenRestoreLayer((ViewGroup) layer, cacheData);
             }
         }
+    }
+
+    private boolean hasEditedPhoto() {
+        boolean hasEdited = false;
+        for (int i = 0; i < layerComposite.getChildCount(); i++) {
+            View layer = layerComposite.getChildAt(i);
+
+            if (layer instanceof BaseLayerView) {
+                if (((BaseLayerView) layer).hasEdited()) {
+                    hasEdited = true;
+                    break;
+                }
+            }
+        }
+
+        return hasEdited;
     }
 
     @Override
@@ -532,8 +571,8 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             Log.e(TAG, "ImageComposeTask:保存路径 : " + mPath);
-            mDialog.dismiss();
             onImageComposeResult(result);
+            mDialog.dismiss();
         }
 
         private void drawChildrenLayer(Matrix inverMatrix, ViewGroup parent, Canvas canvas) {

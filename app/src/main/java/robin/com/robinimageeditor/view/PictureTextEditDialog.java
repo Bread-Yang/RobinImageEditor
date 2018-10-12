@@ -27,8 +27,6 @@ public class PictureTextEditDialog extends Dialog {
 
     private static final String TAG = "PictureTextEditDialog";
 
-    private static int sCheckedId = -1;
-
     private EditText etInput;
 
     private OnClickSaveListener mOnClickSaveListener;
@@ -51,7 +49,7 @@ public class PictureTextEditDialog extends Dialog {
         Window window = getWindow();
         if (window != null) {
             window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            window.setFlags(LayoutParams.FLAG_FULLSCREEN,LayoutParams.FLAG_FULLSCREEN);
+            window.setFlags(LayoutParams.FLAG_FULLSCREEN, LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
@@ -59,8 +57,8 @@ public class PictureTextEditDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        pcgColors = (PictureColorGroup)findViewById(R.id.pcgColors);
-        etInput = (EditText)findViewById(R.id.etInput);
+        pcgColors = (PictureColorGroup) findViewById(R.id.pcgColors);
+        etInput = (EditText) findViewById(R.id.etInput);
 
         initListener();
     }
@@ -96,34 +94,36 @@ public class PictureTextEditDialog extends Dialog {
         this.mInputTextSharableData = inputTextSharableData;
     }
 
+    private void clearData() {
+        etInput.setText("");
+        mInputTextSharableData = null;
+        mTextInputId = null;
+        dismiss();
+    }
+
     private void initListener() {
         findViewById(R.id.tvCancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                etInput.setText("");
-                dismiss();
+                clearData();
             }
         });
         findViewById(R.id.tvComplete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mInputTextSharableData = null;
                 String text = etInput.getText().toString().trim();
-                etInput.setText("");
                 if (!TextUtils.isEmpty(text) && mOnClickSaveListener != null) {
                     mOnClickSaveListener.onSave(new InputTextSharableData(mTextInputId, text, mTextColor));
                 }
-                dismiss();
+                clearData();
             }
         });
 
         pcgColors.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                sCheckedId = group.getCheckedRadioButtonId();
-                int color = pcgColors.getCheckColor();
-                etInput.setTextColor(color);
-                mTextColor = color;
+                mTextColor = pcgColors.getCheckColor();
+                etInput.setTextColor(mTextColor);
             }
         });
 
@@ -135,9 +135,9 @@ public class PictureTextEditDialog extends Dialog {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() > 100){
-                    Toast.makeText(mContext,"最多编辑100个文字",Toast.LENGTH_SHORT).show();
-                    etInput.setText(s.subSequence(0,100));
+                if (s.length() > 100) {
+                    Toast.makeText(mContext, "最多编辑100个文字", Toast.LENGTH_SHORT).show();
+                    etInput.setText(s.subSequence(0, 100));
                     etInput.setSelection(100);
                 }
             }

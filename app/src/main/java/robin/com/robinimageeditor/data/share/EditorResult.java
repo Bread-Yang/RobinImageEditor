@@ -7,13 +7,11 @@ package robin.com.robinimageeditor.data.share;
 public class EditorResult implements SharableData {
 
     private String originalPath;
-    private String editorPath;
     private String editor2SavedPath;
     private boolean editStatus;
 
-    public EditorResult(String originalPath, String editorPath, String editor2SavedPath, boolean editStatus) {
+    public EditorResult(String originalPath, String editor2SavedPath, boolean editStatus) {
         this.originalPath = originalPath;
-        this.editorPath = editorPath;
         this.editor2SavedPath = editor2SavedPath;
         this.editStatus = editStatus;
     }
@@ -26,14 +24,6 @@ public class EditorResult implements SharableData {
         this.originalPath = originalPath;
     }
 
-    public String getEditorPath() {
-        return editorPath;
-    }
-
-    public void setEditorPath(String editorPath) {
-        this.editorPath = editorPath;
-    }
-
     public String getEditor2SavedPath() {
         return editor2SavedPath;
     }
@@ -42,6 +32,11 @@ public class EditorResult implements SharableData {
         this.editor2SavedPath = editor2SavedPath;
     }
 
+    /**
+     * 图片是否编辑过
+     *
+     * @return
+     */
     public boolean isEditStatus() {
         return editStatus;
     }

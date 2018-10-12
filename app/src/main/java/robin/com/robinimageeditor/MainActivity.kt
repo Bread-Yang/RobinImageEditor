@@ -56,7 +56,14 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "请先选择图片", Toast.LENGTH_SHORT).show()
             return
         }
-        val source = editResultMap[mDisplayImageUrl!!]
+        var source = editResultMap[mDisplayImageUrl!!]
+
+        // 第一次选择图片
+        if (source == null) {
+            source = mDisplayImageUrl
+            mDisplayImageUrl = null
+        }
+
         val setup = EditorPathSetup(source, mDisplayImageUrl, getEditorSavePath())
         val intent = ImageEditorActivity.intent(this, setup)
         startActivityForResult(intent, ACTION_REQUEST_EDITOR)
@@ -97,10 +104,11 @@ class MainActivity : AppCompatActivity() {
                         //editor result path and original path
                         mDisplayImageUrl = result.editor2SavedPath
                         editResultMap.put(result.editor2SavedPath, result.originalPath!!)
-                        //ivDisplay.setImageURI(Uri.fromFile(File(result.editor2SavedPath)))
-                        Glide.with(this).load(result.editor2SavedPath).apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                                .apply(RequestOptions.skipMemoryCacheOf(true)).into(ivDisplay)
+                    } else {
+                        mDisplayImageUrl = result.originalPath
                     }
+                    Glide.with(this).load(mDisplayImageUrl).apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                            .apply(RequestOptions.skipMemoryCacheOf(true)).into(ivDisplay)
                 }
             }
 

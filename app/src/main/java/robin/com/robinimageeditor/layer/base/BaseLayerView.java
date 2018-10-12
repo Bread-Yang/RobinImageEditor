@@ -360,6 +360,15 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         return matrix;
     }
 
+    /**
+     * 该layer是否已经编辑过,如果编辑过，则编辑缓存 {@link saveStateMap} 大于0
+     *
+     * @return
+     */
+    public boolean hasEdited() {
+        return saveStateMap.size() > 0;
+    }
+
     public void setLayerInEditMode(boolean isLayerInEditMode) {
         this.isLayerInEditMode = isLayerInEditMode;
     }
