@@ -52,7 +52,7 @@ public class ScrawlView extends BasePaintLayerView<ScrawlSaveState> {
         mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
 //        mDrawPaint.setDither(true);
         mDrawPaint.setPathEffect(new CornerPathEffect(10));
-        mDrawPaint.setStrokeWidth(MatrixUtils.dp2px(context, 6f));
+        mDrawPaint.setStrokeWidth(MatrixUtils.dp2px(context, 3f));
     }
 
     @Override

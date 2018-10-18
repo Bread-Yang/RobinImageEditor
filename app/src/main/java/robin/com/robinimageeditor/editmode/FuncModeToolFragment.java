@@ -15,14 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import robin.com.robinimageeditor.R;
+import robin.com.robinimageeditor.funcdetail.FuncDetailsListener;
 import robin.com.robinimageeditor.funcdetail.MosaicDetails;
+import robin.com.robinimageeditor.funcdetail.OnRevokeListener;
 import robin.com.robinimageeditor.funcdetail.ScrawlDetails;
 import robin.com.robinimageeditor.layer.mosaic.MosaicDetailsView;
 import robin.com.robinimageeditor.layer.mosaic.MosaicMode;
 import robin.com.robinimageeditor.layer.scrawl.ScrawlDetailsView;
 import robin.com.robinimageeditor.utils.MatrixUtils;
-import robin.com.robinimageeditor.funcdetail.FuncDetailsListener;
-import robin.com.robinimageeditor.funcdetail.OnRevokeListener;
 
 import static robin.com.robinimageeditor.layer.mosaic.MosaicMode.Grid;
 

@@ -11,6 +11,7 @@
 
         <robin.com.robinimageeditor.layer.photoview.PhotoView
             android:id="@+id/layerPhotoView"
+            android:background="#313131"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
+import robin.com.robinimageeditor.funcdetail.OnPathChangedListener;
 import robin.com.robinimageeditor.layer.mosaic.MosaicView;
 import robin.com.robinimageeditor.layer.scrawl.ScrawlView;
 import robin.com.robinimageeditor.utils.MatrixUtils;
@@ -29,6 +30,8 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
      */
     protected boolean currentPathValidate;
     private float mLastX, mLastY;
+
+    private OnPathChangedListener onPathChangedListener;
 
     public BasePaintLayerView(Context context) {
         super(context);
@@ -93,6 +96,10 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
                 T result = savePathOnFingerUp(paintPath);
                 if (result != null) {
                     saveStateMap.put(result.getId(), result);
+
+                    if (onPathChangedListener != null) {
+                        onPathChangedListener.onPathChanged(saveStateMap.size() > 0);
+                    }
                 }
             }
         }
@@ -118,6 +125,9 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
             saveStateMap.removeAt(saveStateMap.size() - 1);
             redrawAllCache();
         }
+        if (onPathChangedListener != null) {
+            onPathChangedListener.onPathChanged(saveStateMap.size() > 0);
+        }
     }
 
     protected void drawDragPath(Path paintPath) {
@@ -129,4 +139,8 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
     }
 
     protected abstract T savePathOnFingerUp(Path paintPath);
+
+    public void setOnPathChangedListener(OnPathChangedListener onPathChangedListener) {
+        this.onPathChangedListener = onPathChangedListener;
+    }
 }

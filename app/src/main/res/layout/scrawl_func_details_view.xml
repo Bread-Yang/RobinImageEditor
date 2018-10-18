@@ -33,6 +33,6 @@
             android:contentDescription="@string/app_name"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:src="@mipmap/edit_image_revoke" />
+            android:src="@drawable/selector_revoke"  />
     </LinearLayout>
 </LinearLayout>

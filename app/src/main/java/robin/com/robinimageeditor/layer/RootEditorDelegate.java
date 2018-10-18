@@ -64,6 +64,11 @@ public class RootEditorDelegate implements RootNode<ImageView>, LayerTransformer
     }
 
     @Override
+    public void setRotationTo(float degree) {
+        rootNode.setRotationTo(degree);
+    }
+
+    @Override
     public void resetMinScale(float minScale) {
         rootNode.resetMinScale(minScale);
     }

@@ -25,7 +25,7 @@ import robin.com.robinimageeditor.utils.MatrixUtils;
 
 public class CropView extends View implements GestureDetectorListener, OnPhotoRectUpdateListener {
 
-    private int DEFAULT_BG_COLOR = Color.parseColor("#99000000");
+    private int DEFAULT_BG_COLOR = Color.parseColor("#99313131");
     private int DEFAULT_GUIDE_LINE_COLOR = Color.WHITE;
     private int DEFAULT_BORDER_LINE_COLOR = Color.WHITE;
     private float DEFAULT_GUIDE_LINE_WIDTH = 2.0f;
@@ -42,7 +42,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     private Paint mGuidelinePaint;
     private Paint mBorderlinePaint;
     private Paint mBorderCornerPaint;
-    private Paint mPaintTranslucent;
+    private Paint mTranslucentBgPaint;
 
     private RectF mViewRect = new RectF();
 
@@ -52,7 +52,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     private Path mBgPath = new Path();
 
     /* 当前view绘制crop的区域 */
-    private RectF mDrawingRect = new RectF();
+    private RectF mCurrentCropRect = new RectF();
     /* 限制cropWindow 通过 mValidateBorderRect，max,min with,or height */
     private RectF mValidateBorderRect = new RectF();
 
@@ -86,25 +86,25 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     }
 
     private void initView(Context context) {
-        // mDrawingRect = new RectF(200f, 200f, 1000f, 1000f);  //test
+        // mCurrentCropRect = new RectF(200f, 200f, 1000f, 1000f);  //test
         int mCropTouchSlop = MatrixUtils.dp2px(context, 15f);
         // init cropWindowHelper.
         mCropWindowHelper = new CropWindowHelper(mCropTouchSlop);
-        mCropWindowHelper.setEdge(mDrawingRect);
+        mCropWindowHelper.setEdgeRectF(mCurrentCropRect);
         // mValidateBorderRect = RectF(0f, 0f, 1080f, 1920f);  //test
         int minCrop = MatrixUtils.dp2px(context, 60f);
         mCropWindowHelper.minCropWindowWidth = minCrop;
         mCropWindowHelper.minCropWindowHeight = minCrop;
         // touchEventSupport.
         mScaleDragDetector = new CustomGestureDetector(context, this, false);
-        // paint
+        // line paint
         mBorderlinePaint = getBorderPaint(mBorderlineWidth, mBorderlineColor);
         mGuidelinePaint = getBorderPaint(mGuidelineStrokeWidth, mGuidelineColor);
         mBorderCornerPaint = getBorderPaint(mBorderlineWidth * 2, mBorderlineColor);
-        // bgPath
-        mPaintTranslucent = getBorderPaint(mGuidelineStrokeWidth, mBackgroundColor);
-        mPaintTranslucent.setStyle(Paint.Style.FILL);
-        // inner border
+        // bg paint
+        mTranslucentBgPaint = getBorderPaint(mGuidelineStrokeWidth, mBackgroundColor);
+        mTranslucentBgPaint.setStyle(Paint.Style.FILL);
+        // border corner length
         mBorderCornerLength = MatrixUtils.dp2px(context, 20f);
 //        mBorderCornerOffset = MatrixUtils.dp2px(context, 3f);
         mBorderCornerOffset = mBorderlineWidth;
@@ -112,13 +112,18 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mDrawingRect.width() <= 0) {
+        if (mCurrentCropRect.width() <= 0) {
             return;
         }
-        // drawBgPath
-        drawBgPath(canvas);
+//        Paint rect_paint = new Paint();
+//        rect_paint.setStyle(Paint.Style.FILL);
+//        rect_paint.setColor(Color.rgb(49, 49, 49));
+//        canvas.drawRect(0, 0, getWidth(), getHeight(), rect_paint);
+
+        // drawTranslucentBgPath
+        drawTranslucentBgPath(canvas);
         // drawBorder
-        canvas.drawRect(mDrawingRect, mBorderlinePaint);
+        canvas.drawRect(mCurrentCropRect, mBorderlinePaint);
         // Draw 2 vertical and 2 horizontal guidelines
         drawGuideLines(canvas);
         // drawCorners
@@ -148,15 +153,15 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
         return borderPaint;
     }
 
-    private void drawBgPath(Canvas canvas) {
+    private void drawTranslucentBgPath(Canvas canvas) {
         mBgPath.reset();
         mBgPath.addRect(mViewRect, Path.Direction.CW);
-        mBgPath.addRect(mDrawingRect, Path.Direction.CCW);
-        canvas.drawPath(mBgPath, mPaintTranslucent);
+        mBgPath.addRect(mCurrentCropRect, Path.Direction.CCW);
+        canvas.drawPath(mBgPath, mTranslucentBgPaint);  // 两个矩阵不相交的地方用mTranslucentBGPaint画出来
     }
 
     private void drawGuideLines(Canvas canvas) {
-        RectF rect = mDrawingRect;
+        RectF rect = mCurrentCropRect;
         float oneThirdCropWidth = rect.width() / 3;
         float oneThirdCropHeight = rect.height() / 3;
         // Draw vertical guidelines.
@@ -172,7 +177,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     }
 
     private void drawCorners(Canvas canvas) {
-        RectF rect = mDrawingRect;
+        RectF rect = mCurrentCropRect;
         float cornerOffset = mBorderCornerOffset;
         // Top left
         canvas.drawLine(rect.left - cornerOffset, rect.top - cornerOffset, rect.left - cornerOffset, rect.top - cornerOffset + mBorderCornerLength, mBorderCornerPaint);
@@ -207,7 +212,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     public void onDrag(float dx, float dy, float x, float y, boolean rootLayer) {
         boolean feedBack = mCropWindowHelper.onCropWindowDrag(dx, dy, mValidateBorderRect);
         if (feedBack) {
-            mDrawingRect.set(mCropWindowHelper.getEdge());
+            mCurrentCropRect.set(mCropWindowHelper.getEdgeRectF());
             invalidate();
             notifyCropViewUpdated();
         }
@@ -263,7 +268,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
         mValidateBorderRect.set(validateBorder);
         boolean boundsChanged = mCropWindowHelper.checkCropWindowBounds(mValidateBorderRect);
         if (boundsChanged) {
-            mDrawingRect.set(mCropWindowHelper.getEdge());
+            mCurrentCropRect.set(mCropWindowHelper.getEdgeRectF());
             invalidate();
         }
         notifyCropViewUpdated();
@@ -283,31 +288,31 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
         }
         mLastRotateDegree = rotateDegree;
         Matrix matrix = new Matrix();
-        RectF result = new RectF();
-        matrix.postRotate(degree % 360, mDrawingRect.centerX(), mDrawingRect.centerY());
-        matrix.postTranslate(mViewRect.centerX() - mDrawingRect.centerX(), mViewRect.centerY() - mDrawingRect.centerY());
-        matrix.mapRect(result, mDrawingRect);
+        RectF resultRectF = new RectF();
+        matrix.postRotate(degree % 360, mCurrentCropRect.centerX(), mCurrentCropRect.centerY());
+        matrix.postTranslate(mViewRect.centerX() - mCurrentCropRect.centerX(), mViewRect.centerY() - mCurrentCropRect.centerY());
+        matrix.mapRect(resultRectF, mCurrentCropRect);
         //exchange
         if (degree % 90 == 0f) {
             float oldHeight = mCropWindowHelper.maxCropWindowHeight;
             mCropWindowHelper.maxCropWindowHeight = mCropWindowHelper.maxCropWindowWidth;
             mCropWindowHelper.maxCropWindowWidth = oldHeight;
         }
-        updateDrawingRect(result, true);
+        updateCropRect(resultRectF, true);
     }
 
-    private void updateDrawingRect(RectF rect, boolean notifyUpdated) {
-        mDrawingRect.set(rect);
-        mCropWindowHelper.setEdge(mDrawingRect);
+    private void updateCropRect(RectF rect, boolean notifyUpdated) {
+        mCurrentCropRect.set(rect);
+        mCropWindowHelper.setEdgeRectF(mCurrentCropRect);
         invalidate();
         if (notifyUpdated)  {
             notifyCropViewUpdated();
         }
     }
 
-    public void setupDrawingRect(RectF rect) {
+    public void setupCropRect(RectF rect) {
         mValidateBorderRect.set(rect);
-        updateDrawingRect(rect, false);
+        updateCropRect(rect, false);
         mCropViewIsUpdated = false;
     }
 
@@ -317,11 +322,15 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     }
 
     public void clearDrawingRect() {
-        setupDrawingRect(new RectF());
+        setupCropRect(new RectF());
     }
 
+    /**
+     * 拿到当前在屏幕上显示正方形的坐标，坐标是相对CropView左上角
+     * @return
+     */
     public RectF getCropRect() {
-        return new RectF(mDrawingRect);
+        return new RectF(mCurrentCropRect);
     }
 
     public boolean isCropWindowEdit() {
@@ -330,5 +339,9 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
 
     public void setOnCropViewUpdatedListener(OnCropViewUpdatedListener onCropViewUpdatedListener) {
         this.onCropViewUpdatedListener = onCropViewUpdatedListener;
+    }
+
+    public float getLastRotateDegree() {
+        return mLastRotateDegree;
     }
 }

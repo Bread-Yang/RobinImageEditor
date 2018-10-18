@@ -40,7 +40,7 @@
                 android:layout_height="22dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                app:image_stroke_color="#167FFF" />
+                app:image_stroke_color="#FED953" />
 
             <robin.com.robinimageeditor.view.PictureStrokeRadio
                 android:id="@+id/psr26dp"
@@ -48,7 +48,7 @@
                 android:layout_height="26dp"
                 android:layout_marginStart="23dp"
                 android:layout_marginLeft="23dp"
-                app:image_stroke_color="#167FFF" />
+                app:image_stroke_color="#FED953" />
 
             <robin.com.robinimageeditor.view.PictureStrokeRadio
                 android:id="@+id/psr30dp"
@@ -56,7 +56,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="23dp"
                 android:layout_marginLeft="23dp"
-                app:image_stroke_color="#167FFF" />
+                app:image_stroke_color="#FED953" />
 
             <robin.com.robinimageeditor.view.PictureStrokeRadio
                 android:id="@+id/psr34dp"
@@ -64,7 +64,7 @@
                 android:layout_height="34dp"
                 android:layout_marginStart="23dp"
                 android:layout_marginLeft="23dp"
-                app:image_stroke_color="#167FFF" />
+                app:image_stroke_color="#FED953" />
 
             <robin.com.robinimageeditor.view.PictureStrokeRadio
                 android:id="@+id/psr38dp"
@@ -72,7 +72,7 @@
                 android:layout_height="38dp"
                 android:layout_marginStart="23dp"
                 android:layout_marginLeft="23dp"
-                app:image_stroke_color="#167FFF" />
+                app:image_stroke_color="#FED953" />
         </robin.com.robinimageeditor.view.PictureStrokeGroup>
 
         <View
@@ -87,7 +87,7 @@
             android:contentDescription="@string/app_name"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:src="@mipmap/edit_image_revoke" />
+            android:src="@drawable/selector_revoke" />
 
     </LinearLayout>
 </LinearLayout>

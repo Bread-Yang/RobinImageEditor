@@ -172,7 +172,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
 
     public void setRotationTo(float degrees) {
         mSuppMatrix.setRotate(degrees % 360);
-        checkAndDisplayMatrix();
+//        checkAndDisplayMatrix();
     }
 
     public void setRotationBy(float degrees) {

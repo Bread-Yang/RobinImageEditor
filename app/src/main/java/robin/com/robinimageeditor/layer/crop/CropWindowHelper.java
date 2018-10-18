@@ -21,23 +21,29 @@ public class CropWindowHelper {
         CENTER
     }
 
-    private float targetRadius;
+    /**
+     * 触摸范围，判断用户当前触摸的是左上角、右上角、左下角、右下角、左边、上边、右边还是下边
+     */
+    private float mCropTouchRadius;
 
-    private RectF mEdges = new RectF();
+    /**
+     * 当前裁剪的RectF
+     */
+    private RectF mEdgesRectF = new RectF();
+    private RectF mFeedBackEdgesRectF = new RectF();
     private Type mPressedCropType;
-    private RectF mFeedBackEdges = new RectF();
     /*cropWindow,size*/
     float minCropWindowHeight;
     float maxCropWindowHeight = Float.MAX_VALUE;
     float minCropWindowWidth;
     float maxCropWindowWidth = Float.MAX_VALUE;
 
-    public CropWindowHelper(float targetRadius) {
-        this.targetRadius = targetRadius;
+    public CropWindowHelper(float mCropTouchRadius) {
+        this.mCropTouchRadius = mCropTouchRadius;
     }
 
     public boolean interceptTouchEvent(MotionEvent event) {
-        mPressedCropType = getPressedCropType(event.getX(), event.getY(), targetRadius);
+        mPressedCropType = getPressedCropType(event.getX(), event.getY(), mCropTouchRadius);
         return mPressedCropType != null;
     }
 
@@ -48,26 +54,26 @@ public class CropWindowHelper {
     public boolean checkCropWindowBounds(RectF bounds) {
         float offsetX = 0f;
         float offsetY = 0f;
-        RectF tempRect = new RectF(mEdges);
-        if (mEdges.left < bounds.left) {
-            offsetX = bounds.left - mEdges.left;
+        RectF tempRect = new RectF(mEdgesRectF);
+        if (mEdgesRectF.left < bounds.left) {
+            offsetX = bounds.left - mEdgesRectF.left;
             tempRect.left = bounds.left;
         }
-        if (mEdges.top < bounds.top) {
-            offsetY = bounds.top - mEdges.top;
+        if (mEdgesRectF.top < bounds.top) {
+            offsetY = bounds.top - mEdgesRectF.top;
             tempRect.top = bounds.top;
         }
-        if (mEdges.right > bounds.right) {
-            offsetX = bounds.right - mEdges.right;
+        if (mEdgesRectF.right > bounds.right) {
+            offsetX = bounds.right - mEdgesRectF.right;
             tempRect.right = bounds.right;
         }
-        if (mEdges.bottom > bounds.bottom) {
-            offsetY = bounds.bottom - mEdges.bottom;
+        if (mEdgesRectF.bottom > bounds.bottom) {
+            offsetY = bounds.bottom - mEdgesRectF.bottom;
             tempRect.bottom = bounds.bottom;
         }
-        mEdges.offset(offsetX, offsetY);
-        if (!bounds.contains(mEdges)) {
-            mEdges.set(tempRect);
+        mEdgesRectF.offset(offsetX, offsetY);
+        if (!bounds.contains(mEdgesRectF)) {
+            mEdgesRectF.set(tempRect);
         }
         return offsetX != 0f || offsetY != 0f;
     }
@@ -75,9 +81,9 @@ public class CropWindowHelper {
     public boolean onCropWindowDrag(float dx, float dy, RectF bound) {
         boolean hasDrag = false;
         if (mPressedCropType == Type.CENTER) {
-            hasDrag = moveCenter(mEdges, dx, dy, bound);
+            hasDrag = moveCenter(mEdgesRectF, dx, dy, bound);
         } else {
-            hasDrag = moveOtherCropType(mEdges, dx, dy, bound, mPressedCropType);
+            hasDrag = moveOtherCropType(mEdgesRectF, dx, dy, bound, mPressedCropType);
         }
         return hasDrag;
     }
@@ -196,23 +202,23 @@ public class CropWindowHelper {
 
     private Type getPressedCropType(float x, float y, float targetRadius) {
         Type moveType = null;
-        if (isInCornerTargetZone(x, y, mEdges.left, mEdges.top, targetRadius)) {
+        if (isInCornerTargetZone(x, y, mEdgesRectF.left, mEdgesRectF.top, targetRadius)) {
             moveType = Type.TOP_LEFT;
-        } else if (isInCornerTargetZone(x, y, mEdges.right, mEdges.top, targetRadius)) {
+        } else if (isInCornerTargetZone(x, y, mEdgesRectF.right, mEdgesRectF.top, targetRadius)) {
             moveType = Type.TOP_RIGHT;
-        } else if (isInCornerTargetZone(x, y, mEdges.left, mEdges.bottom, targetRadius)) {
+        } else if (isInCornerTargetZone(x, y, mEdgesRectF.left, mEdgesRectF.bottom, targetRadius)) {
             moveType = Type.BOTTOM_LEFT;
-        } else if (isInCornerTargetZone(x, y, mEdges.right, mEdges.bottom, targetRadius)) {
+        } else if (isInCornerTargetZone(x, y, mEdgesRectF.right, mEdgesRectF.bottom, targetRadius)) {
             moveType = Type.BOTTOM_RIGHT;
-        } else if (isInHorizontalTargetZone(x, y, mEdges.left, mEdges.right, mEdges.top, targetRadius)) {
+        } else if (isInHorizontalTargetZone(x, y, mEdgesRectF.left, mEdgesRectF.right, mEdgesRectF.top, targetRadius)) {
             moveType = Type.TOP;
-        } else if (isInHorizontalTargetZone(x, y, mEdges.left, mEdges.right, mEdges.bottom, targetRadius)) {
+        } else if (isInHorizontalTargetZone(x, y, mEdgesRectF.left, mEdgesRectF.right, mEdgesRectF.bottom, targetRadius)) {
             moveType = Type.BOTTOM;
-        } else if (isInVerticalTargetZone(x, y, mEdges.left, mEdges.top, mEdges.bottom, targetRadius)) {
+        } else if (isInVerticalTargetZone(x, y, mEdgesRectF.left, mEdgesRectF.top, mEdgesRectF.bottom, targetRadius)) {
             moveType = Type.LEFT;
-        } else if (isInVerticalTargetZone(x, y, mEdges.right, mEdges.top, mEdges.bottom, targetRadius)) {
+        } else if (isInVerticalTargetZone(x, y, mEdgesRectF.right, mEdgesRectF.top, mEdgesRectF.bottom, targetRadius)) {
             moveType = Type.RIGHT;
-        } else if (isInCenterTargetZone(x, y, mEdges.left, mEdges.top, mEdges.right, mEdges.bottom)) {
+        } else if (isInCenterTargetZone(x, y, mEdgesRectF.left, mEdgesRectF.top, mEdgesRectF.right, mEdgesRectF.bottom)) {
             moveType = Type.CENTER;
         }
         return moveType;
@@ -236,12 +242,12 @@ public class CropWindowHelper {
         return Math.abs(x - handleX) <= targetRadius && y > handleYStart && y < handleYEnd;
     }
 
-    public RectF getEdge() {
-        mFeedBackEdges.set(mEdges);
-        return mFeedBackEdges;
+    public RectF getEdgeRectF() {
+        mFeedBackEdgesRectF.set(mEdgesRectF);
+        return mFeedBackEdgesRectF;
     }
 
-    public void setEdge(RectF edges) {
-        this.mEdges.set(edges);
+    public void setEdgeRectF(RectF edges) {
+        this.mEdgesRectF.set(edges);
     }
 }

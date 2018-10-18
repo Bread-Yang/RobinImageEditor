@@ -104,9 +104,9 @@ public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
             return false;
         }
         int count = MatrixUtils.saveEntireLayer(canvas);
+        mMosaicPaint.setStrokeWidth(strokeWidth);
         canvas.drawPath(paintPath, mMosaicPaint);
         mMosaicPaint.setXfermode(mMosaicPaintMode);
-        mMosaicPaint.setStrokeWidth(strokeWidth);
         canvas.drawBitmap(cover, initializeMatrix, mMosaicPaint); // 显示和path的交集
         mMosaicPaint.setXfermode(null);
         canvas.restoreToCount(count);

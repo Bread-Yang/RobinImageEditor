@@ -111,16 +111,11 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MatrixUtils.hideStatusBar(this);
         initRootView();
         initData();
         initView();
         initActionBarListener();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MatrixUtils.hideStatusBar(this);
     }
 
     private void initRootView() {
@@ -405,6 +400,12 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
 
     private boolean hasEditedPhoto() {
         boolean hasEdited = false;
+
+        // 是否已经裁剪过
+        if (mCropHelper.getCropSaveState() != null) {
+            return true;
+        }
+
         for (int i = 0; i < layerComposite.getChildCount(); i++) {
             View layer = layerComposite.getChildAt(i);
 

@@ -94,7 +94,7 @@ public class CropDetailsView implements ViewTreeObserver.OnPreDrawListener {
     public void setRestoreTextStatus(boolean restore) {
         int color;
         if (restore) {
-            color = R.color.green_btn;
+            color = R.color.image_color_white;
         } else {
             color = R.color.color_919191;
         }

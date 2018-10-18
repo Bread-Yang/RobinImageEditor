@@ -14,6 +14,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 /**
+ * |  MScale_X   MSkew_X   MTrans_X  |
+ * |  MSkew_Y    MScale_Y  MTrans_Y  |
+ * |  MPersp_0   MPersp_1  MPersp_2  |
+ *
  * Created by Robin Yang on 12/28/17.
  */
 

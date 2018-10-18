@@ -19,6 +19,8 @@ public interface RootNode<RootView> {
 
     void setRotationBy(float degree);
 
+    void setRotationTo(float degree);
+
     void resetMinScale(float minScale);
 
     void resetMaxScale(float maxScale);

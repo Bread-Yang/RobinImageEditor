@@ -74,7 +74,7 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
     public void onCropConfirm() {
         if (mCropView.isCropWindowEdit() || mCropSaveState != null) {
             Matrix lastMatrix = mRootEditorDelegate.getSupportMatrix();
-            Bitmap lastBitmap = mRootEditorDelegate.getDisplayBitmap();
+            Bitmap lastBitmap = mRootEditorDelegate.getDisplayBitmap();  // 这里拿到的bitmap始终是最开始显示那张(Original photo),不是裁剪后的图片
             RectF lastDisplayRect = mRootEditorDelegate.getDisplayingRect();
             Matrix lastBaseMatrix = mRootEditorDelegate.getBaseLayoutMatrix();
             RectF lastCropRect = mCropView.getCropRect();
@@ -172,10 +172,13 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
     private void initSetupViewWithScale() {
         //1.reset minScale and setScale
         mRootEditorDelegate.resetMinScale(mCropScaleRatio);
-        mRootEditorDelegate.setScale(mCropScaleRatio, true);
+        mRootEditorDelegate.setScale(mCropScaleRatio, false);
+        if (mCropView.getLastRotateDegree() != 0) {
+            mRootEditorDelegate.setRotationBy(-mCropView.getLastRotateDegree());   // 将旋转还原为0
+        }
         //2.update crop drawing rect
         RectF rect = mRootEditorDelegate.getDisplayingRect();
-        mCropView.setupDrawingRect(rect);
+        mCropView.setupCropRect(rect);
         mCropView.updateCropMaxSize(rect.width(), rect.height());
         mCropDetailsView.setRestoreTextStatus(false);
     }
@@ -362,7 +365,7 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
         public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
             if (mCropSaveState != null) {
-                mCropView.setupDrawingRect(mCropSaveState.getCropRect());
+                mCropView.setupCropRect(mCropSaveState.getCropRect());
                 Matrix matrix = new Matrix();
                 matrix.set(mCropSaveState.getSupportMatrix());
                 //matrix.postConcat(MatrixUtils.getInvertMatrix(it.cropFitCenterMatrix))
