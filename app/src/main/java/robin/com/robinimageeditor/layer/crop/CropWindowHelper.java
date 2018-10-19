@@ -43,6 +43,9 @@ public class CropWindowHelper {
     }
 
     public boolean interceptTouchEvent(MotionEvent event) {
+        if (event.getPointerCount() > 1) {
+            return false;
+        }
         mPressedCropType = getPressedCropType(event.getX(), event.getY(), mCropTouchRadius);
         return mPressedCropType != null;
     }

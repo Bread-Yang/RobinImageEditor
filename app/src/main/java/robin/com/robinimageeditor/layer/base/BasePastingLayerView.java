@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,6 +23,10 @@ import robin.com.robinimageeditor.utils.MatrixUtils;
  */
 
 public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> extends BaseLayerView<T> {
+
+    public static boolean sIsPastingLayerTouching = false;
+
+    private static final String TAG = "BasePastingLayerView";
 
     private RectF dragViewRect;
 
@@ -182,6 +187,28 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
         canvas.drawPath(path, focusRectCornerPaint);
 //        canvas.drawRect(rect, focusRectCornerPaint);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean result = super.onTouchEvent(event);
+
+        int action = event.getAction() & MotionEvent.ACTION_MASK;
+
+        Log.e(TAG, "action : " + action);
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                if (result) {
+                    sIsPastingLayerTouching = true;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                sIsPastingLayerTouching = false;
+                break;
+        }
+
+        return result;
     }
 
     @Override

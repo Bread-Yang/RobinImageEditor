@@ -11,6 +11,7 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,6 +25,8 @@ import robin.com.robinimageeditor.utils.MatrixUtils;
  */
 
 public class CropView extends View implements GestureDetectorListener, OnPhotoRectUpdateListener {
+
+    private static final String TAG = "CropView";
 
     private int DEFAULT_BG_COLOR = Color.parseColor("#99313131");
     private int DEFAULT_GUIDE_LINE_COLOR = Color.WHITE;
@@ -59,6 +62,8 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     private boolean mCropViewIsUpdated = false;
     private OnCropViewUpdatedListener onCropViewUpdatedListener;
     private float mLastRotateDegree;
+
+    private boolean mHandleTouchEvent;
 
     public interface OnCropViewUpdatedListener {
         void onCropViewUpdated();
@@ -133,6 +138,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction() & MotionEvent.ACTION_MASK;
+
         if (action == MotionEvent.ACTION_DOWN) {
             boolean intercept = mCropWindowHelper.interceptTouchEvent(event);
             if (!intercept) {
@@ -195,21 +201,23 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
 
     @Override
     public void onFingerDown(float downX, float downY) {
-
+        Log.e(TAG, "onFingerDown()");
     }
 
     @Override
     public void onFingerUp(float upX, float upY) {
-
+        Log.e(TAG, "onFingerUp()");
     }
 
     @Override
     public void onFingerCancel() {
-
+        Log.e(TAG, "onFingerCancel()");
     }
 
     @Override
     public void onDrag(float dx, float dy, float x, float y, boolean rootLayer) {
+        Log.e(TAG, "onDrag()");
+
         boolean feedBack = mCropWindowHelper.onCropWindowDrag(dx, dy, mValidateBorderRect);
         if (feedBack) {
             mCurrentCropRect.set(mCropWindowHelper.getEdgeRectF());
@@ -220,31 +228,31 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
 
     @Override
     public void onFling(float startX, float startY, float velocityX, float velocityY, boolean rootLayer) {
-
+        Log.e(TAG, "onFling()");
     }
 
     @Override
     public void cancelFling(boolean rootLayer) {
-
+        Log.e(TAG, "cancelFling()");
     }
 
     @Override
     public void onScale(float scaleFactor, float focusX, float focusY, boolean rootLayer) {
-
+        Log.e(TAG, "onScale()");
     }
 
     @Override
     public void onRotate(float rotateDegree, float focusX, float focusY, boolean rootLayer) {
-
+        Log.e(TAG, "onRotate()");
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        if(mViewRect.isEmpty()){
+        if (mViewRect.isEmpty()) {
             mViewRect.set(left, top, right, bottom);
         }
-        if(mValidateBorderRect.isEmpty()){
+        if (mValidateBorderRect.isEmpty()) {
             mValidateBorderRect.set(mViewRect);
         }
     }
@@ -271,6 +279,9 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
             mCurrentCropRect.set(mCropWindowHelper.getEdgeRectF());
             invalidate();
         }
+        mCropWindowHelper.maxCropWindowWidth = rect.width();
+        mCropWindowHelper.maxCropWindowHeight = rect.height();
+
         notifyCropViewUpdated();
     }
 
@@ -305,7 +316,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
         mCurrentCropRect.set(rect);
         mCropWindowHelper.setEdgeRectF(mCurrentCropRect);
         invalidate();
-        if (notifyUpdated)  {
+        if (notifyUpdated) {
             notifyCropViewUpdated();
         }
     }
@@ -316,7 +327,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
         mCropViewIsUpdated = false;
     }
 
-    public void updateCropMaxSize(float maxWidth,float  maxHeight) {
+    public void updateCropMaxSize(float maxWidth, float maxHeight) {
         mCropWindowHelper.maxCropWindowHeight = maxHeight;
         mCropWindowHelper.maxCropWindowWidth = maxWidth;
     }
@@ -327,6 +338,7 @@ public class CropView extends View implements GestureDetectorListener, OnPhotoRe
 
     /**
      * 拿到当前在屏幕上显示正方形的坐标，坐标是相对CropView左上角
+     *
      * @return
      */
     public RectF getCropRect() {

@@ -43,6 +43,9 @@
         <item name="android:windowExitAnimation">@anim/anim_dialog_exit</item>
 
     </style>
+
+    <!--5.0以下无水波纹效果-->
+    <style name="view_click_bg"/>
 </resources>
 
 

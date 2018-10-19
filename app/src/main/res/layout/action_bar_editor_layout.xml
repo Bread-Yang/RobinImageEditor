@@ -19,6 +19,7 @@
             android:layout_centerVertical="true"
             android:paddingLeft="16dp"
             android:paddingTop="6dp"
+            style="@style/view_click_bg"
             android:paddingRight="16dp"
             android:paddingBottom="6dp"
             android:text="@string/editor_cancel"
@@ -28,6 +29,7 @@
         <TextView
             android:id="@+id/tvComplete"
             android:layout_width="wrap_content"
+            style="@style/view_click_bg"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"

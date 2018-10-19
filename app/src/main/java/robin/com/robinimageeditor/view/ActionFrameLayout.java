@@ -7,7 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
+
+import robin.com.robinimageeditor.layer.base.BasePastingLayerView;
+import robin.com.robinimageeditor.layer.photoview.PhotoView;
 
 /**
  * Created by Robin Yang on 12/28/17.
@@ -15,8 +19,11 @@ import android.widget.FrameLayout;
 
 public class ActionFrameLayout extends FrameLayout {
 
+    public static boolean sIsMultipleTouching = false;
+
     interface ActionListener {
         void actionUp();
+
         void actionMove();
     }
 
@@ -49,15 +56,29 @@ public class ActionFrameLayout extends FrameLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_UP) {
+        int action = ev.getAction() & MotionEvent.ACTION_MASK;
+
+        if (action == MotionEvent.ACTION_UP) {
             if (actionListener != null) {
                 actionListener.actionUp();
             }
-        } else if ( ev.getAction() == MotionEvent.ACTION_MOVE) {
+            sIsMultipleTouching = false;
+        } else if (action == MotionEvent.ACTION_MOVE) {
             if (actionListener != null) {
                 actionListener.actionMove();
             }
         }
+
+        // BasePastingLayerView正在操作的时候不拦截事件
+        if (ev.getPointerCount() > 1 && !BasePastingLayerView.sIsPastingLayerTouching) {
+            View firstChild = getChildAt(0);
+            if (firstChild instanceof PhotoView) {
+
+                sIsMultipleTouching = true;
+                return firstChild.dispatchTouchEvent(ev);
+            }
+        }
+
         return super.dispatchTouchEvent(ev);
     }
 

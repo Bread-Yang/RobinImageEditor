@@ -24,12 +24,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import robin.com.robinimageeditor.editcache.LayerEditCache;
-import robin.com.robinimageeditor.data.share.LayerEditResult;
 import robin.com.robinimageeditor.data.savestate.SaveStateMarker;
+import robin.com.robinimageeditor.data.share.LayerEditResult;
+import robin.com.robinimageeditor.editcache.LayerEditCache;
 import robin.com.robinimageeditor.layer.base.detector.CustomGestureDetector;
 import robin.com.robinimageeditor.layer.crop.CropHelper;
 import robin.com.robinimageeditor.utils.MatrixUtils;
+import robin.com.robinimageeditor.view.ActionFrameLayout;
 
 /**
  * All photo edit layer base on this view.
@@ -182,6 +183,8 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction() & MotionEvent.ACTION_MASK;
+
         if (isLayerInEditMode) {
             return checkInterceptedOnTouchEvent(event) && gestureDetector.onTouchEvent(event);
         }

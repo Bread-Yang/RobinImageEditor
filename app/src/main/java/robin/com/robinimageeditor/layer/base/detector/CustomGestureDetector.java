@@ -12,6 +12,8 @@ import android.view.ViewConfiguration;
  */
 public class CustomGestureDetector {
 
+    private static final String TAG = "CustomGestureDetector";
+
     private static final int INVALID_POINTER_ID = -1;
 
     private int mActivePointerId = INVALID_POINTER_ID;

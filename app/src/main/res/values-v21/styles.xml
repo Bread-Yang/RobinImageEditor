@@ -1,0 +1,6 @@
+<resources>
+    <!--toolbar水波纹效果-->
+    <style name="view_click_bg" parent="@style/Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:minWidth">0dp</item>
+    </style>
+</resources>

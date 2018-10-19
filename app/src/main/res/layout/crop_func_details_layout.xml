@@ -13,6 +13,7 @@
 
         <ImageView
             android:id="@+id/ivCropLeftRotate"
+            style="@style/view_click_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -25,6 +26,7 @@
 
         <TextView
             android:id="@+id/tvCropRestore"
+            style="@style/view_click_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -35,6 +37,7 @@
 
         <ImageView
             android:id="@+id/ivCropRightRotate"
+            style="@style/view_click_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -50,6 +53,7 @@
 
         <ImageView
             android:id="@+id/ivCropCancel"
+            style="@style/view_click_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -60,6 +64,7 @@
 
         <ImageView
             android:id="@+id/ivCropConfirm"
+            style="@style/view_click_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
