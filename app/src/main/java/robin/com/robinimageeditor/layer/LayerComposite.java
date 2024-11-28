@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
+import robin.com.robinimageeditor.layer.crop.CropHelper;
 
 /**
  * Created by Robin Yang on 12/28/17.
@@ -15,6 +16,9 @@ import android.widget.FrameLayout;
 
 public class LayerComposite extends FrameLayout {
 
+    /**
+     * 当前是否能拦截touch事件, 通过{@link CropHelper#setupCropView}来控制,当是裁剪模式时,不给拦截
+     */
     private boolean isHandlingEvent = true;
 
     public LayerComposite(@NonNull Context context) {

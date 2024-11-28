@@ -51,16 +51,17 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
      * Support matrix for drawing layerView
      * PhotoView放大、缩小、移动等等操作不改变supportMatrix,只改变rootLayerMatrix.
      * 只有当图片裁剪了，才会改变supportMatrix
+     * (PhotoAttacher持有RootEditorDelegate的引用，RootEditorDelegate持有各个BaseLayerView的引用，PhotoView操作最后导致BaseLayerView.resetEditorSupportMatrix()被调用)
      * {@link CropHelper#resetEditorSupportMatrix}
      */
     protected final Matrix supportMatrix = new Matrix();
     /**
-     * PhotoView放大、缩小、移动等等操作会改变此值(PhotoAttacher持有RootEditorDelegate的引用，RootEditorDelegate持有
-     * 各个BaseLayerView的引用，PhotoView操作最后导致BaseLayerView.resetEditorSupportMatrix()被调用)
+     * PhotoView放大、缩小、移动等等操作会改变此值
      * {@link robin.com.robinimageeditor.layer.photoview.PhotoViewAttacher#setImageViewMatrix}
      */
     protected final Matrix rootLayerMatrix = new Matrix();
     /**
+     * PhotoView放大、缩小、移动等等操作会改变此值
      * 调用canvas.drawXXX()后, 能显示出来drawXXX效果的Rect区域
      */
     protected final RectF validateRect = new RectF();
@@ -179,6 +180,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         viewIsLayout = true;
     }
 
+    // PhotoView缩放平移时, 回调该方法
     @Override
     public void onPhotoRectUpdate(RectF rect, Matrix matrix) {
         validateRect.set(rect);
@@ -193,6 +195,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         }
     }
 
+    // 剪裁区域变化时, 回调该方法
     @Override
     public void resetEditorSupportMatrix(Matrix matrix) {
         supportMatrix.set(matrix);

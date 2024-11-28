@@ -10,7 +10,7 @@ import android.graphics.RectF;
 public abstract class PastingSaveStateMarker extends SaveStateMarker {
 
     protected RectF initDisplayRect;
-    protected Matrix transformMatrix;
+    protected Matrix transformMatrix;   // 缩放平移旋转改变此值
     protected Matrix initDisplayMatrix;
 
     public PastingSaveStateMarker(RectF initDisplayRect, Matrix initDisplayMatrix, Matrix transformMatrix) {

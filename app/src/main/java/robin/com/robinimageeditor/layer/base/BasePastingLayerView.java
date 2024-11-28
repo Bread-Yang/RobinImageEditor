@@ -24,6 +24,7 @@ import robin.com.robinimageeditor.utils.MatrixUtils;
 
 public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> extends BaseLayerView<T> {
 
+    // BasePastingLayerView当前是否正在操作
     public static boolean sIsPastingLayerTouching = false;
 
     private static final String TAG = "BasePastingLayerView";

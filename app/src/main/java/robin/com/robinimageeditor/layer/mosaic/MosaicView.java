@@ -26,13 +26,15 @@ import robin.com.robinimageeditor.utils.MosaicUtils;
  */
 public class MosaicView extends BasePaintLayerView<MosaicSaveState> {
 
-    private Bitmap mGridMosaicCover;
-    private Bitmap mBlurMosaicCover;
+    private Bitmap mGridMosaicCover;  // 把整张原图变成一格一格
+    private Bitmap mBlurMosaicCover;  // 把整张原图变成模糊
     private MosaicMode mMosaicMode;
     private int mLastBitmapId;
     private Paint mMosaicPaint;
     private Xfermode mMosaicPaintMode;
 
+    // 这个initializeMatrix, 是ImageEditorActivity在onLayoutChange回调时,拿到其PhotoView的baseMatrix来设置的
+    // 因为马赛克的实现原理是用上面的mGridMosaicCover或者mBlurMosaicCover, 重叠上path, 再把整张bitmap画上去来实现, 所以要算上PhotoView一开始的缩放值
     private Matrix initializeMatrix = new Matrix();
 
     public MosaicView(Context context) {
