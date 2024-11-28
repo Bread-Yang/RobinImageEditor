@@ -33,6 +33,8 @@ import robin.com.robinimageeditor.utils.MatrixUtils;
 import robin.com.robinimageeditor.view.ActionFrameLayout;
 
 /**
+ * 看看自己github上的另一个工程MatrixPractice : https://github.com/Bread-Yang/MatrixPractice
+ * matrix最全方法详解与进阶: https://cloud.tencent.com/developer/article/2384173
  * All photo edit layer base on this view.
  *
  * Created by Robin Yang on 12/28/17.
@@ -44,8 +46,11 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     private static final String TAG = "BaseLayerView";
 
     /**
-     * Support matrix for drawing layerView, PhotoView放大、缩小、移动等等操作不改变supportMatrix,
-     * 只改变rootLayerMatrix.只有当图片裁剪了，才会改变supportMatrix
+     * matrix最全方法详解与进阶: https://cloud.tencent.com/developer/article/2384173
+     *
+     * Support matrix for drawing layerView
+     * PhotoView放大、缩小、移动等等操作不改变supportMatrix,只改变rootLayerMatrix.
+     * 只有当图片裁剪了，才会改变supportMatrix
      * {@link CropHelper#resetEditorSupportMatrix}
      */
     protected final Matrix supportMatrix = new Matrix();

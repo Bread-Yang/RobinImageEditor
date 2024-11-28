@@ -62,6 +62,7 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
     public void onFingerDown(float downX, float downY) {
         super.onFingerDown(downX, downY);
         genDisplayCanvas();
+        // 通过逆矩阵, 得到在原图下(没有做过任何缩放,平移,裁剪操作)的x,y坐标
         PointF result = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(downX, downY));
 
         mLastX = result.x;
@@ -101,6 +102,8 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
     private void upOrCancelFinger() {
         if (paintPath != null) {
             if (currentPathValidate) {
+                // 这里保存的paintPath, 所有的坐标都是在原图下(没有做过任何缩放,平移,裁剪操作)的x,y坐标(),
+                // 通过MatrixUtils.mapInvertMatrixPoint(getDrawMatrix())获得, 所以当调用drawDragPath(paintPath)绘制时, 可以直接在displayCanvas上画
                 T result = savePathOnFingerUp(paintPath);
                 if (result != null) {
                     saveStateMap.put(result.getId(), result);

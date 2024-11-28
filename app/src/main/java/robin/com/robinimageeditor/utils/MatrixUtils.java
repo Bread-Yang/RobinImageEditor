@@ -171,9 +171,13 @@ public class MatrixUtils {
 
     public static PointF mapInvertMatrixPoint(Matrix matrix, PointF point) {
         Matrix invert = new Matrix();
+        // matrix 最全方法详解与进阶: https://cloud.tencent.com/developer/article/2384173
+        // 这个方法的作用是得到当前矩阵的逆矩阵什么是逆矩阵，逆矩阵就是matrix旋转了30度逆matrix就反向旋转30度，放大n倍，就缩小n倍。所以如果要得到当前（x,y）坐标对应matrix操作之前的(x',y')可以先将当前进行逆矩阵在进行map
+        // 将参数为matrix的逆矩阵, 设置到invert里
         matrix.invert(invert);
         float[] src = new float[]{point.x, point.y};
         float[] dst = new float[2];
+        // 得到对应matrix操作之前的x,y坐标
         invert.mapPoints(dst, src);
         return new PointF(dst[0], dst[1]);
     }
