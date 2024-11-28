@@ -4,6 +4,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 
 /**
+ * 如果裁剪Rect变化，则回调该方法
  * Created by Robin Yang on 12/28/17.
  */
 

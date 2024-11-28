@@ -55,6 +55,9 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
      * {@link robin.com.robinimageeditor.layer.photoview.PhotoViewAttacher#setImageViewMatrix}
      */
     protected final Matrix rootLayerMatrix = new Matrix();
+    /**
+     * 调用canvas.drawXXX()后, 能显示出来drawXXX效果的Rect区域
+     */
     protected final RectF validateRect = new RectF();
 
     /* support drawing */
@@ -64,7 +67,10 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
      */
     protected Canvas displayCanvas;
 
-    /* saveState Info */
+    /**
+     * 历史操作
+     * saveState Info
+     */
     protected ArrayMap<String, T> saveStateMap = new ArrayMap<>();
 
     /* gesture */
@@ -76,6 +82,9 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     /* 当前layer是否能拦截触控事件 */
     private boolean isLayerInEditMode;
+    /**
+     * 单位矩阵，是一个对角线上的元素全为1，其他元素全为0的标量矩阵
+     */
     protected Matrix unitMatrix = new Matrix();
     /** view是否已经加载完*/
     protected boolean viewIsLayout;
@@ -126,6 +135,9 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
             if (clipRect()) {
                 canvas.save();
                 // 该方法用于裁剪画布，也就是设置画布的显示区域
+                // https://blog.csdn.net/u010015108/article/details/52817431
+                // 比如调用了canvas.clipRect(0, 0, getWidth()/2, getHeight()/2);
+                // 这行代码将画布的绘制区域限制到了屏幕的左上角的四分之一的区域中
                 canvas.clipRect(validateRect);
                 canvas.drawBitmap(displayBitmap, getDrawMatrix(), null);
                 canvas.restore();
@@ -358,8 +370,13 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
 
     public Matrix getDrawMatrix() {
         Matrix matrix = new Matrix();
+        // 矩阵的用法 : https://cloud.baidu.com/article/3151272
+        // matrix1.postConcat(matrix2);
+        // 就是将matrix2后接到matrix1
+        // preConcat()：将一个 Matrix 乘以当前 Matrix。
+        // postConcat()：将当前 Matrix 乘以一个 Matrix。
         matrix.set(supportMatrix);
-        matrix.postConcat(rootLayerMatrix);
+        matrix.postConcat(rootLayerMatrix);  // 就是supportMatrix * rootLayerMatrix
         return matrix;
     }
 
