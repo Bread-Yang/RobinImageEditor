@@ -131,6 +131,7 @@ public class MatrixUtils {
         rectF.bottom += dy;
     }
 
+    // 根据提供的中心坐标和宽高, 设置rectF的left,top,right,bottom
     public static void RectFSchedule(RectF rectF, float centerX, float centerY, float width, float height) {
         rectF.left = centerX - width / 2;
         rectF.top = centerY - height / 2;

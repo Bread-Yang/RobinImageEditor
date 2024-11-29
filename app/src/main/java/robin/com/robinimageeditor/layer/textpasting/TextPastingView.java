@@ -89,7 +89,12 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         float width = mTextPaint.measureText(text);
         float height = mTextPaint.descent() - mTextPaint.ascent();
         RectF initDisplayRect = new RectF();
-        PointF point = new PointF(validateRect.centerX(), validateRect.centerY());
+        // 这段代码会导致新增的PastingView所在的位置, 每次都是在validateRect的中间, 而不是在屏幕的中间
+//        PointF point = new PointF(validateRect.centerX(), validateRect.centerY());
+        // 无论photoView是缩放还是平移, 新增的PastingView的初始位置, 永远显示在屏幕的中间
+        float centerX = getResources().getDisplayMetrics().widthPixels / 2;
+        float centerY = getResources().getDisplayMetrics().heightPixels / 2;
+        PointF point = new PointF(centerX, centerY);
         point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);
         MatrixUtils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
         RectF initTextRect = new RectF();

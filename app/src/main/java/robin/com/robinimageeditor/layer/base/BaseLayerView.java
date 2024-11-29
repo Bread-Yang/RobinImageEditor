@@ -61,8 +61,9 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
      */
     protected final Matrix rootLayerMatrix = new Matrix();
     /**
-     * PhotoView放大、缩小、移动等等操作会改变此值
+     * 原图显示出来的区域, 也就是validateRect以外的区域, 显示灰色
      * 调用canvas.drawXXX()后, 能显示出来drawXXX效果的Rect区域
+     * PhotoView放大、缩小、移动等等操作会改变此值
      */
     protected final RectF validateRect = new RectF();
 
@@ -183,6 +184,8 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     // PhotoView缩放平移时, 回调该方法
     @Override
     public void onPhotoRectUpdate(RectF rect, Matrix matrix) {
+        Log.e(TAG, "validateRect的宽高, width : " + rect.width() + ", height : " + rect.height());
+        Log.e(TAG, "validateRect的中心, x : " + rect.centerX() + ", y : " + rect.centerY());
         validateRect.set(rect);
         rootLayerMatrix.set(matrix);
         redrawOnPhotoRectUpdate();
