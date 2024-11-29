@@ -6,6 +6,7 @@ import android.graphics.Path;
 import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
+ * 涂鸦编辑记录
  * Created by Robin Yang on 12/29/17.
  */
 

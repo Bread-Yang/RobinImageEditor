@@ -19,6 +19,8 @@ import robin.com.robinimageeditor.data.share.SharableData;
 import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
+ * ## Base  pasting layerView  for [StickerView] and [TextPastingView]
+ * It's hold drag info and callback of show or hide pasting removable
  * Created by Robin Yang on 1/4/18.
  */
 
@@ -106,6 +108,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         drawFocusDecorate(canvas);
     }
 
+    // 画出高亮的白色框
     protected void drawFocusDecorate(Canvas canvas) {
         if (currentPastingState != null) {
             RectF initDisplayRectF = currentPastingState.getInitDisplayRect();
@@ -287,6 +290,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         Matrix finalMatrix = new Matrix();
         finalMatrix.set(state.getTransformMatrix());
         if (realDisplay) {
+            // PastingSaveStateMarker的TransformMatrix * getDrawMatrix()
             finalMatrix.postConcat(getDrawMatrix());
         }
         RectF displayRect = new RectF();
@@ -404,6 +408,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         hideExtraValidateRect();
     }
 
+    // 把在validateRect外面的pasting隐藏
     protected void hideExtraValidateRect() {
         postDelayed(hidePastingOutOfBoundsRunnable, 1500);
     }

@@ -6,6 +6,7 @@ import android.graphics.RectF;
 import robin.com.robinimageeditor.layer.sticker.StickerType;
 
 /**
+ * 表情编辑记录
  * Created by Robin Yang on 1/4/18.
  */
 

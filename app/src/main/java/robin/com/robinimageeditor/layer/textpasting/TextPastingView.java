@@ -22,6 +22,7 @@ import robin.com.robinimageeditor.utils.MatrixUtils;
 
 public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> {
 
+    // 高亮的白色选中框相对于文本Text的offset
     private float mFocusRectOffset;
     private Paint mTextPaint;
     private Paint mTempTextPaint;
@@ -95,22 +96,25 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         float centerX = getResources().getDisplayMetrics().widthPixels / 2;
         float centerY = getResources().getDisplayMetrics().heightPixels / 2;
         PointF point = new PointF(centerX, centerY);
+        // 屏幕中心点, 通过DrawMatrix的逆矩阵, 计算出变换前的实际位置
         point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);
         MatrixUtils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
         RectF initTextRect = new RectF();
         initTextRect.set(initDisplayRect);
+        // 高亮的白色选中框相对于文本Text的offset, 这里left和top各减了mFocusRectOffset, right和bottom各加了mFocusRectOffset
         MatrixUtils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
         return new TextPastingSaveState(text, color, initTextRect, initDisplayRect, new Matrix(), transformMatrix);
     }
 
+    // 把历史的文本画出来
     @Override
     protected void drawPastingState(TextPastingSaveState state, Canvas canvas) {
-        RectF resultTextRect = new RectF();
-        Matrix matrix = new Matrix(state.getTransformMatrix());
-        matrix.mapRect(resultTextRect, state.getInitTextRect());
-        mTempTextPaint.setTextSize(mTextPaint.getTextSize() * MatrixUtils.getMatrixScale(matrix));
+//        RectF resultTextRect = new RectF();
+        Matrix transformMatrix = new Matrix(state.getTransformMatrix());
+//        transformMatrix.mapRect(resultTextRect, state.getInitTextRect());
+        mTempTextPaint.setTextSize(mTextPaint.getTextSize() * MatrixUtils.getMatrixScale(transformMatrix));
         mTempTextPaint.setColor(state.getTextColor());
-        PointF result = new PointF(resultTextRect.left, resultTextRect.bottom - mTempTextPaint.descent());
+//        PointF result = new PointF(resultTextRect.left, resultTextRect.bottom - mTempTextPaint.descent());
 //        canvas.drawText(state.getText(), result.x, result.y, mTempTextPaint);
 
         RectF initDisplayRectF = state.getInitDisplayRect();
