@@ -96,7 +96,7 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         float centerX = getResources().getDisplayMetrics().widthPixels / 2;
         float centerY = getResources().getDisplayMetrics().heightPixels / 2;
         PointF point = new PointF(centerX, centerY);
-        // 屏幕中心点, 通过DrawMatrix的逆矩阵, 计算出变换前的实际位置
+        // 屏幕中心点, 通过DrawMatrix的逆矩阵, 计算出变换前的实际位置(相对于图片编辑框左上角的位置(不是相对于屏幕左上角),)
         point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);
         MatrixUtils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
         RectF initTextRect = new RectF();

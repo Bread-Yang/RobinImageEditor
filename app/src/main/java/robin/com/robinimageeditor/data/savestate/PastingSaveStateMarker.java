@@ -9,7 +9,7 @@ import android.graphics.RectF;
 
 public abstract class PastingSaveStateMarker extends SaveStateMarker {
 
-    protected RectF initDisplayRect;    // 白色的高亮选中框的Rect, 坐标已经是通过逆矩阵计算出来的, 所以直接在canvas上画就行
+    protected RectF initDisplayRect;    // 白色的高亮选中框的Rect, 坐标已经是通过逆矩阵计算出来的, 相对于图片编辑框左上角的位置(不是相对于屏幕左上角), 所以直接在canvas上画就行
     protected Matrix transformMatrix;   // 缩放平移旋转改变此值, 一开始都是单位矩阵
     protected Matrix initDisplayMatrix; // 一开始都是单位矩阵
 

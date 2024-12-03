@@ -121,6 +121,9 @@ public class CustomGestureDetector {
                 mScaleDetector.onTouchEvent(ev);
                 mRotateDetector.onTouchEvent(ev);
             }
+            // touch事件产生的所有x,y坐标, 都是相对于屏幕左上角的坐标, 要拿到真正相对于图片编辑框左上角的真正坐标,必须通过逆矩阵,也就是通过方法
+            // MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(x, y))
+            // 才能拿到相对于图片编辑框左上角的真正坐标
             return processTouchEvent(ev);
         } catch (IllegalArgumentException e) {
             // Fix for support lib bug, happening when onDestroy is called
