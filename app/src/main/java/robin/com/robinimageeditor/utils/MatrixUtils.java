@@ -183,6 +183,16 @@ public class MatrixUtils {
         return new PointF(dst[0], dst[1]);
     }
 
+    /**
+     * 1. dx和dy, 是在已经做了matrix参数平移后的dx和dy
+     * 2. 所以为了得到真正的dx'和dy', 要先拿到matrix参数的逆矩阵invert, 得到在translate操作前TransX和TransY的坐标(用startX和startY标识)
+     * 3. 然后matrix参数再postTranslate(dx, dy), 做完再invert, 拿到逆矩阵的坐标
+     * 4. 再用(startX - 逆矩阵后得到的TransX), 和(startY - 逆矩阵后得到的TransY), 得到真正的dx'和dy'
+     * @param matrix
+     * @param dx
+     * @param dy
+     * @return
+     */
     public static float[] mapInvertMatrixTranslate(Matrix matrix, float dx, float dy) {
         Matrix tempMatrix = new Matrix();
         Matrix invertMatrix = new Matrix();
@@ -196,6 +206,16 @@ public class MatrixUtils {
         return new float[]{startX - getMatrixTransX(invertMatrix), startY - getMatrixTransY(invertMatrix)};
     }
 
+    /**
+     * 1. scaleX和scaleY, 是在已经做了matrix参数缩放后的scaleX和scaleY
+     * 2. 所以为了得到真正的scaleX'和scaleY', 要先拿到matrix参数的逆矩阵invert, 得到在scale操作前scaleX和scaleY的坐标(用startScaleX和startScaleY标识)
+     * 3. 然后matrix参数再postScale(scaleX, scaleY), 做完再invert, 拿到逆矩阵的坐标
+     * 4. 再用(startScaleX / 逆矩阵后得到的ScaleX), 和(startScaleY / 逆矩阵后得到的ScaleY), 得到真正的scaleX'和scaleY'
+     * @param matrix
+     * @param scaleX
+     * @param scaleY
+     * @return
+     */
     public static float[] mapInvertMatrixScale(Matrix matrix, float scaleX, float scaleY) {
         Matrix tempMatrix = new Matrix();
         Matrix invertMatrix = new Matrix();

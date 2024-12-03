@@ -106,7 +106,7 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         return new TextPastingSaveState(text, color, initTextRect, initDisplayRect, new Matrix(), transformMatrix);
     }
 
-    // 把历史的文本画出来
+    // 把历史的文本编辑记录画出来
     @Override
     protected void drawPastingState(TextPastingSaveState state, Canvas canvas) {
 //        RectF resultTextRect = new RectF();

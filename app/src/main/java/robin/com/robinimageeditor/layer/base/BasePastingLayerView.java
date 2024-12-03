@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.support.annotation.Nullable;
@@ -31,10 +32,12 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     private static final String TAG = "BasePastingLayerView";
 
-    private RectF dragViewRect;
+    // 拖动删除当前历史编辑记录的RectF范围, 该RectF是相对于屏幕左上角的绝对位置, 不是是相对于编辑框的左上角
+    private RectF dragToDeleteViewRect;
 
     protected boolean pastingOutOfBound;
     protected boolean pastingDoubleClick;
+    // 当前正在操作的编辑记录
     protected T currentPastingState;
     protected HidePastingOutOfBoundsRunnable hidePastingOutOfBoundsRunnable;
 
@@ -45,6 +48,9 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     protected OnOperateCallback mCallback;
 
+    /**
+     * 用于处理拖动、缩放、旋转等操作的回调
+     */
     public interface OnOperateCallback {
         void showOrHideDragCallback(boolean b);
 
@@ -77,7 +83,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         // 继承于BasePastingLayerView的子类默认是可拦截触控事件
         setLayerInEditMode(true);
 
-        dragViewRect = new RectF();
+        dragToDeleteViewRect = new RectF();
         hidePastingOutOfBoundsRunnable = new HidePastingOutOfBoundsRunnable();
     }
 
@@ -286,6 +292,13 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         return false;
     }
 
+    /**
+     * 获取编辑历史的显示范围Rect
+     *
+     * @param state
+     * @param realDisplay 如果是true, 则返回相对于手机左上角的位置(transformMatrix * drawMatrix); 如果是false, 则返回相对于图片(编辑框)左上角的位置(做了transformMatrix变换的位置)
+     * @return
+     */
     protected RectF getStateDisplayRect(PastingSaveStateMarker state, boolean realDisplay) {
         Matrix finalMatrix = new Matrix();
         finalMatrix.set(state.getTransformMatrix());
@@ -314,17 +327,17 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                     if (mCallback != null) {
                         mCallback.showOrHideDragCallback(true);
                     }
-                    // calc
-                    float[] invert = MatrixUtils.mapInvertMatrixTranslate(getDrawMatrix(), dx, dy);
-                    currentPastingState.getTransformMatrix().postTranslate(invert[0], invert[1]);
-                    RectF displayRect = getStateDisplayRect(currentPastingState, true);
-                    checkDisplayRegion(displayRect);
-                    // setStates
-                    if (mCallback != null) {
-                        mCallback.setOrNotDragCallback(!dragViewRect.contains(displayRect.centerX(), displayRect.centerY()));
-                    }
-                    redrawAllCache();
                 }
+                // calc
+                float[] invert = MatrixUtils.mapInvertMatrixTranslate(getDrawMatrix(), dx, dy);
+                currentPastingState.getTransformMatrix().postTranslate(invert[0], invert[1]);
+                RectF displayRect = getStateDisplayRect(currentPastingState, true);
+                checkDisplayRegion(displayRect);
+                // setStates
+                if (mCallback != null) {
+                    mCallback.setOrNotDragCallback(!dragToDeleteViewRect.contains(displayRect.centerX(), displayRect.centerY()));
+                }
+                redrawAllCache();
             }
         }
     }
@@ -383,8 +396,9 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         pastingDoubleClick = false;
         // remove mode, rebound mode
         if (currentPastingState != null) {
+            // 获取相对于手机屏幕左上角的位置(绝对位置)
             RectF displayRect = getStateDisplayRect(currentPastingState, true);
-            boolean delete = dragViewRect.contains(displayRect.centerX(), displayRect.centerY());
+            boolean delete = dragToDeleteViewRect.contains(displayRect.centerX(), displayRect.centerY());
             // remove
             if (delete) {
                 saveStateMap.remove(currentPastingState.getId());
@@ -393,12 +407,9 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
             } else {
                 // rebound
                 if (!validateRect.contains(displayRect.centerX(), displayRect.centerY())) {
-                    Matrix initEventMatrix = currentPastingState.getInitDisplayMatrix();
-                    Matrix currentMatrix = new Matrix();
-                    currentMatrix.set(currentPastingState.getTransformMatrix());
-                    currentMatrix.postConcat(getDrawMatrix());
-                    float dx = MatrixUtils.getMatrixTransX(currentMatrix) - MatrixUtils.getMatrixTransX(initEventMatrix);
-                    float dy = MatrixUtils.getMatrixTransY(currentMatrix) - MatrixUtils.getMatrixTransY(initEventMatrix);
+                    float dx = displayRect.centerX() - getResources().getDisplayMetrics().widthPixels / 2;
+                    float dy = displayRect.centerY() - getResources().getDisplayMetrics().heightPixels / 2;
+                    // 如果超出编辑框, 把历史记录挪回当前编辑框的中心
                     rebound(dx, dy);
                 }
 //                currentPastingState.getInitDisplayMatrix().reset();
@@ -413,6 +424,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         postDelayed(hidePastingOutOfBoundsRunnable, 1500);
     }
 
+    // 将在validateRect边界外的控件translate回来
     private void rebound(float dx, float dy) {
         new OverBoundRunnable(dx, dy).run();
     }
@@ -443,8 +455,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         }
     }
 
-    public void setDragViewRect(RectF dragViewRect) {
-        this.dragViewRect = dragViewRect;
+    public void setDragToDeleteViewRect(RectF dragToDeleteViewRect) {
+        this.dragToDeleteViewRect = dragToDeleteViewRect;
     }
 
     @Override

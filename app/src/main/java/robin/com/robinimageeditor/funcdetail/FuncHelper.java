@@ -70,11 +70,11 @@ public class FuncHelper implements FuncModeListener, FuncDetailsListener, OnRevo
             @Override
             public void onChange(View view, RectF rectF) {
                 if (stickerView != null) {
-                    stickerView.setDragViewRect(rectF);
+                    stickerView.setDragToDeleteViewRect(rectF);
                 }
 
                 if (textPastingView != null) {
-                    textPastingView.setDragViewRect(rectF);
+                    textPastingView.setDragToDeleteViewRect(rectF);
                 }
             }
         });
