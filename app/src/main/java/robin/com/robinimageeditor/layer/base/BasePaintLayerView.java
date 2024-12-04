@@ -70,8 +70,8 @@ public abstract class BasePaintLayerView<T extends SaveStateMarker> extends Base
     }
 
     @Override
-    public void onDrag(float dx, float dy, float x, float y, boolean rootLayer) {
-        if (!rootLayer) {
+    public void onDrag(float dx, float dy, float x, float y, boolean isRootLayer) {
+        if (!isRootLayer) {
             PointF result = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), new PointF(x, y));
 
             if (paintPath == null) {

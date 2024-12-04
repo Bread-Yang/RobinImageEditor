@@ -35,7 +35,9 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     // 拖动删除当前历史编辑记录的RectF范围, 该RectF是相对于屏幕左上角的绝对位置, 不是是相对于编辑框的左上角
     private RectF dragToDeleteViewRect;
 
+    // 当前编辑记录的RectF中心点, 是否不在validateRect范围内, 如果不在validateRect的范围内， 则调用rebound()方法把编辑记录拉回来
     protected boolean pastingOutOfBound;
+    // 双击编辑
     protected boolean pastingDoubleClick;
     // 当前正在操作的编辑记录
     protected T currentPastingState;
@@ -108,6 +110,12 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     protected void drawMask(Canvas canvas) {
         if (pastingOutOfBound) {
             if (currentPastingState != null) {
+                /**
+                 * 这里画多一次的目的是因为在因为在{@link BaseLayerView#onDraw}里，调用了canvas.clipRect(validateRect),
+                 * 因为所以的历史编辑记录是在@{@link displayBitmap}上画的, 所以超出{@link validateRect}范围外的编辑记录无法显示，
+                 * 但是这里的canvas，不是@{@link displayCanvas}，而是{@link BaseLayerView#onDraw}方法上的canvas，所以
+                 * {@link validateRect}范围外能显示出来
+                 */
                 drawPastingState(currentPastingState, canvas);
             }
         }
@@ -145,6 +153,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
             path.lineTo(polygonPoint[6], polygonPoint[7]);
             path.close();
 
+            // 将高亮白色框框画出来
             canvas.drawPath(path, focusRectPaint);
 
             // draw bigRect corner's smallRect
@@ -164,6 +173,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         }
     }
 
+    // 画高亮白色框框各个角的点
     protected void drawFocusRectCornerRect(Canvas canvas, float centerX, float centerY) {
         RectF rect = new RectF();
         MatrixUtils.RectFSchedule(rect, centerX, centerY, focusRectCornerWidth, focusRectCornerWidth);
@@ -227,6 +237,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
         int action = event.getAction() & MotionEvent.ACTION_MASK;
         if (action == MotionEvent.ACTION_DOWN) {
+            // 当前手指触控的位置，是否有历史编辑记录
             T downState = getFingerDownState(event.getX(), event.getY());
             if (downState != null && downState == currentPastingState) {
                 pastingDoubleClick = true;
@@ -275,6 +286,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         Path path = new Path();
         path.addRect(state.getInitDisplayRect(), Path.Direction.CW);
 
+        // 因为PastingSaveStateMarker的坐标都是在原图没有经过任何变换操作的原始x，y坐标，所以这里要再次乘上matrix
         Matrix finalMatrix = new Matrix();
         finalMatrix.set(state.getTransformMatrix());
         finalMatrix.postConcat(getDrawMatrix());
@@ -319,8 +331,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     }
 
     @Override
-    public void onDrag(float dx, float dy, float x, float y, boolean rootLayer) {
-        if (!rootLayer) {
+    public void onDrag(float dx, float dy, float x, float y, boolean isRootLayer) {
+        if (!isRootLayer) {
             pastingDoubleClick = false;
             if (currentPastingState != null) {
                 if (x != -1 || y != -1) {
@@ -409,7 +421,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                 if (!validateRect.contains(displayRect.centerX(), displayRect.centerY())) {
                     float dx = displayRect.centerX() - getResources().getDisplayMetrics().widthPixels / 2;
                     float dy = displayRect.centerY() - getResources().getDisplayMetrics().heightPixels / 2;
-                    // 如果超出编辑框, 把历史记录挪回当前编辑框的中心
+                    // 如果超出编辑框, 把历史记录挪回当前图片编辑框的中心
                     rebound(dx, dy);
                 }
 //                currentPastingState.getInitDisplayMatrix().reset();
@@ -449,6 +461,12 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     @Override
     protected void drawAllCachedState(Canvas canvas) {
+        /**
+         * 这里重画的所有历史编辑记录的x,y坐标, 都是在通过getDrawMatrix()的逆矩阵计算, 得到原图在没有做过任何缩放,平移,裁剪操作情况下的x',y'坐标
+         * 在{@link BaseLayerView#onDraw}方法调用时,
+         * 1.先把所有的path, 通过{@link BaseLayerView#displayCanvas}, 画在没有经过任何变换操作的{@link BaseLayerView#displayBitmap}上
+         * 2.再把{@link BaseLayerView#displayBitmap}, 通过canvas.drawBitmap(displayBitmap, getDrawMatrix(), null), 在经过getDrawMatrix()的变换后, 画到canvas上
+         */
         for (int i = 0; i < saveStateMap.size(); i++) {
             T state = saveStateMap.valueAt(i);
             drawPastingState(state, canvas);

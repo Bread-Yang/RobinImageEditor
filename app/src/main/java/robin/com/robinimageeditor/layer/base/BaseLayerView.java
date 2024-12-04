@@ -30,7 +30,6 @@ import robin.com.robinimageeditor.editcache.LayerEditCache;
 import robin.com.robinimageeditor.layer.base.detector.CustomGestureDetector;
 import robin.com.robinimageeditor.layer.crop.CropHelper;
 import robin.com.robinimageeditor.utils.MatrixUtils;
-import robin.com.robinimageeditor.view.ActionFrameLayout;
 
 /**
  * 看看自己github上的另一个工程MatrixPractice : https://github.com/Bread-Yang/MatrixPractice
@@ -61,15 +60,22 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
      */
     protected final Matrix rootLayerMatrix = new Matrix();
     /**
-     * 原图显示出来的区域, 也就是validateRect以外的区域, 显示灰色
+     * 原图显示出来的区域, 也就是validateRect以外的区域, 不显示
+     * 在{@link BaseLayerView#onDraw}方法里, 调用canvas.clipRect(validateRect);
      * 调用canvas.drawXXX()后, 能显示出来drawXXX效果的Rect区域
      * PhotoView放大、缩小、移动等等操作会改变此值
      */
     protected final RectF validateRect = new RectF();
 
-    /* support drawing */
+    /**
+     * 通过{@link displayCanvas}, 将所有编辑记录画到该displayBitmap上
+     * 然后在{@link BaseLayerView#onDraw}方法里, 通过canvas.drawBitmap(displayBitmap, getDrawMatrix(), null)方法调用, 在经过getDrawMatrix()的变换后, 画到canvas上
+     */
     protected Bitmap displayBitmap;
     /**
+     * 该displayCanvas由displayBitmap生成, 所有的历史编辑记录, 都在displayCanvas上画
+     * displayCanvas = new Canvas(displayBitmap)
+     * 每个BaseLayerView都有自己的一层displayCanvas, 生成编辑图片时, 再叠加
      * Canvas that draw on {@link displayBitmap}
      */
     protected Canvas displayCanvas;
@@ -94,7 +100,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
      */
     protected Matrix unitMatrix = new Matrix();
     /** view是否已经加载完*/
-    protected boolean viewIsLayout;
+    protected boolean viewIsAlreadyLayout;
 
     public BaseLayerView(Context context) {
         super(context);
@@ -125,6 +131,10 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         maskPaint.setAntiAlias(true);
         maskPaint.setColor(Color.BLACK);
         initSupportView(context);
+        if (this instanceof BasePaintLayerView) {
+//            setBackgroundColor(Color.parseColor("#40001111"));
+//            setBackgroundColor(Color.BLUE);
+        }
     }
 
     @Override
@@ -164,6 +174,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         return true;
     }
 
+    // 子类BasePastingLayerView用到，用于画正在编辑的历史记录的高亮白色框框
     protected void drawMask(Canvas canvas) {
 //        val layerRect = RectF(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat())
 //        val diffs = MatrixUtils.diffRect(layerRect, validateRect)
@@ -178,7 +189,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         if (validateRect.isEmpty()) {
             validateRect.set(left, top, right, bottom);
         }
-        viewIsLayout = true;
+        viewIsAlreadyLayout = true;
     }
 
     // PhotoView缩放平移时, 回调该方法
@@ -230,7 +241,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
     }
 
     @Override
-    public void onDrag(float dx, float dy, float x, float y, boolean rootLayer) {
+    public void onDrag(float dx, float dy, float x, float y, boolean isRootLayer) {
 
     }
 
@@ -311,6 +322,13 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         }
         if (displayCanvas != null) {
             displayCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+            /**
+             * 这里重画的所有历史编辑记录的x,y坐标, 都是在通过getDrawMatrix()的逆矩阵计算, 得到原图在没有做过任何缩放,平移,裁剪操作情况下的x',y'坐标
+             * 在{@link BaseLayerView#onDraw}方法调用时,
+             * 1.先把所有的path, 通过{@link BaseLayerView#displayCanvas}, 画在没有经过任何变换操作的{@link BaseLayerView#displayBitmap}上
+             * 2.再把{@link BaseLayerView#displayBitmap}, 通过canvas.drawBitmap(displayBitmap, getDrawMatrix(), null), 在经过getDrawMatrix()的变换后, 画到canvas上
+             * 3.因为都是在displayBitmap上画的，所以在validateRect范围外的历史编辑记录是无法显示出来(因为在{@link BaseLayerView#onDraw}里，调用了canvas.clipRect(validateRect);)
+             */
             drawAllCachedState(displayCanvas);
         }
         postInvalidate();
@@ -356,7 +374,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
                 }
             }
 
-            if (viewIsLayout) {
+            if (viewIsAlreadyLayout) {
                 redrawAllCache();
             } else {
                 addOnLayoutChangeListener(new OnLayerLayoutListener());
