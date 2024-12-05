@@ -492,10 +492,12 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
             RootEditorDelegate delegate = mProvider.getRootEditorDelegate();
 
             // draw image data layer by layer
+            // 获取到裁剪后的图片
             Bitmap rootBitmap = delegate.getDisplayBitmap();
-            Bitmap composeBitmap = Bitmap.createBitmap(layerComposite.getWidth(), layerComposite.getHeight(), Bitmap.Config.RGB_565);
+            Bitmap composeBitmap = Bitmap.createBitmap(layerComposite.getWidth(), layerComposite.getHeight(), Bitmap.Config.RGB_565);  // 这里获取到的是屏幕的宽高
 
             Canvas canvas = new Canvas(composeBitmap);
+            // 在屏幕大小的canvas上， 通过PhotoView的mBaseMatrix变换，将裁剪后的图片画上
             canvas.drawBitmap(rootBitmap, delegate.getBaseLayoutMatrix(), null);
 
             drawChildrenLayer(null, layerComposite, canvas);

@@ -289,6 +289,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         // 因为PastingSaveStateMarker的坐标都是在原图没有经过任何变换操作的原始x，y坐标，所以这里要再次乘上matrix
         Matrix finalMatrix = new Matrix();
         finalMatrix.set(state.getTransformMatrix());
+        // public boolean postConcat (Matrix other)
+        // Postconcats the matrix with the specified matrix. M' = other * M
         finalMatrix.postConcat(getDrawMatrix());
         path.transform(finalMatrix);
 
@@ -390,6 +392,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                 points[1] = initDisplayRectF.centerY();
 
                 transformMatrix.mapPoints(points);
+                // public boolean postRotate (float degrees)
+                //Postconcats the matrix with the specified rotation. M' = R(degrees) * M
                 currentPastingState.getTransformMatrix().postRotate(rotateDegree, points[0], points[1]);
                 redrawAllCache();
             }

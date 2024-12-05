@@ -403,11 +403,11 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         Matrix matrix = new Matrix();
         // 矩阵的用法 : https://cloud.baidu.com/article/3151272
         // matrix1.postConcat(matrix2);
-        // 就是将matrix2后接到matrix1
-        // preConcat()：将一个 Matrix 乘以当前 Matrix。
-        // postConcat()：将当前 Matrix 乘以一个 Matrix。
+        // 就是将matrix1后接到matrix2
         matrix.set(supportMatrix);
-        matrix.postConcat(rootLayerMatrix);  // 就是supportMatrix * rootLayerMatrix
+        // public boolean postConcat (Matrix other)
+        // Postconcats the matrix with the specified matrix. M' = other * M
+        matrix.postConcat(rootLayerMatrix);  // 就是 rootLayerMatrix * supportMatrix
         return matrix;
     }
 
