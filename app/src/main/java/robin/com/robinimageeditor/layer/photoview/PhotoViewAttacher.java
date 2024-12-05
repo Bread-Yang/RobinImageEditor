@@ -32,6 +32,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     private Interpolator mInterpolator = new AccelerateDecelerateInterpolator();
 
     private int mZoomDuration = DEFAULT_ZOOM_DURATION;
+    // PhotoView 定义了三档默认缩放大小，1.0f、1.75f、3.0f，分别对应 mMinScale 、mMidScale 、mMaxScale
     private static float DEFAULT_MAX_SCALE = 3.0f;
     private static float DEFAULT_MID_SCALE = 1.75f;
     private static float DEFAULT_MIN_SCALE = 1.0f;
@@ -56,9 +57,13 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     private CustomGestureDetector mScaleDragDetector;
 
     // These are set so we don't keep allocating them on the heap
+    // mBaseMatrix 基础矩阵，记录的是图片根据 ScaleType 缩放移动到适应 ImageView 的变化，不记录手势操作
     private final Matrix mBaseMatrix = new Matrix();
-    private final Matrix mDrawMatrix = new Matrix();
+    // mSuppMatrix 额外矩阵，记录的是手势操作
     private final Matrix mSuppMatrix = new Matrix();
+    // mDrawMatrix 实际设置给 ImageView 的矩阵，由 mBaseMatrix 和 mSuppMatrix 相乘得到
+    // 在给 ImageView 设置矩阵和获取边界时，是要用 mDrawMatrix 的
+    private final Matrix mDrawMatrix = new Matrix();
     private final RectF mDisplayRect = new RectF();
     private final float[] mMatrixValues = new float[9];
 
@@ -75,16 +80,20 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     public PhotoViewAttacher(ImageView imageView) {
         mImageView = imageView;
         imageView.setOnTouchListener(this);
+        // 主要用于在外面布局发生变化的时候更新图片默认的矩阵
         imageView.addOnLayoutChangeListener(this);
         mBaseRotation = 0.0f;
 
+        // 这个方法是用于 Android Studio 布局编辑器预览的,在预览环境拿到的 context 是 com.android.layoutlib.bridge.android.BridgeContext ，这里面的方法获取到的一些对象是和 Android 系统环境不太一样的
         if (imageView.isInEditMode()) {
+            // 这里判断 isInEditMode 后就直接返回了，可能是因为预览环境不需要监听触摸事件，也就不会走到相关的方法了
             return;
         }
 
         // Create Gesture Detectors...
         mScaleDragDetector = new CustomGestureDetector(imageView.getContext(), this);
 
+        // 手势监听回调接口
         mGestureDetector = new GestureDetector(imageView.getContext(), new GestureDetector.SimpleOnGestureListener() {
 
             // forward long click listener
@@ -208,7 +217,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     }
 
     public float getScale() {
-        return (float) Math.sqrt((float) Math.pow(getValue(mSuppMatrix, Matrix.MSCALE_X), 2) + (float) Math.pow(getValue(mSuppMatrix, Matrix.MSKEW_Y), 2));
+        return (float) Math.sqrt((float) Math.pow(getValue(mSuppMatrix, Matrix.MSCALE_X), 2) + (float) Math.pow(getValue(mSuppMatrix, Matrix.MSCALE_Y), 2));
     }
 
     public void setScale(float scale) {
@@ -316,6 +325,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     public boolean onTouch(View v, MotionEvent ev) {
         boolean handled = false;
 
+        // mZoomEnabled 是外部可设置的属性，只有允许缩放并且 ImageView 有 drawable 的情况下才会处理手势操作
         if (mZoomEnabled && MatrixUtils.hasDrawable((ImageView) v)) {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -610,6 +620,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
         resetMatrix();
     }
 
+    // checkMatrixBounds 算是这个类的一个核心方法了，用于矫正偏差。getDisplayRect 会对当前的 drawable 边界执行变换，变换矩阵就是前文说的 mDrawMatrix ，拿到了显示区域后会跟 ImageView 区域对比，把超出边界的部分拉回去，拉回去的位置会参考 ScaleType ，这里只有位移变换，mHorizontalScrollEdge、mVerticalScrollEdge 主要记录当前的手势操作 matrix 需要往哪个边界矫正
     private boolean checkMatrixBounds() {
 
         final RectF rect = getDisplayRect(getDrawMatrix());

@@ -36,6 +36,7 @@ public class CustomGestureDetector {
         final ViewConfiguration configuration = ViewConfiguration
                 .get(context);
         mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
+        // getScaledTouchSlop 是按根据设备密度（density）来获取的最小滑动距离，默认是 8dp （<dimen name="config_viewConfigurationTouchSlop">8dp</dimen>）
 //        mTouchSlop = configuration.getScaledTouchSlop();
         mTouchSlop = 2;
 
@@ -92,6 +93,7 @@ public class CustomGestureDetector {
     }
 
     private float getActiveX(MotionEvent ev) {
+        // 获取事件坐标有两种方法，一种是无参数的 float getX() ,这个方法获取的是索引为0的点的坐标，一种是带参数的 float getX(int pointerIndex) ，这个需要传入索引值，用于多指操作
         try {
             return ev.getX(mActivePointerIndex);
         } catch (Exception e) {
@@ -131,14 +133,32 @@ public class CustomGestureDetector {
         }
     }
 
+    /**
+     * ACTION_DOWN 第一个手指按下
+     * ACTION_POINTER_DOWN 第一个手指按下后其他手指按下
+     * ACTION_POINTER_UP 多个手指长按时抬起其中一个手指，注意松开后还有手指在屏幕上
+     * ACTION_UP 最后一个手指抬起
+     * ACTION_MOVE 手指移动
+     * ACTION_CANCEL 父View收到ACTION_DOWN后会把事件传给子View，如果后续的ACTION_MOVE和ACTION_UP等事件被父View拦截掉，那子View就会收到ACTION_CANCEL事件
+     * 可以通过 getAction() 方法获取到一个动作，这里的返回值，对于单指而言，就是动作的状态，含义跟上面这些常量一样，但是如果是多指按下或者抬起，返回值是包含动作的索引的，多指的滑动返回值不包含索引，还是状态。动作的状态和索引可以分开获取，getActionMasked() 可以只获取状态，getActionIndex() 可以只获取索引
+     * 对于多指操作，要关注两个属性，触摸点id（PointerId）和索引（PointerIndex），触摸点索引可以通过刚刚说的 getActionIndex() 获取到，也可以通过 findPointerIndex(int pointerId) 获取到，触摸点id可以通过 getPointerId(int pointerIndex) 方法来获取，这个方法需要传入触摸点索引。值得注意的是 PointerId 和 PointerIndex 的取值
+     * PointerId 手指按下时生成，手指抬起时回收，注意多点触摸时，抬起任何一个手指，其他手指的 PointerId 不变，PointerId 赋值后不会变更
+     * PointerIndex 手指按下时生成，从0开始计数，多点触摸抬起其中一个手指时，后面的手指 PointerIndex 会更新，取值范围是0~触摸点个数-1
+     *
+     * @param ev The MotionEvent object containing full information about
+     *        the event.
+     * @return
+     */
     private boolean processTouchEvent(MotionEvent ev) {
         final int action = ev.getAction();
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 mActivePointerId = ev.getPointerId(0);
 
+                // 初始化 VelocityTracker ，VelocityTracker 是一个速度检测类，内部存了个 SynchronizedPool ，obtain() 方法会优先从池子里取 VelocityTracker 的实例，取不到再创建
                 mVelocityTracker = VelocityTracker.obtain();
                 if (null != mVelocityTracker) {
+                    // addMovement 用于跟踪移动事件，一般会在 ACTION_DOWN 、ACTION_MOVE 、ACTION_UP 中调用
                     mVelocityTracker.addMovement(ev);
                 }
 
@@ -150,6 +170,7 @@ public class CustomGestureDetector {
             case MotionEvent.ACTION_MOVE: {
                 final float x = getActiveX(ev);
                 final float y = getActiveY(ev);
+                // 首先得出移动距离dx、dy，这个距离用于拖动手势
                 final float dx = x - mLastTouchX, dy = y - mLastTouchY;
 
                 if (!mIsDragging) {
@@ -189,6 +210,7 @@ public class CustomGestureDetector {
                         mLastTouchX = getActiveX(ev);
                         mLastTouchY = getActiveY(ev);
 
+                        // 这里主要处理松开手后的惯性滑动以及释放 VelocityTracker ，判断是否要惯性滑动，要看 x 轴和 y 轴的速度，VelocityTracker 在获取速度前要先调用 computeCurrentVelocity(int units) 计算速度，computeCurrentVelocity(int units) 方法的参数是单位，1表示1ms，1000表示1s
                         // Compute velocity within the last 1000ms
                         mVelocityTracker.addMovement(ev);
                         mVelocityTracker.computeCurrentVelocity(1000);
@@ -213,6 +235,7 @@ public class CustomGestureDetector {
                 mListener.onFingerUp(mLastTouchX, mLastTouchY);
                 break;
             case MotionEvent.ACTION_POINTER_UP:
+                // 多指触摸抬起其中一个手指，因为 mLastTouchX 在之前一直存的是第一个手指的坐标，所以这里只要判断是不是第一个手指抬起，如果是第一个手指抬起，就更新到下一个手指的坐标
                 final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                 final int pointerId = ev.getPointerId(pointerIndex);
                 if (pointerId == mActivePointerId) {

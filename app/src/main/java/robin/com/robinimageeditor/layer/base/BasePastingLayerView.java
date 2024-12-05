@@ -453,6 +453,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         }
     }
 
+    // 把在validateRect外面的pasting隐藏
     private void recover2ValidateRect() {
         currentPastingState = null;
         pastingOutOfBound = false;

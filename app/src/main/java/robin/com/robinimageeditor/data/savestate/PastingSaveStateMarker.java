@@ -3,15 +3,21 @@ package robin.com.robinimageeditor.data.savestate;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 
+import robin.com.robinimageeditor.layer.base.BaseLayerView;
+
 /**
  * Created by Robin Yang on 1/4/18.
  */
 
 public abstract class PastingSaveStateMarker extends SaveStateMarker {
 
-    protected RectF initDisplayRect;    // 白色的高亮选中框的Rect, 坐标已经是通过逆矩阵计算出来的, 相对于图片编辑框左上角的位置(不是相对于屏幕左上角), 所以直接在canvas上画就行
+    /**
+     * 白色的高亮选中框的Rect
+     * 坐标已经是通过逆矩阵计算出来的, 相对于图片编辑框左上角的位置(不是相对于屏幕左上角), 所以直接在canvas上画就行{@link BaseLayerView#displayCanvas}
+     */
+    protected RectF initDisplayRect;
     protected Matrix transformMatrix;   // 缩放平移旋转改变此值, 一开始都是单位矩阵
-    protected Matrix initDisplayMatrix; // 一开始都是单位矩阵
+    protected Matrix initDisplayMatrix; // 一开始都是单位矩阵, 除非设置了
 
     public PastingSaveStateMarker(RectF initDisplayRect, Matrix initDisplayMatrix, Matrix transformMatrix) {
         this.initDisplayRect = initDisplayRect;

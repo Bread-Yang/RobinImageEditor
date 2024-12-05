@@ -20,7 +20,7 @@ public class PhotoEditCache {
 
     }
 
-    public static PhotoEditCache getIntance() {
+    public static PhotoEditCache getInstance() {
         if (sInstance == null) {
             synchronized (PhotoEditCache.class) {
                 if (sInstance == null) {

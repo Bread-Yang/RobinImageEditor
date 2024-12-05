@@ -185,7 +185,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
     private void initView() {
         List<EditorMode> functionalModeList = new ArrayList<>();
         functionalModeList.add(EditorMode.ScrawlMode);
-//        functionalModeList.add(EditorMode.StickerMode);
+        functionalModeList.add(EditorMode.StickerMode);
         functionalModeList.add(EditorMode.MosaicMode);
         functionalModeList.add(EditorMode.TextPastingMode);
         functionalModeList.add(EditorMode.CropMode);
@@ -216,14 +216,14 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 // key是原图片Url和编辑后图片Url的结合
                 mEditorId += editedImageUrl;
             }
-            editCacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
+            editCacheData = PhotoEditCache.getInstance().getEditCacheDataByImageUrl(mEditorId);
         }
         if ((editCacheData == null || editCacheData.isEmpty()) && editedImageUrl != null) {
             mEditorId = editedImageUrl;
             if (originalImageUrl != null) {
                 mEditorId = originalImageUrl + editedImageUrl;
             }
-            editCacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
+            editCacheData = PhotoEditCache.getInstance().getEditCacheDataByImageUrl(mEditorId);
             //set up layer cache with ep...
             mOriginalImageUrl = editedImageUrl;
         } else {
@@ -510,7 +510,7 @@ public class ImageEditorActivity extends AppCompatActivity implements LayerViewP
                 MatrixUtils.recycleBitmap(rootBitmap);
 
                 // Save cached data.
-                HashMap<String, LayerEditCache> cacheData = PhotoEditCache.getIntance().getEditCacheDataByImageUrl(mEditorId);
+                HashMap<String, LayerEditCache> cacheData = PhotoEditCache.getInstance().getEditCacheDataByImageUrl(mEditorId);
                 saveChildrenLayerData(layerComposite, cacheData);
                 mProvider.getCropHelper().saveLayerEditData(cacheData);
             } catch (FileNotFoundException e) {

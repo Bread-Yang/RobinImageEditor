@@ -72,17 +72,17 @@ public class StickerView extends BasePastingLayerView<StickerSaveState> {
         float height = bitmap.getHeight();
         RectF initDisplayRect = new RectF();
         PointF point = new PointF(validateRect.centerX(), validateRect.centerY());
-        point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);  // 图片未Matrix变换前的中点
+        point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);  // 图片在做Matrix变换前的中点
         MatrixUtils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
         MatrixUtils.RectFIncrease(initDisplayRect, mFocusRectOffset, mFocusRectOffset);
 
-        float tranlateX = initDisplayRect.left;
-        float tranlateY = initDisplayRect.top;
+        float translateX = initDisplayRect.left;
+        float translateY = initDisplayRect.top;
         float scaleX = initDisplayRect.width() / width;
         float scaleY = initDisplayRect.height() / height;
 
         initMatrix.postScale(scaleX, scaleY);
-        initMatrix.postTranslate(tranlateX, tranlateY);
+        initMatrix.postTranslate(translateX, translateY);
 
         return new StickerSaveState(stickerType, stickerIndex, initDisplayRect, initMatrix, null);
     }

@@ -48,6 +48,7 @@ public class PhotoView extends ImageView implements RootNode<ImageView> {
     }
 
     private void init() {
+        // 把ScaleType设置为ScaleType.MATRIX ，因为 PhotoView 的手势操作都是通过设置 matrix 生效的
         mAttacher = new PhotoViewAttacher(this);
         //We always pose as a Matrix scale type, though we can change to another scale type
         //via the mAttacher

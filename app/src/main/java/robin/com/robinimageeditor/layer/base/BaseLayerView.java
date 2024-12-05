@@ -33,6 +33,8 @@ import robin.com.robinimageeditor.utils.MatrixUtils;
 
 /**
  * 看看自己github上的另一个工程MatrixPractice : https://github.com/Bread-Yang/MatrixPractice
+ * 安卓自定义View进阶-Matrix原理 : https://www.gcssloop.com/customview/Matrix_Basic.html
+ * 安卓自定义View进阶-Matrix详解 : https://www.gcssloop.com/customview/Matrix_Method.html
  * matrix最全方法详解与进阶: https://cloud.tencent.com/developer/article/2384173
  * All photo edit layer base on this view.
  *

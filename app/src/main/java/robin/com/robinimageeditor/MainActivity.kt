@@ -115,6 +115,7 @@ class MainActivity : AppCompatActivity() {
 
         // 结果是(55.0f, 55.0f)
         // 进行变换的顺序是先执行postTranslate(100f,100f)，再执行的postScale(0,5f,0.5f)
+        // 总之平时都用post就行
         Log.i(TAG, "postTranslate(100, 100), 再postScale(0.5f, 0.5f)之后 : " + points.contentToString())   // 打印再次postScale后, 原坐标(0, 0)对应的新坐标
 
         val invert = Matrix()
