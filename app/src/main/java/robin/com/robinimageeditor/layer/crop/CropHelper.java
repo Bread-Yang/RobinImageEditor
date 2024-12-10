@@ -221,9 +221,8 @@ public class CropHelper implements CropDetailsView.OnCropOperationListener, Laye
                 mRootEditorDelegate.getRooView().getHeight());
         Matrix realMatrix = mapCropRect2FitCenter(state.getCropRect(), viewRect);
         state.setCropFitCenterMatrix(realMatrix);
-        Matrix editorMatrix = new Matrix();
-        editorMatrix.postConcat(state.getSupportMatrix());
-        editorMatrix.postConcat(realMatrix);
+        Matrix editorMatrix = new Matrix(state.getSupportMatrix());
+        editorMatrix.postConcat(realMatrix); // 这里就是realMatrix * state.getSupportMatrix(), 先做state.getSupportMatrix()矩阵变换，再做realMatrix变换
         mRootEditorDelegate.resetEditorSupportMatrix(editorMatrix);
     }
 

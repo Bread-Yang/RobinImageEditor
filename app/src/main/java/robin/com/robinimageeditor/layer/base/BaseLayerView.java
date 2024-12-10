@@ -407,7 +407,7 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         matrix.set(supportMatrix);
         // public boolean postConcat (Matrix other)
         // Postconcats the matrix with the specified matrix. M' = other * M
-        matrix.postConcat(rootLayerMatrix);  // 就是 rootLayerMatrix * supportMatrix
+        matrix.postConcat(rootLayerMatrix);  // 就是 rootLayerMatrix * supportMatrix, 就是先做supportMatrix变换，再做rootLayerMatrix变换
         return matrix;
     }
 

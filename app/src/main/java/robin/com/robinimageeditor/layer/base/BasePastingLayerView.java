@@ -291,7 +291,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         finalMatrix.set(state.getTransformMatrix());
         // public boolean postConcat (Matrix other)
         // Postconcats the matrix with the specified matrix. M' = other * M
-        finalMatrix.postConcat(getDrawMatrix());
+        finalMatrix.postConcat(getDrawMatrix());  // 这里就是getDrawMatrix() * state.getTransformMatrix(), 先做state.getTransformMatrix()矩阵变换，再做getDrawMatrix()变化
         path.transform(finalMatrix);
 
         RectF rectF = new RectF();
@@ -317,8 +317,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         Matrix finalMatrix = new Matrix();
         finalMatrix.set(state.getTransformMatrix());
         if (realDisplay) {
-            // PastingSaveStateMarker的TransformMatrix * getDrawMatrix()
-            finalMatrix.postConcat(getDrawMatrix());
+            // PastingSaveStateMarker的getDrawMatrix() * TransformMatrix
+            finalMatrix.postConcat(getDrawMatrix()); // 这里就是getDrawMatrix() * state.getTransformMatrix(), 先做state.getTransformMatrix()矩阵变换，再做getDrawMatrix()变化
         }
         RectF displayRect = new RectF();
         finalMatrix.mapRect(displayRect, state.getInitDisplayRect());

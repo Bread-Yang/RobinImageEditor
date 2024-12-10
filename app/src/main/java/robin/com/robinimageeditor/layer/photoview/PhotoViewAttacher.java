@@ -481,7 +481,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
 
     private Matrix getDrawMatrix() {
         mDrawMatrix.set(mBaseMatrix);
-        mDrawMatrix.postConcat(mSuppMatrix);
+        mDrawMatrix.postConcat(mSuppMatrix);  // 先做基础矩阵mBaseMatrix变换，再做mSuppMatrix手势操作变换
         return mDrawMatrix;
     }
 

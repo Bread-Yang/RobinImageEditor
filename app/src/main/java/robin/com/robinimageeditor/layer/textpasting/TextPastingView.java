@@ -83,18 +83,23 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
     }
 
     private TextPastingSaveState initTextPastingSaveState(String text, int color, Matrix transformMatrix) {
+        // 无论photoView是缩放还是平移, 新增的PastingView的初始位置, 永远显示在屏幕的中间
+        float centerX = getResources().getDisplayMetrics().widthPixels / 2;
+        float centerY = getResources().getDisplayMetrics().heightPixels / 2;
+
         if (transformMatrix == null) {
             transformMatrix = new Matrix();
         }
+        // 获取已经旋转的角度
+        float rotateDegree = MatrixUtils.getMatrixDegree(getDrawMatrix());
+        // 反向旋转, 让文本生成时水平显示
+        transformMatrix.postRotate(-rotateDegree % 360, centerX, centerY);
         mTextPaint.setColor(color);
         float width = mTextPaint.measureText(text);
         float height = mTextPaint.descent() - mTextPaint.ascent();
         RectF initDisplayRect = new RectF();
         // 这段代码会导致新增的PastingView所在的位置, 每次都是在validateRect的中间, 而不是在屏幕的中间
 //        PointF point = new PointF(validateRect.centerX(), validateRect.centerY());
-        // 无论photoView是缩放还是平移, 新增的PastingView的初始位置, 永远显示在屏幕的中间
-        float centerX = getResources().getDisplayMetrics().widthPixels / 2;
-        float centerY = getResources().getDisplayMetrics().heightPixels / 2;
         PointF point = new PointF(centerX, centerY);
         // 屏幕中心点, 通过DrawMatrix的逆矩阵, 计算出变换前的实际位置(相对于图片编辑框左上角的位置(不是相对于屏幕左上角),)
         point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);
@@ -137,6 +142,7 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
         path.moveTo(polygonPoint[0], polygonPoint[1]);
         path.lineTo(polygonPoint[2], polygonPoint[3]);
 
+        // "polygonPoint[0] : " + polygonPoint[0] + ", polygonPoint[1] : " + polygonPoint[1] + ", polygonPoint[2] : " + polygonPoint[2] + ", polygonPoint[3] : " + polygonPoint[3]
         canvas.drawTextOnPath(state.getText(), path, 0, 0, mTempTextPaint);
     }
 
