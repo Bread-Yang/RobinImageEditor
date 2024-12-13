@@ -84,16 +84,47 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
 
     private TextPastingSaveState initTextPastingSaveState(String text, int color, Matrix transformMatrix) {
         // 无论photoView是缩放还是平移, 新增的PastingView的初始位置, 永远显示在屏幕的中间
+        // 这里的centerX，centerY已经是做过了变换的矩阵，要通过getDrawMatrix() * transformMatrix的逆矩阵转换回来
         float centerX = getResources().getDisplayMetrics().widthPixels / 2;
         float centerY = getResources().getDisplayMetrics().heightPixels / 2;
 
         if (transformMatrix == null) {
             transformMatrix = new Matrix();
         }
-        // 获取已经旋转的角度
-        float rotateDegree = MatrixUtils.getMatrixDegree(getDrawMatrix());
-        // 反向旋转, 让文本生成时水平显示
-        transformMatrix.postRotate(-rotateDegree % 360, centerX, centerY);
+//        // 获取已经缩放的倍数
+//        float scale = MatrixUtils.getMatrixScale(getDrawMatrix());
+//        Matrix scaleMatrix = new Matrix();
+//        scaleMatrix.postScale(scale, scale);
+//        Matrix invertScaleMatrix = new Matrix();
+//        scaleMatrix.invert(invertScaleMatrix);
+//        // 反向缩放
+//        transformMatrix.postConcat(invertScaleMatrix);
+//        // 获取已经旋转的角度
+//        float rotateDegree = MatrixUtils.getMatrixDegree(getDrawMatrix());
+//        // 反向旋转, 让文本生成时水平显示
+//        transformMatrix.postRotate(-rotateDegree % 360, centerX, centerY);
+
+        /**
+         * 上面的反向缩放和反向旋转，还可以这样实现
+         * 1.首先copy getDrawMatrix()矩阵
+         * 2.然后把drawMatrix的MTRANS_X和MTRANS_Y设置为0
+         * 3.再取得drawMatrix的逆矩阵
+         * 4.再乘上transformMatrix
+         * 代码如下：
+         */
+        float[] copyMatrixValue = new float[9];
+        getDrawMatrix().getValues(copyMatrixValue);
+
+        // 将偏移量设置为0，只获取已旋转的角度和已缩放的倍数
+        copyMatrixValue[Matrix.MTRANS_X] = 0;
+        copyMatrixValue[Matrix.MTRANS_Y] = 0;
+
+        Matrix copyMatrix = new Matrix();
+        copyMatrix.setValues(copyMatrixValue);
+        Matrix invertMatrix = new Matrix();
+        copyMatrix.invert(invertMatrix);    // 得到逆矩阵，获取反向旋转的角度和反向缩放的倍数
+        transformMatrix.postConcat(invertMatrix);  // 做反向变换操作
+
         mTextPaint.setColor(color);
         float width = mTextPaint.measureText(text);
         float height = mTextPaint.descent() - mTextPaint.ascent();
@@ -102,7 +133,10 @@ public class TextPastingView extends BasePastingLayerView<TextPastingSaveState> 
 //        PointF point = new PointF(validateRect.centerX(), validateRect.centerY());
         PointF point = new PointF(centerX, centerY);
         // 屏幕中心点, 通过DrawMatrix的逆矩阵, 计算出变换前的实际位置(相对于图片编辑框左上角的位置(不是相对于屏幕左上角),)
-        point = MatrixUtils.mapInvertMatrixPoint(getDrawMatrix(), point);
+        // fix : 解决图片旋转后，新增文本位置错乱bug
+        Matrix matrix = new Matrix(transformMatrix);
+        matrix.postConcat(getDrawMatrix());
+        point = MatrixUtils.mapInvertMatrixPoint(matrix, point);
         MatrixUtils.RectFSchedule(initDisplayRect, point.x, point.y, width, height);
         RectF initTextRect = new RectF();
         initTextRect.set(initDisplayRect);

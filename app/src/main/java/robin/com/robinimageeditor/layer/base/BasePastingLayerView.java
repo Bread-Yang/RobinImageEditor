@@ -1,12 +1,14 @@
 package robin.com.robinimageeditor.layer.base;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.support.annotation.Nullable;
@@ -15,6 +17,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import robin.com.robinimageeditor.R;
 import robin.com.robinimageeditor.data.savestate.PastingSaveStateMarker;
 import robin.com.robinimageeditor.data.share.SharableData;
 import robin.com.robinimageeditor.utils.MatrixUtils;
@@ -50,6 +53,9 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     protected OnOperateCallback mCallback;
 
+    public static int icon_radius;
+    private float mLastX, mLastY;
+
     /**
      * 用于处理拖动、缩放、旋转等操作的回调
      */
@@ -82,6 +88,7 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
     }
 
     private void init() {
+        icon_radius = MatrixUtils.dp2px(getContext(), 10f);
         // 继承于BasePastingLayerView的子类默认是可拦截触控事件
         setLayerInEditMode(true);
 
@@ -161,6 +168,18 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
             drawFocusRectCornerRect(canvas, initDisplayRectF.right, initDisplayRectF.top);
             drawFocusRectCornerRect(canvas, initDisplayRectF.right, initDisplayRectF.bottom);
             drawFocusRectCornerRect(canvas, initDisplayRectF.left, initDisplayRectF.bottom);
+
+            Bitmap bitmapDelete = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_delete);
+            Bitmap bitmapAdjust = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_adjust);
+
+//            int padding = icon_radius;
+//            Rect deleteRect = new Rect((int) (polygonPoint[0] - padding), (int) (polygonPoint[1] - padding), (int) (polygonPoint[0] + padding), (int) (polygonPoint[1] + padding));
+//            Rect adjustRect = new Rect((int) (polygonPoint[4] - padding), (int) (polygonPoint[5] - padding), (int) (polygonPoint[4] + padding), (int) (polygonPoint[5] + padding));
+//            canvas.drawBitmap(bitmapDelete, null, deleteRect, null);
+//            canvas.drawBitmap(bitmapAdjust, null, adjustRect, null);
+            RectF adjustRect = new RectF(currentPastingState.getAdjustIconRectF());
+            currentPastingState.getTransformMatrix().mapRect(adjustRect);
+            canvas.drawBitmap(bitmapAdjust, null, adjustRect, null);
 
 //            RectF display = getStateDisplayRect(currentPastingState, false);
 //            canvas.drawRect(display, focusRectPaint);
@@ -266,7 +285,9 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 //            if (displayRect.contains(downX, downY)) {
 //                return state;
 //            }
-            if (containsTouchPoint(state, (int) downX, (int) downY)) {
+            boolean isTouchAdjustIcon = containsAdjustTouchPoint(state, (int) downX, (int) downY);
+            state.setAdjustPointTouch(isTouchAdjustIcon);
+            if (isTouchAdjustIcon || containsTouchPoint(state, (int) downX, (int) downY)) {
                 return state;
             }
         }
@@ -297,6 +318,32 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
         RectF rectF = new RectF();
         path.computeBounds(rectF, true);
 
+        // Region 表示一个范围，它可以由0个或多个矩形组成
+        Region region = new Region();
+        region.setPath(path, new Region((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom));
+
+        if (region.contains(x, y)) {
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean containsAdjustTouchPoint(PastingSaveStateMarker state, int x, int y) {
+        Path path = new Path();
+        path.addRect(state.getAdjustIconRectF(), Path.Direction.CW);
+
+        // 因为PastingSaveStateMarker的坐标都是在原图没有经过任何变换操作的原始x，y坐标，所以这里要再次乘上matrix
+        Matrix finalMatrix = new Matrix();
+        finalMatrix.set(state.getTransformMatrix());
+        // public boolean postConcat (Matrix other)
+        // Postconcats the matrix with the specified matrix. M' = other * M
+        finalMatrix.postConcat(getDrawMatrix());  // 这里就是getDrawMatrix() * state.getTransformMatrix(), 先做state.getTransformMatrix()矩阵变换，再做getDrawMatrix()变化
+        path.transform(finalMatrix);
+
+        RectF rectF = new RectF();
+        path.computeBounds(rectF, true);
+
+        // Region 表示一个范围，它可以由0个或多个矩形组成，可以检测xy坐标是否在不规则图形里
         Region region = new Region();
         region.setPath(path, new Region((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom));
 
@@ -329,6 +376,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
 
     @Override
     public void onFingerDown(float downX, float downY) {
+        mLastX = downX;
+        mLastY = downY;
         removeCallbacks(hidePastingOutOfBoundsRunnable);
     }
 
@@ -342,18 +391,88 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
                         mCallback.showOrHideDragCallback(true);
                     }
                 }
-                // calc
-                float[] invert = MatrixUtils.mapInvertMatrixTranslate(getDrawMatrix(), dx, dy);
-                currentPastingState.getTransformMatrix().postTranslate(invert[0], invert[1]);
-                RectF displayRect = getStateDisplayRect(currentPastingState, true);
-                checkDisplayRegion(displayRect);
-                // setStates
-                if (mCallback != null) {
-                    mCallback.setOrNotDragCallback(!dragToDeleteViewRect.contains(displayRect.centerX(), displayRect.centerY()));
+                // 做缩放旋转操作
+                if (currentPastingState.isAdjustPointTouch()) {
+                    float[] points = new float[2];
+                    points[0] = currentPastingState.getInitDisplayRect().centerX();
+                    points[1] = currentPastingState.getInitDisplayRect().centerY();
+                    currentPastingState.getTransformMatrix().mapPoints(points);
+
+                    float centerX = points[0];
+                    float centerY = points[1];
+
+                    // 这里InitDisplayRect的中心点，是在canvas没有做过任何缩放操作的情况下的坐标
+                    // 所以为了得到跟触控坐标系一致的坐标，这里需要用getDrawMatrix()*TransformMatrix后再映射
+                    // 就能得到坐标系一致的真实中心点了
+                    // 其实这里还有一种做法，就是将mLastX, mLastY, x, y通过getDrawMatrix()*TransformMatrix的逆矩阵,
+                    // 转换成没有变化前的坐标，这样就可以直接用InitDisplayRect的中心点来计算了
+                    float[] realPoints = new float[2];
+                    realPoints[0] = currentPastingState.getInitDisplayRect().centerX();
+                    realPoints[1] = currentPastingState.getInitDisplayRect().centerY();
+                    Matrix matrix = new Matrix(currentPastingState.getTransformMatrix());
+                    matrix.postConcat(getDrawMatrix());
+                    matrix.mapPoints(realPoints);
+
+                    // 缩放
+                    float scale = calculateScale(realPoints[0], realPoints[1], mLastX, mLastY, x, y);
+                    float[] invert = MatrixUtils.mapInvertMatrixScale(getDrawMatrix(), scale, scale);
+                    currentPastingState.getTransformMatrix().postScale(invert[0], invert[1], points[0], points[1]);
+
+                    // 旋转
+                    float rotateDegree = calculateAngle(realPoints[0], realPoints[1], mLastX, mLastY, x, y);
+                    currentPastingState.getTransformMatrix().postRotate(rotateDegree, points[0], points[1]);
+
+                    mLastX = x;
+                    mLastY = y;
+                } else { // 做平移操作
+                    // calc
+                    float[] invert = MatrixUtils.mapInvertMatrixTranslate(getDrawMatrix(), dx, dy);
+                    currentPastingState.getTransformMatrix().postTranslate(invert[0], invert[1]);
+                    RectF displayRect = getStateDisplayRect(currentPastingState, true);
+                    checkDisplayRegion(displayRect);
+                    // setStates
+                    if (mCallback != null) {
+                        mCallback.setOrNotDragCallback(!dragToDeleteViewRect.contains(displayRect.centerX(), displayRect.centerY()));
+                    }
                 }
                 redrawAllCache();
             }
         }
+    }
+
+    public static float calculateScale(float centerX, float centerY, float x1, float y1, float x2, float y2) {
+        float v1X = x1 - centerX;
+        float v1Y = y1 - centerY;
+        float v2X = x2 - centerX;
+        float v2Y = y2 - centerY;
+
+        float lenV1 = (float) Math.sqrt(v1X * v1X + v1Y * v1Y);
+        float lenV2 = (float) Math.sqrt(v2X * v2X + v2Y * v2Y);
+
+        return lenV2 / lenV1;
+    }
+
+    public float calculateAngle(float centerX, float centerY, float x1, float y1, float x2, float y2) {
+        float lastDegree = getAngle(centerX, centerY, x1, y1);
+        float newDegree = getAngle(centerX, centerY, x2, y2);
+        if (Float.isNaN(lastDegree) || Float.isNaN(newDegree)) {
+            return 0;
+        }
+        return newDegree - lastDegree;
+    }
+
+    private float getAngle(float centerX, float centerY, float touchX, float touchY) {
+        float angle = 0;
+        float x2 = touchX - centerX;
+        float y2 = touchY - centerY;
+        float d1 = (float) Math.sqrt((centerY * centerY));
+        float d2 = (float) Math.sqrt((x2 * x2 + y2 * y2));
+        double toDegrees = Math.toDegrees(Math.acos((-centerY * y2) / (d1 * d2)));
+        if (touchX >= centerX) {
+            angle = (float) toDegrees;
+        } else
+            angle = (float) (360 - toDegrees);
+        return angle;
     }
 
     @Override
@@ -432,7 +551,8 @@ public abstract class BasePastingLayerView<T extends PastingSaveStateMarker> ext
             }
         }
         // hide extra validate rect (over mValidateRect should be masked)
-        hideExtraValidateRect();
+        // 手指抬起时，过1.5s后，不高亮当前操作的pasting
+//        hideExtraValidateRect();
     }
 
     // 把在validateRect外面的pasting隐藏

@@ -404,9 +404,13 @@ public abstract class BaseLayerView<T extends SaveStateMarker> extends View
         // 矩阵的用法 : https://cloud.baidu.com/article/3151272
         // matrix1.postConcat(matrix2);
         // 就是将matrix1后接到matrix2
+        // 注意！！！！！！不管是前乘后乘或者左乘右乘，反正知道postXXX()方法，都是按照代码顺序，从上到下执行就行，验证链接：https://blog.51cto.com/u_12395319/5715265
+        // 参考MainActivity的testPre()和testPost()方法
         matrix.set(supportMatrix);
         // public boolean postConcat (Matrix other)
         // Postconcats the matrix with the specified matrix. M' = other * M
+        // 这里对比PhotoViewAttacher的getDrawMatrix()顺序后的理解，PhotoViewAttacher是在做了基础矩阵mBaseMatrix变换，再做mSuppMatrix手势操作变换
+        // 这里是先做supportMatrix变换，再做rootLayerMatrix变换，是因为rootLayerMatrix是手势操作PhotoView后再改变此矩阵的，所以postConcat(rootLayerMatrix)
         matrix.postConcat(rootLayerMatrix);  // 就是 rootLayerMatrix * supportMatrix, 就是先做supportMatrix变换，再做rootLayerMatrix变换
         return matrix;
     }
